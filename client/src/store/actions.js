@@ -1,10 +1,61 @@
 export const CHANGE_CHECKBOX = "CHANGE_CHECKBOX";
+export const CHANGE_THEME = "CHANGE_THEME";
+export const CHANGE_CLIENT = "CHANGE_CLIENT";
+export const CHANGE_INDICATOR = "CHANGE_INDICATOR";
 
-export function change(checkbox_id, checkBoxState) {
+export function change_CB(checkbox_id, checkBoxState) {
     return { type: CHANGE_CHECKBOX,
         payload: {
             checkBoxId: checkbox_id,
             checkBoxState: !checkBoxState
         }
+    };
+}
+
+export function change_theme(themeState) {
+    return { type: CHANGE_THEME,
+        payload: {
+            themeId: "theme_ch",
+            themeState: !themeState
+        }
+    };
+}
+
+export function changeIndTimer(indState) {
+    let stat = parseInt(indState.split('_')[1]) + 1;
+    if(stat > 3) stat = 0;
+    return { type: CHANGE_INDICATOR,
+        payload: 'ind_' + stat
+    };
+}
+
+export function changeIndNext(indState, res) {
+    res();
+    let stat = parseInt(indState.split('_')[1]) + 1;
+    if(stat > 3) stat = 0;
+    return { type: CHANGE_INDICATOR,
+        payload: 'ind_' + stat
+    };
+}
+
+export function changeIndPrev(indState, res) {
+    res();
+    let stat = parseInt(indState.split('_')[1]) - 1;
+    if(stat < 0) stat = 3;
+    return { type: CHANGE_INDICATOR,
+        payload: 'ind_' + stat
+    };
+}
+
+export function changeInd(indState, res) {
+    res();
+    return { type: CHANGE_INDICATOR,
+        payload: indState
+    };
+}
+
+export function change_CL(body) {
+    return {
+        type: CHANGE_CLIENT, payload: body
     };
 }

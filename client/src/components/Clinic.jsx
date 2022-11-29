@@ -1,4 +1,4 @@
-import {Component} from "react";
+import React, {Component} from "react";
 import button from './button.module.css';
 import clin from './clin.module.css';
 import {Link} from "react-router-dom";
@@ -20,10 +20,10 @@ export default class Clinic extends Component
     render() {
         console.log('I was triggered during render');
         return(
-            <div className={clin.App} style={}>
+            <div className={clin.App}>
                 <header className={clin.header}>
-                    <Link to = "/">
-                        <center><div className={[button.button, clin.button].join(' ')}>Искренне принять поздравление</div></center>
+                    <Link to = "/" style="text-align: center;">
+                        <div className={[button.button, clin.button].join(' ')}>Искренне принять поздравление</div>
                     </Link>
                 </header>
             </div>

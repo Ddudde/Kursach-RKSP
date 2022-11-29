@@ -1,7 +1,7 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import {getCheckBoxState} from "../store/selector";
-import {change} from "../store/actions";
+import {change_CB} from "../store/actions";
 
 
 const CustomCheckbox = (props) => {
@@ -13,7 +13,7 @@ const CustomCheckbox = (props) => {
                 type="checkbox"
                 {...props}
                 checked={checkBoxState ? "checked" : ""}
-                onChange={() => {dispatch(change(props.checkbox_id, checkBoxState))}}
+                onChange={() => {dispatch(change_CB(props.checkbox_id, checkBoxState))}}
             />
             {props.text}
         </>
