@@ -2,17 +2,28 @@ export const CHANGE_CHECKBOX = "CHANGE_CHECKBOX";
 export const CHANGE_THEME = "CHANGE_THEME";
 export const CHANGE_CLIENT = "CHANGE_CLIENT";
 export const CHANGE_INDICATOR = "CHANGE_INDICATOR";
+export const CHANGE_NEWS = "CHANGE_NEWS";
 
-export function change_CB(checkbox_id, checkBoxState) {
+export function changeCB(checkboxId, checkBoxState) {
     return { type: CHANGE_CHECKBOX,
         payload: {
-            checkBoxId: checkbox_id,
+            checkBoxId: checkboxId,
             checkBoxState: !checkBoxState
         }
     };
 }
 
-export function change_theme(themeState) {
+export function changeNews(type, id, title, date, img_url, text) {
+    return { type: CHANGE_NEWS,
+        payload: {
+            newsType: type,
+            newsId: id,
+            newsState: {title: title, date: date, img_url: img_url, text: text}
+        }
+    };
+}
+
+export function changeTheme(themeState) {
     return { type: CHANGE_THEME,
         payload: {
             themeId: "theme_ch",
@@ -54,7 +65,7 @@ export function changeInd(indState, res) {
     };
 }
 
-export function change_CL(body) {
+export function changeCL(body) {
     return {
         type: CHANGE_CLIENT, payload: body
     };

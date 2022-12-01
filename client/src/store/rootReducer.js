@@ -1,12 +1,14 @@
 import { combineReducers } from "redux";
-import checkBoxReducer from "./checkBoxReducer";
-import clientReducer from "./clientReducer";
-import themeReducer from "./themeReducer";
-import indicatorReducer from "./indicatorReducer";
+import checkBoxReducer from "./reducers/checkBoxReducer";
+import clientReducer from "./reducers/clientReducer";
+import themeReducer from "./reducers/themeReducer";
+import indicatorReducer from "./reducers/indicatorReducer";
+import newsReducer from "./reducers/newsReducer";
 
 export default combineReducers({
     checkbox: checkBoxReducer,
     themes: themeReducer,
     indicators: indicatorReducer,
+    news: newsReducer,
     client: clientReducer
 });
