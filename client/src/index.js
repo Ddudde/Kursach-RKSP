@@ -15,6 +15,7 @@ import NewsPor from "./components/news/Por/NewsPor";
 import ContactMain from "./components/contacts/ContactMain";
 import ContactYo from "./components/contacts/Yo/ContactYo";
 import ContactPor from "./components/contacts/Por/ContactPor";
+import ErrNotFound from "./components/error/ErrNotFound";
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -37,6 +38,7 @@ root.render(
                                     <Route path="por" element={<ContactPor/>} />
                                     <Route path="yo" element={<ContactYo/>} />
                                 </Route>
+                                <Route path="*" element={<ErrNotFound/>} />
                             </Route>
                         </Routes>
                     </Provider>
