@@ -3,6 +3,7 @@ export const CHANGE_THEME = "CHANGE_THEME";
 export const CHANGE_CLIENT = "CHANGE_CLIENT";
 export const CHANGE_INDICATOR = "CHANGE_INDICATOR";
 export const CHANGE_NEWS = "CHANGE_NEWS";
+export const CHANGE_CONTACT = "CHANGE_CONTACT";
 
 export function changeCB(checkboxId, checkBoxState) {
     return { type: CHANGE_CHECKBOX,
@@ -19,6 +20,16 @@ export function changeNews(type, id, title, date, img_url, text) {
             newsType: type,
             newsId: id,
             newsState: {title: title, date: date, img_url: img_url, text: text}
+        }
+    };
+}
+
+export function changeContacts(type, id, title, number) {
+    return { type: CHANGE_CONTACT,
+        payload: {
+            contactType: type,
+            contactId: id,
+            contactState: {title: title, number: number}
         }
     };
 }

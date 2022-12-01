@@ -12,6 +12,9 @@ import {Route, Routes} from "react-router-dom";
 import Start from "./components/start/Start.jsx";
 import NewsYo from "./components/news/Yo/NewsYo";
 import NewsPor from "./components/news/Por/NewsPor";
+import ContactMain from "./components/contacts/ContactMain";
+import ContactYo from "./components/contacts/Yo/ContactYo";
+import ContactPor from "./components/contacts/Por/ContactPor";
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -28,6 +31,11 @@ root.render(
                                     <Route index element={<NewsYo/>} />
                                     <Route path="por" element={<NewsPor/>} />
                                     <Route path="yo" element={<NewsYo/>} />
+                                </Route>
+                                <Route path="contacts" element={<ContactMain/>}>
+                                    <Route index element={<ContactYo/>} />
+                                    <Route path="por" element={<ContactPor/>} />
+                                    <Route path="yo" element={<ContactYo/>} />
                                 </Route>
                             </Route>
                         </Routes>

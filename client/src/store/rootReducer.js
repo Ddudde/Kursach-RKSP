@@ -4,11 +4,13 @@ import clientReducer from "./reducers/clientReducer";
 import themeReducer from "./reducers/themeReducer";
 import indicatorReducer from "./reducers/indicatorReducer";
 import newsReducer from "./reducers/newsReducer";
+import contactReducer from "./reducers/contactReducer";
 
 export default combineReducers({
     checkbox: checkBoxReducer,
     themes: themeReducer,
     indicators: indicatorReducer,
     news: newsReducer,
+    contacts: contactReducer,
     client: clientReducer
 });

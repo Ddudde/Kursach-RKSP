@@ -62,9 +62,9 @@ export function Main() {
                 <Link className={main.nav_i+" panNew"} id={main.nav_i} to="news" onClick={() => {setActived(".panNew")}}>
                     Объявления
                 </Link>
-                <a className={main.nav_i+" panCon"} id={main.nav_i} onClick={() => {setActived(".panCon")}}>
+                <Link className={main.nav_i+" panCon"} id={main.nav_i} to="contacts" onClick={() => {setActived(".panCon")}}>
                     Контакты
-                </a>
+                </Link>
                 <a className={main.nav_i+" panSch"} id={main.nav_i} onClick={() => {setActived(".panSch")}}>
                     Школам
                 </a>

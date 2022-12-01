@@ -21,22 +21,26 @@
 	padding: 10px;
 	border-radius: 5px;
 	margin-bottom: 10px;
+	transition: background-color 1s ease;
 }
 .news_line h2 {
 	color:#006600;
 	margin: 0;
 	text-shadow: 2px 2px 2px #000;
+	transition: color 1s ease;
 }
 .news_line span {
 	font-size:10px;
 	font-style:italic;
 	color:#090a0b;
 	text-shadow: 1px 1px 3px #000;
+	transition: color 1s ease;
 }
 .news_line p {
 	color: #006600;
 	margin-bottom:5px;
 	text-shadow: 1px 1px 3px #000;
+	transition: color 1s ease;
 }
 .news_line p img {
 	margin:0px 10px;
