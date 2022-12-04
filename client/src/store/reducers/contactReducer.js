@@ -1,4 +1,9 @@
-import {CHANGE_CONTACT} from '../actions';
+import {
+    CHANGE_CONTACT_YO,
+    CHANGE_CONTACT_POR,
+    CHANGE_CONTACT_YO_IMAGEURL,
+    CHANGE_CONTACT_POR_IMAGEURL
+} from '../actions';
 
 const initialState = {
     contactsYo: {
@@ -19,57 +24,44 @@ const initialState = {
 export default function contactReducer(state = initialState, action) {
     console.log('reducer', state, action);
     switch(action.type) {
-        case CHANGE_CONTACT:
-            let result;
-            switch(action.payload.contactType) {
-                case "Yo":
-                    if(action.payload.contactId === "imageUrl") {
-                        result = {
-                            ...state,
-                            contactsYo: {
-                                ...state.contactsYo,
-                                [action.payload.contactId]: action.payload.contactState.title
-                            }
-                        };
-                    } else {
-                        result = {
-                            ...state,
-                            contactsYo: {
-                                ...state.contactsYo,
-                                numbers: {
-                                    ...state.contactsYo.numbers,
-                                    [action.payload.contactId]: action.payload.contactState
-                                }
-                            }
-                        };
+        case CHANGE_CONTACT_YO_IMAGEURL:
+            return {
+                ...state,
+                contactsYo: {
+                    ...state.contactsYo,
+                    [action.payload.contactId]: action.payload.contactState.title
+                }
+            };
+        case CHANGE_CONTACT_YO:
+            return {
+                ...state,
+                contactsYo: {
+                    ...state.contactsYo,
+                    numbers: {
+                        ...state.contactsYo.numbers,
+                        [action.payload.contactId]: action.payload.contactState
                     }
-                    break;
-                case "Por":
-                    if(action.payload.contactId === "imageUrl") {
-                        result = {
-                            ...state,
-                            contactsPor: {
-                                ...state.contactsPor,
-                                [action.payload.contactId]: action.payload.contactState.title
-                            }
-                        };
-                    } else {
-                        result = {
-                            ...state,
-                            contactsPor: {
-                                ...state.contactsPor,
-                                numbers: {
-                                    ...state.contactsPor.numbers,
-                                    [action.payload.contactId]: action.payload.contactState
-                                }
-                            }
-                        };
+                }
+            };
+        case CHANGE_CONTACT_POR_IMAGEURL:
+            return  {
+                ...state,
+                contactsPor: {
+                    ...state.contactsPor,
+                    [action.payload.contactId]: action.payload.contactState.title
+                }
+            };
+        case CHANGE_CONTACT_POR:
+            return  {
+                ...state,
+                contactsPor: {
+                    ...state.contactsPor,
+                    numbers: {
+                        ...state.contactsPor.numbers,
+                        [action.payload.contactId]: action.payload.contactState
                     }
-                    break;
-                default:
-                    return state;
-            }
-            return result;
+                }
+            };
         default:
             return state;
     }

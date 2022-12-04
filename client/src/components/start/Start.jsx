@@ -50,7 +50,7 @@ export function Start() {
         //put(14, JSON.stringify({id: 14, name: 'nm127', email: 'm@y.ru7'}))
         st.ini(start.AppHeader);
         setActived(".panGL");
-        dispatch(changeInd("ind_0", reset_timer));
+        dispatch(changeInd("ind_0", reset_timer, indActState));
         return function() {
             console.log("I was triggered during componentWillUnmount Start.jsx");
             st.destroy();
@@ -99,13 +99,13 @@ export function Start() {
                     <img src={left} className={start.pic_l} alt="" onClick={() => {dispatch(changeIndPrev(indActState, reset_timer))}}/>
                     <img src={left} className={start.pic_r} alt="" onClick={() => {dispatch(changeIndNext(indActState, reset_timer))}}/>
                     <div className={start.indic}>
-                        <div className={start.indic_bl} id="ind_0" onClick={() => {dispatch(changeInd("ind_0", reset_timer))}}>
+                        <div className={start.indic_bl} id="ind_0" onClick={() => {dispatch(changeInd("ind_0", reset_timer, indActState))}}>
                         </div>
-                        <div className={start.indic_bl} id="ind_1" onClick={() => {dispatch(changeInd("ind_1", reset_timer))}}>
+                        <div className={start.indic_bl} id="ind_1" onClick={() => {dispatch(changeInd("ind_1", reset_timer, indActState))}}>
                         </div>
-                        <div className={start.indic_bl} id="ind_2" onClick={() => {dispatch(changeInd("ind_2", reset_timer))}}>
+                        <div className={start.indic_bl} id="ind_2" onClick={() => {dispatch(changeInd("ind_2", reset_timer, indActState))}}>
                         </div>
-                        <div className={start.indic_bl} id="ind_3" onClick={() => {dispatch(changeInd("ind_3", reset_timer))}}>
+                        <div className={start.indic_bl} id="ind_3" onClick={() => {dispatch(changeInd("ind_3", reset_timer, indActState))}}>
                         </div>
                     </div>
                 </div>

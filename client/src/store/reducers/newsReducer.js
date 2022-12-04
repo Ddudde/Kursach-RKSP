@@ -1,4 +1,4 @@
-import {CHANGE_NEWS} from '../actions';
+import {CHANGE_NEWS_POR, CHANGE_NEWS_YO} from '../actions';
 
 const initialState = {
     newsYo: {
@@ -15,32 +15,23 @@ const initialState = {
 export default function newsReducer(state = initialState, action) {
     console.log('reducer', state, action);
     switch(action.type) {
-        case CHANGE_NEWS:
-            let result;
-            switch(action.payload.newsType) {
-                case "Yo":
-                    result = {
-                        newsYo: {
-                            ...state.newsYo,
-                            [action.payload.newsId]: action.payload.newsState
-                        },
-                        ...state.newsPor
-                    };
-                    break;
-                case "Por":
-                    result = {
-                        newsPor: {
-                            ...state.newsPor,
-                            [action.payload.newsId]: action.payload.newsState
-                        },
-                        ...state.newsYo
-                    };
-                    break;
-                default:
-                    return {...state};
-            }
-            return result;
+        case CHANGE_NEWS_YO:
+            return {
+                newsYo: {
+                    ...state.newsYo,
+                    [action.payload.newsId]: action.payload.newsState
+                },
+                ...state.newsPor
+            };
+        case CHANGE_NEWS_POR:
+            return {
+                newsPor: {
+                    ...state.newsPor,
+                    [action.payload.newsId]: action.payload.newsState
+                },
+                ...state.newsYo
+            };
         default:
-            return {...state};
+            return state;
     }
 }
