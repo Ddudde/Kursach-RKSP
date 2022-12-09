@@ -6,6 +6,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {setActived} from "../../main/Main";
 import {setActNew} from "../NewsMain";
 import {changeNews} from "../../../store/actions";
+import warn from "../../../media/warn_big.png";
 
 let dispatch, newsInfo;
 
@@ -44,10 +45,15 @@ export function NewsPor() {
         <>
             <Helmet>
                 <title>Объявления портала</title>
-                <link rel="canonical" href="http://example.com/example" />
             </Helmet>
             <div className={newsCSS.AppHeader}>
-                <section className={newsCSS.center_colum}>
+                {Object.getOwnPropertyNames(newsInfo.newsPor).length == 0 && (<div className={newsCSS.block}>
+                    <img alt="banner" src={warn}/>
+                    <div className={newsCSS.block_text}>
+                        Новостей нет... Ждите новой информации.
+                    </div>
+                </div>)}
+                {Object.getOwnPropertyNames(newsInfo.newsPor).length > 0 && (<section className={newsCSS.center_colum}>
                     {Object.getOwnPropertyNames(newsInfo.newsPor).map(param =>
                         <div className={newsCSS.news_line} key={param}>
                             <h2>{newsInfo.newsPor[param].title}</h2>
@@ -55,7 +61,7 @@ export function NewsPor() {
                             <p><img alt="banner" src={newsInfo.newsPor[param].img_url+''} onError={errorLoad}/>{newsInfo.newsPor[param].text}</p>
                         </div>
                     )}
-                </section>
+                </section>)}
             </div>
         </>
     )

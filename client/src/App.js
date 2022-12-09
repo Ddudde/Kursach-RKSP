@@ -11,6 +11,12 @@ import ErrNotFound from "./components/error/ErrNotFound";
 import {states} from "./store/selector";
 import {useSelector} from "react-redux";
 import Dnevnik from "./components/dnevnik/Dnevnik";
+import AnalyticsMain from "./components/analytics/AnalyticsMain";
+import Zvonki from "./components/analytics/zvonki/Zvonki";
+import Periods from "./components/analytics/periods/Periods";
+import Schedule from "./components/analytics/schedule/Schedule";
+import AnalyticsJournal from "./components/analytics/journal/AnalyticsJournal";
+import Marks from "./components/analytics/marks/Marks";
 
 function App() {
     const cState = useSelector(states);
@@ -20,6 +26,7 @@ function App() {
         indexComp = <Start/>;
     } else {
         if(cState.role == 0) indexComp = <Dnevnik/>;
+
     }
     return (
       <Routes>
@@ -35,6 +42,14 @@ function App() {
                   <Route index element={<ContactYo/>} />
                   <Route path="por" element={<ContactPor/>} />
                   <Route path="yo" element={<ContactYo/>} />
+              </Route>
+              <Route path="analytics" element={<AnalyticsMain/>}>
+                  <Route index element={<Zvonki/>} />
+                  <Route path="zvonki" element={<Zvonki/>} />
+                  <Route path="periods" element={<Periods/>} />
+                  <Route path="schedule" element={<Schedule/>} />
+                  <Route path="journal" element={<AnalyticsJournal/>} />
+                  <Route path="marks" element={<Marks/>} />
               </Route>
               <Route path="*" element={<ErrNotFound/>} />
           </Route>

@@ -6,6 +6,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {setActived} from "../../main/Main";
 import {changeContacts} from "../../../store/actions";
 import {setActNew} from "../ContactMain";
+import warn from "../../../media/warn_big.png";
 
 let dispatch, contactsInfo;
 
@@ -46,21 +47,26 @@ export function ContactYo() {
         <>
             <Helmet>
                 <title>Контакты учебного центра</title>
-                <link rel="canonical" href="http://example.com/example" />
             </Helmet>
             <div className={contactCSS.AppHeader}>
-                <section className={contactCSS.center_colum}>
-                    <div className={contactCSS.block}>
+                {(Object.getOwnPropertyNames(contactsInfo.contactsYo.numbers).length == 0 && !contactsInfo.contactsYo.imageUrl) && (<div className={contactCSS.block}>
+                    <img alt="banner" src={warn}/>
+                    <div className={contactCSS.block_text}>
+                        К сожалению, информация не найдена... Можете попробовать попросить завуча заполнить информацию.
+                    </div>
+                </div>)}
+                {(Object.getOwnPropertyNames(contactsInfo.contactsYo.numbers).length > 0 && contactsInfo.contactsYo.imageUrl) && (<section className={contactCSS.center_colum}>
+                    <div className={contactCSS.blockTel}>
                         <h1>ТЕЛЕФОНЫ ДЛЯ СВЯЗИ</h1>
                         {Object.getOwnPropertyNames(contactsInfo.contactsYo.numbers).map(param =>
                             <p key={param}><a href={"tel:" + contactsInfo.contactsYo.numbers[param].number}>{contactsInfo.contactsYo.numbers[param].title}</a></p>
                         )}
                     </div>
-                    <div className={contactCSS.map+" "+contactCSS.block}>
+                    <div className={contactCSS.map+" "+contactCSS.blockTel}>
                         <h1>КАРТА ПРОЕЗДА</h1>
                         <p><img className={contactCSS.imk} alt="banner" src={contactsInfo.contactsYo.imageUrl+''} onError={errorLoad}/></p>
                     </div>
-                </section>
+                </section>)}
             </div>
         </>
     )

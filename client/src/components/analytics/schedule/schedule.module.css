@@ -6,7 +6,7 @@
 	top: 7vh;
 }
 
-.blockTel{
+.block{
 	background-color: #DBDBDBe6;
 	padding: 10px;
 	border-radius: 5px;
@@ -43,24 +43,4 @@ h1 {
 	color:#006600;
 	text-shadow: 2px 2px 2px #000;
 	transition: color 1s ease;
-}
-
-.block{
-	margin: auto;
-	text-align: center;
-}
-
-.block > img{
-	width: 30vmin;
-	height: 30vmin;
-}
-
-.block_text{
-	width: 70vmin;
-	color:#009900;
-	font-weight: bold;
-	font-size: 1.5vw;
-	text-shadow: 2px 2px 2px #000;
-	transition: color 1s ease;
-	text-align: left;
 }

@@ -7,6 +7,7 @@ import newsReducer from "./reducers/newsReducer";
 import contactReducer from "./reducers/contactReducer";
 import statusReducer from "./reducers/statusReducer";
 import dnevnikReducer from "./reducers/dnevnikReducer";
+import zvonkiReducer from "./reducers/zvonkiReducer";
 
 export default combineReducers({
     checkbox: checkBoxReducer,
@@ -15,5 +16,6 @@ export default combineReducers({
     news: newsReducer,
     contacts: contactReducer,
     states: statusReducer,
-    dnevnik: dnevnikReducer
+    dnevnik: dnevnikReducer,
+    zvonki: zvonkiReducer
 });

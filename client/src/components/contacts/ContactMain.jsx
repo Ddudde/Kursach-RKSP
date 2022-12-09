@@ -1,6 +1,6 @@
 import React, {useEffect, useRef} from "react";
 import {Helmet} from "react-helmet-async";
-import contactCSS from '../contacts/contactMain.module.css';
+import contactCSS from './contactMain.module.css';
 import {Link, Outlet} from "react-router-dom";
 
 let act = ".panYo", act_new = "";
