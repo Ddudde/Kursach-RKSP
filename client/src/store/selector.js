@@ -1,5 +1,6 @@
 export const all = state => state
-export const clients = state => state.client || {"clients":[]};
+export const states = state => state.states || {};
+export const dnevnik = state => state.dnevnik || {};
 export const newsSelec = state => state.news || {"newsYo": {}, "newsPor": {}};
 export const contactsSelec = state => state.contacts || {"contactsYo": {}, "contactsPor": {}};
 

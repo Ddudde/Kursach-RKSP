@@ -17,6 +17,7 @@ export function ini() {
 	d1.setAttribute('style', `user-select: none;
 	cursor: pointer;
 	position: fixed;
+	width: 4vw;
 	bottom: 50px;
 	right: 6.25vw;
 	display: none;
@@ -25,18 +26,27 @@ export function ini() {
 	document.body.appendChild(d1);
 	d1.addEventListener('click', onTop);
 	window.onscroll = () => {
-		scrolling = true;
-	};
-	setInterval(() => {
-		if (scrolling) {
-			scrolling = false;
-			scr();
+		if(!scrolling) {
+			scrolling = true;
+			setTimeout(tim,300);
 		}
-	},300);
+	};
+}
+
+function tim() {
+	if (scrolling) {
+		scrolling = false;
+		scr();
+	}
 }
 
 function onTop(){
-    window.scrollTo(0, 0);
+	window.scroll({
+		left: 0,
+		top: 0,
+		behavior: "smooth"
+	});
+    // window.scrollTo(0, 0);
 }
 
 function scr() {

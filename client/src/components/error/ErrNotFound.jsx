@@ -2,8 +2,11 @@ import React, {useEffect, useRef} from "react";
 import {Helmet} from "react-helmet-async";
 import errCSS from './error.module.css';
 import warn from '../../media/warn_big.png';
+import {states} from "../../store/selector";
+import {useSelector} from "react-redux";
 
 export function ErrNotFound() {
+    const cState = useSelector(states);
     const isFirstUpdate = useRef(true);
     useEffect(() => {
         if(isFirstUpdate.current) return;
@@ -30,21 +33,21 @@ export function ErrNotFound() {
             <div className={errCSS.AppHeader}>
                 <div className={errCSS.block}>
                     <img alt="banner" src={warn}/>
-                    <div className={errCSS.block_text} id={errCSS.def}>
+                    {!cState.auth && (<div className={errCSS.block_text}>
                         К сожалению, страница не найдена... Предлагаем изучить страницы на выбор ("Школам", "Педагогам", "Родителям", "Учащимся"). <br/>Также можете авторизоваться, тогда система предложит вам подходящую страницу по изучению портала.
-                    </div>
-                    <div className={errCSS.block_text}>
+                    </div>)}
+                    {(cState.auth && cState.role == 3) && (<div className={errCSS.block_text}>
                         К сожалению, страница не найдена... Предлагаем изучить страницу "Школам".
-                    </div>
-                    <div className={errCSS.block_text}>
+                    </div>)}
+                    {(cState.auth && cState.role == 2) && (<div className={errCSS.block_text}>
                         К сожалению, страница не найдена... Предлагаем изучить страницу "Педагогам".
-                    </div>
-                    <div className={errCSS.block_text}>
+                    </div>)}
+                    {(cState.auth && cState.role == 1) && (<div className={errCSS.block_text}>
                         К сожалению, страница не найдена... Предлагаем изучить страницу "Родителям".
-                    </div>
-                    <div className={errCSS.block_text}>
-                        К сожалению, страница не найдена... Предлагаем изучить страницу "Учащимся".
-                    </div>
+                    </div>)}
+                    {(cState.auth && cState.role == 0) && (<div className={errCSS.block_text}>
+                        К сожалению, страница не найдена... Предлагаем изучить страницу "Обучающимся".
+                    </div>)}
                 </div>
             </div>
         </>

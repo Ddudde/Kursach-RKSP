@@ -17,7 +17,6 @@
 }
 
 .block_text{
-	display: none;
 	width: 70vmin;
 	color:#009900;
 	font-weight: bold;
@@ -25,8 +24,4 @@
 	text-shadow: 2px 2px 2px #000;
 	transition: color 1s ease;
 	text-align: left;
-}
-
-#def{
-	display: block;
 }

@@ -1,5 +1,9 @@
 export const CHANGE_CHECKBOX = "CHANGE_CHECKBOX";
 export const CHANGE_THEME = "CHANGE_THEME";
+export const CHANGE_STATE = "CHANGE_STATE";
+export const CHANGE_DNEVNIK = "CHANGE_DNEVNIK";
+export const CHANGE_DNEVNIK_DAY_UP = "CHANGE_DNEVNIK_DAY_UP";
+export const CHANGE_DNEVNIK_DAY_DOWN = "CHANGE_DNEVNIK_DAY_DOWN";
 export const CHANGE_CLIENT = "CHANGE_CLIENT";
 export const CHANGE_INDICATOR = "CHANGE_INDICATOR";
 export const CHANGE_NEWS_YO = "CHANGE_NEWS_YO";
@@ -14,6 +18,24 @@ export function changeCB(checkboxId, checkBoxState) {
         payload: {
             checkBoxId: checkboxId,
             checkBoxState: !checkBoxState
+        }
+    };
+}
+
+export function changeState(id, state) {
+    return { type: CHANGE_STATE,
+        payload: {
+            stateId: id,
+            cState: state
+        }
+    };
+}
+
+export function changeDnevnik(id, state, type) {
+    return { type: type,
+        payload: {
+            stateId: id,
+            cState: state
         }
     };
 }

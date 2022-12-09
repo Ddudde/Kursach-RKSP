@@ -3,19 +3,39 @@ import warn from '../../media/warning.png';
 import main from './main.module.css';
 import {Link, Outlet} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
-import {all, getCheckBoxState, clients, getThemeState, getIndicatorState} from "../../store/selector";
-import {
-    changeCB,
-    changeCL,
-    changeTheme,
-    changeInd,
-    changeIndNext,
-    changeIndPrev,
-    changeIndTimer
-} from "../../store/actions";
+import {getThemeState, states} from "../../store/selector";
+import {changeTheme} from "../../store/actions";
 import * as def from "./default";
 
-let act = ".panGL";
+let act = ".panGL", elems = 0;
+
+function getPan(name, namecl, link, inc, dopClass) {
+    if(!inc) elems++;
+    let cl = "pan" + namecl;
+    return (
+        <Link className={main.nav_i+" "+cl+" "+dopClass} id={main.nav_i} to={link} onClick={() => {setActived("."+cl)}}>
+            {name}
+        </Link>
+    )
+}
+
+function getLogin(login, ico, desc) {
+    elems++;
+    return (
+        <div className={main.logBlock}>
+            <div className={main.nav_i+' '+main.log} id={main.nav_i}>
+                <img alt="ico" src={'/media/ls-icon'+ ico +'.png'}/>
+                <div className={main.logLog}>{login}</div>
+                <div className={main.logText}>Я - {desc}</div>
+            </div>
+            <div className={main.logMenu}>
+                {getPan("Профиль", "Pro", "start", true, main.logMenuBlock)}
+                {getPan("Сменить роль", "Rol", "start", true, main.logMenuBlock)}
+                {getPan("Выход", "Exi", "start", true, main.logMenuBlock)}
+            </div>
+        </div>
+    )
+}
 
 export function setActived(name) {
     if(document.querySelector(act)) document.querySelector(act).setAttribute('data-act', '0');
@@ -27,6 +47,7 @@ export function setActived(name) {
 
 export function Main() {
     const themeState = useSelector(getThemeState("theme"));
+    const cState = useSelector(states);
     const themeCheckBoxState = useSelector(getThemeState("theme_ch"));
     const isFirstUpdate = useRef(true);
     const dispatch = useDispatch();
@@ -47,6 +68,9 @@ export function Main() {
             isFirstUpdate.current = false;
             return;
         }
+        elems = 0;
+        for(let el of document.querySelectorAll("body *"))
+            if(el.style.cssText === "")el.style.cssText += "background-color:" + window.getComputedStyle(el).backgroundColor + "; color:" + window.getComputedStyle(el).color + "; border-color:" + window.getComputedStyle(el).borderColor;
         console.log('componentDidUpdate Main.jsx');
     });
     return (
@@ -55,28 +79,18 @@ export function Main() {
                 <div/>
                 <div/>
             </div>
-            <nav className={main.panel} id="her">
-                <Link className={main.nav_i+" panGL"} id={main.nav_i} to="start" onClick={() => {setActived(".panGL")}}>
-                    Главная
-                </Link>
-                <Link className={main.nav_i+" panNew"} id={main.nav_i} to="news" onClick={() => {setActived(".panNew")}}>
-                    Объявления
-                </Link>
-                <Link className={main.nav_i+" panCon"} id={main.nav_i} to="contacts" onClick={() => {setActived(".panCon")}}>
-                    Контакты
-                </Link>
-                <a className={main.nav_i+" panSch"} id={main.nav_i} onClick={() => {setActived(".panSch")}}>
-                    Школам
-                </a>
-                <a className={main.nav_i+" panTea"} id={main.nav_i} onClick={() => {setActived(".panTea")}}>
-                    Педагогам
-                </a>
-                <a className={main.nav_i+" panPar"} id={main.nav_i} onClick={() => {setActived(".panPar")}}>
-                    Родителям
-                </a>
-                <a className={main.nav_i+" panKid"} id={main.nav_i} onClick={() => {setActived(".panKid")}}>
-                    Учащимся
-                </a>
+            <nav className={main.panel} style={{gridTemplate: "auto/repeat("+elems+",1fr)"}} id="her">
+                {!cState.auth && getPan("Главная", "GL", "/")}
+                {getPan("Объявления", "New", "news")}
+                {getPan("Контакты", "Con", "contacts")}
+                {getPan("Люди", "Pep", "start")}
+                {(!cState.auth || (cState.auth && cState.role == 3)) && getPan("Школам", "Sch", "start")}
+                {(!cState.auth || (cState.auth && cState.role == 2)) && getPan("Педагогам", "Tea", "start")}
+                {(!cState.auth || (cState.auth && cState.role == 1)) && getPan("Родителям", "Par", "start")}
+                {(cState.auth && cState.role == 0) && getPan("Дневник", "Dnev", "/")}
+                {(cState.auth && cState.role == 0) && getPan("Аналитика", "Ana", "start")}
+                {(!cState.auth || (cState.auth && cState.role == 0)) && getPan("Обучающимся", "Kid", "start")}
+                {cState.auth && getLogin(cState.login, cState.ico, cState.roleDesc)}
             </nav>
             <Outlet />
             <div className={main.warne+" warnew"} id={main.warnew}>
