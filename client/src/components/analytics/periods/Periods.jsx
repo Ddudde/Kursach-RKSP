@@ -1,20 +1,16 @@
 import React, {useEffect, useRef} from "react";
 import {Helmet} from "react-helmet-async";
 import periodsCSS from './periods.module.css';
-import {contactsSelec} from "../../../store/selector";
 import {useDispatch, useSelector} from "react-redux";
 import {setActived} from "../../main/Main";
-import {changeContacts} from "../../../store/actions";
 import {setActNew} from "../AnalyticsMain";
+import warn from "../../../media/warn_big.png";
+import {periods} from "../../../store/selector";
 
-let dispatch, contactsInfo;
-
-function errorLoad(e) {
-    e.target.style.display = 'none';
-}
+let dispatch, periodsInfo;
 
 export function Periods() {
-    contactsInfo = useSelector(contactsSelec);
+    periodsInfo = useSelector(periods);
     dispatch = useDispatch();
     const isFirstUpdate = useRef(true);
     useEffect(() => {
@@ -25,7 +21,7 @@ export function Periods() {
         // dispatch(changeContacts("Por", "id_0", '8 (800) 555 35 37', '+78005553537'));
         // dispatch(changeContacts("Por", "id_0"));
         // setInterval(function() {
-        //     dispatch(changeContacts("Por", "id_" + Object.getOwnPropertyNames(contactsInfo.contactsPor.numbers).length, '8 (800) 555 35 37', '+78005553537'));
+        //     dispatch(changeContacts("Por", "id_" + Object.getOwnPropertyNames(periodsInfo.contactsPor.numbers).length, '8 (800) 555 35 37', '+78005553537'));
         // }, 5000);
         setActived(".panAna");
         setActNew(".panPer");
@@ -40,6 +36,9 @@ export function Periods() {
             isFirstUpdate.current = false;
             return;
         }
+        for(let el of document.querySelectorAll("." + periodsCSS.AppHeader + " *")) {
+            if(!el.style.cssText) el.style.cssText += "background-color:" + window.getComputedStyle(el).backgroundColor + "; color:" + window.getComputedStyle(el).color + "; border-color:" + window.getComputedStyle(el).borderColor;
+        }
         console.log('componentDidUpdate Periods.jsx');
     });
     return (
@@ -48,18 +47,32 @@ export function Periods() {
                 <title>Расписание периодов</title>
             </Helmet>
             <div className={periodsCSS.AppHeader}>
-                <section className={periodsCSS.center_colum}>
-                    <div className={periodsCSS.block}>
-                        <h1>ТЕЛЕФОНЫ ДЛЯ СВЯЗИ</h1>
-                        {Object.getOwnPropertyNames(contactsInfo.contactsPor.numbers).map(param =>
-                            <p key={param}><a href={"tel:" + contactsInfo.contactsPor.numbers[param].number}>{contactsInfo.contactsPor.numbers[param].title}</a></p>
+                {Object.getOwnPropertyNames(periodsInfo).length == 0 && (<div className={periodsCSS.block}>
+                    <img alt="banner" src={warn}/>
+                    <div className={periodsCSS.block_text}>
+                        К сожалению, информация не найдена... Можете попробовать попросить завуча заполнить информацию.
+                    </div>
+                </div>)}
+                {Object.getOwnPropertyNames(periodsInfo).length > 0 && (<div className={periodsCSS.blockSmen}>
+                    <div className={periodsCSS.smena}>
+                        <div className={periodsCSS.nav_i} id={periodsCSS.nav_i}>
+                            Название учебного периода
+                        </div>
+                        <div className={periodsCSS.nav_i} id={periodsCSS.nav_i}>
+                            Период
+                        </div>
+                        {Object.getOwnPropertyNames(periodsInfo).map(param =>
+                            <>
+                                <div className={periodsCSS.nav_i} id={periodsCSS.nav_i}>
+                                    {periodsInfo[param].name}
+                                </div>
+                                <div className={periodsCSS.nav_i} id={periodsCSS.nav_i}>
+                                    {periodsInfo[param].per}
+                                </div>
+                            </>
                         )}
                     </div>
-                    <div className={periodsCSS.map+" "+periodsCSS.block}>
-                        <h1>КАРТА ПРОЕЗДА</h1>
-                        <p><img className={periodsCSS.imk} alt="banner" src={contactsInfo.contactsPor.imageUrl+''} onError={errorLoad}/></p>
-                    </div>
-                </section>
+                </div>)}
             </div>
         </>
     )

@@ -1,6 +1,7 @@
 export const all = state => state
 export const states = state => state.states || {};
 export const dnevnik = state => state.dnevnik || {};
+export const periods = state => state.periods || {};
 export const zvonki = state => state.zvonki || {};
 export const newsSelec = state => state.news || {"newsYo": {}, "newsPor": {}};
 export const contactsSelec = state => state.contacts || {"contactsYo": {}, "contactsPor": {}};

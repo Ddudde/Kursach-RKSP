@@ -54,7 +54,7 @@ export function Zvonki() {
         console.log('componentDidUpdate Zvonki.jsx');
     });
     return (
-        <div className={zvonkiCSS.AppHeader}>>
+        <div className={zvonkiCSS.AppHeader}>
             <Helmet>
                 <title>Расписание звонков</title>
             </Helmet>

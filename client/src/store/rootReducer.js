@@ -8,6 +8,7 @@ import contactReducer from "./reducers/contactReducer";
 import statusReducer from "./reducers/statusReducer";
 import dnevnikReducer from "./reducers/dnevnikReducer";
 import zvonkiReducer from "./reducers/zvonkiReducer";
+import periodsReducer from "./reducers/periodsReducer";
 
 export default combineReducers({
     checkbox: checkBoxReducer,
@@ -17,5 +18,6 @@ export default combineReducers({
     contacts: contactReducer,
     states: statusReducer,
     dnevnik: dnevnikReducer,
-    zvonki: zvonkiReducer
+    zvonki: zvonkiReducer,
+    periods: periodsReducer
 });
