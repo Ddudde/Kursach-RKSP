@@ -67,12 +67,6 @@ function getDiff(dat, dat1, bol) {
     if(diff > 0) return "+" + diff;
 }
 
-function getSch(inc, inc1) {
-    console.log("dfs135 " + inc);
-    console.log("dfs1356 " + inc1);
-    return dnev.schedule[inc][inc1];
-}
-
 export function Dnevnik() {
     dnev = useSelector(dnevnik);
     dispatch = useDispatch();
@@ -138,7 +132,7 @@ export function Dnevnik() {
                                 {dnev.days[param].lessons.map(param =>
                                     <>
                                         <div className={dnevCSS.nav_i} id={dnevCSS.nav_i}>
-                                            {param.name ? param.name : getSch(incDow-1, shd++)}
+                                            {param.name ? param.name : dnev.schedule[incDow-1][shd++]}
                                         </div>
                                         <div className={dnevCSS.nav_i+" "+dnevCSS.dayHomework} id={dnevCSS.nav_i}>
                                             {param.homework}
@@ -157,7 +151,7 @@ export function Dnevnik() {
                                 {dnev.days[param].lessons.length < 5 && Array(5-dnev.days[param].lessons.length).fill('').map(param =>
                                     <>
                                         <div className={dnevCSS.nav_i} id={dnevCSS.nav_i}>
-                                            {getSch(incDow-1, shd++)}
+                                            <br />
                                         </div>
                                         <div className={dnevCSS.nav_i+" "+dnevCSS.dayHomework} id={dnevCSS.nav_i}>
                                             <br />

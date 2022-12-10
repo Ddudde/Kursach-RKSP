@@ -3,6 +3,7 @@ export const CHANGE_THEME = "CHANGE_THEME";
 export const CHANGE_STATE = "CHANGE_STATE";
 export const CHANGE_ZVONKI = "CHANGE_ZVONKI";
 export const CHANGE_PERIODS = "CHANGE_PERIODS";
+export const CHANGE_SCHEDULE = "CHANGE_SCHEDULE";
 export const CHANGE_DNEVNIK = "CHANGE_DNEVNIK";
 export const CHANGE_DNEVNIK_DAY_UP = "CHANGE_DNEVNIK_DAY_UP";
 export const CHANGE_DNEVNIK_DAY_DOWN = "CHANGE_DNEVNIK_DAY_DOWN";
@@ -29,6 +30,15 @@ export function changeState(id, state) {
         payload: {
             stateId: id,
             cState: state
+        }
+    };
+}
+
+export function changeSchedule(id, state) {
+    return { type: CHANGE_SCHEDULE,
+        payload: {
+            schId: id,
+            schState: state
         }
     };
 }

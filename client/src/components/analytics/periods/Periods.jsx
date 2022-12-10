@@ -53,8 +53,8 @@ export function Periods() {
                         К сожалению, информация не найдена... Можете попробовать попросить завуча заполнить информацию.
                     </div>
                 </div>)}
-                {Object.getOwnPropertyNames(periodsInfo).length > 0 && (<div className={periodsCSS.blockSmen}>
-                    <div className={periodsCSS.smena}>
+                {Object.getOwnPropertyNames(periodsInfo).length > 0 && (<div className={periodsCSS.blockPer}>
+                    <div className={periodsCSS.per}>
                         <div className={periodsCSS.nav_i} id={periodsCSS.nav_i}>
                             Название учебного периода
                         </div>
