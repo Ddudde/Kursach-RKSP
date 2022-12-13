@@ -6,41 +6,131 @@
 	top: 7vh;
 }
 
-.block{
+.blockPredm{
+	text-align: center;
+	margin: auto;
+	width: 75%;
+}
+
+.predm{
 	background-color: #DBDBDBe6;
 	padding: 10px;
 	border-radius: 5px;
-	margin-bottom: 10px;
 	transition: background-color 1s ease;
+	margin-block: 5vh;
 }
 
-.center_colum {
-	width: 50vw;
+.days{
+	overflow-x: scroll;
+	overflow-y: hidden;
+}
+
+.predmGrid{
+	display: grid;
+	grid-template: 5vh /20vw repeat(auto-fit, 2vw);
+	transition: background-color 1s ease;
+	width: fit-content;
+}
+
+.predmGrid:hover{
+	background-color: #FF970055 !important;
+}
+
+.daysGrid{
+	display: grid;
+	grid-template: 15vh /20vw repeat(auto-fit, 2vw);
+	width: fit-content;
+}
+
+.nav_i{
+	text-decoration: none;
+	border: 1px solid #4d4d4d;
+	cursor: pointer;
+	color: #006600;
+	font-size: 1.25vw;
+	font-weight: 500;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	align-self: stretch;
+	-webkit-transition: color 1s ease;
+	-o-transition: color 1s ease;
+	transition: color 1s ease;
+	transition-property: color, text-shadow, border-color;
+	margin: -0.5px;
+	padding: 5px;
+	position: relative;
+}
+
+#nav_i:hover, #nav_i:hover *{
+	color: #00ff00 !important;
+	text-shadow: 0 0 2vw #66ff66;
+}
+
+.nav_iText{
+	transform: rotateZ(270deg);
+	color: #990000;
+}
+
+.nav_iBr{
+	border: none;
+}
+
+.nam{
 	position: absolute;
-	margin: 10px auto;
-	left: 0;
-	right: 0;
+	width: 22vw;
+	height: 5vh;
+	padding: 0;
+	background-color: #DBDBDBe6;
+	z-index: 1;
 }
 
-.imk{
-	width: 40vw;
-	height: 20vw;
+.nav_iTextM{
+	color: #990000;
 }
 
-.center_colum p a{
-	border:0;
-	color:#006600;
+.nav_iTextD{
+	font-size: 0.75vw;
+}
+
+.descr{
+	padding: 1vw;
+}
+
+.nav_iTextDescr{
+	font-size: 1vw;
+	width: fit-content;
+	border: none;
+	padding: 0;
+}
+
+.nav_iWeight{
+	border: none;
+	font-size: 0.75vw;
+	margin: initial;
+	padding: initial;
+	align-items: center;
+	top: 0.75vw;
+	position: relative;
+	margin-block: 0.75vw;
+}
+
+.block{
+	margin: auto;
+	text-align: center;
+}
+
+.block > img{
+	width: 30vmin;
+	height: 30vmin;
+}
+
+.block_text{
+	width: 70vmin;
+	color:#009900;
+	font-weight: bold;
+	font-size: 1.5vw;
 	text-shadow: 2px 2px 2px #000;
 	transition: color 1s ease;
-}
-
-.map {
-	margin:25px 0;
-}
-
-h1 {
-	font-weight:bold;
-	color:#006600;
-	text-shadow: 2px 2px 2px #000;
-	transition: color 1s ease;
+	text-align: left;
 }

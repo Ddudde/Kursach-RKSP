@@ -23,7 +23,7 @@ export function AnalyticsMain() {
         if(isFirstUpdate.current) return;
         console.log("I was triggered during componentDidMount AnalyticsMain.jsx");
         for(let el of document.querySelectorAll("." + analyticsCSS.AppHeader + " *"))
-            el.style.cssText += "background-color:" + window.getComputedStyle(el).backgroundColor + "; color:" + window.getComputedStyle(el).color + "; border-color:" + window.getComputedStyle(el).borderColor;
+            if(!el.style.cssText) el.style.cssText += "background-color:" + window.getComputedStyle(el).backgroundColor + "; color:" + window.getComputedStyle(el).color + "; border-color:" + window.getComputedStyle(el).borderColor;
         setActivedMy(act_new);
         return function() {
             console.log("I was triggered during componentWillUnmount AnalyticsMain.jsx");

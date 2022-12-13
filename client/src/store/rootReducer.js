@@ -10,6 +10,7 @@ import dnevnikReducer from "./reducers/dnevnikReducer";
 import zvonkiReducer from "./reducers/zvonkiReducer";
 import periodsReducer from "./reducers/periodsReducer";
 import scheduleReducer from "./reducers/scheduleReducer";
+import journalReducer from "./reducers/journalReducer";
 
 export default combineReducers({
     checkbox: checkBoxReducer,
@@ -21,5 +22,6 @@ export default combineReducers({
     dnevnik: dnevnikReducer,
     zvonki: zvonkiReducer,
     periods: periodsReducer,
-    schedules: scheduleReducer
+    schedules: scheduleReducer,
+    journals: journalReducer
 });
