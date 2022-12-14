@@ -20,6 +20,7 @@ import Marks from "./components/analytics/marks/Marks";
 import PeopleMain from "./components/people/PeopleMain";
 import Teachers from "./components/people/teachers/Teachers";
 import HTeachers from "./components/people/hteachers/HTeachers";
+import Classmates from "./components/people/classmates/Classmates";
 
 function App() {
     const cState = useSelector(states);
@@ -58,7 +59,7 @@ function App() {
                   <Route index element={<Teachers/>} />
                   <Route path="teachers" element={<Teachers/>} />
                   <Route path="hteachers" element={<HTeachers/>} />
-                  <Route path="classmates" element={<Teachers/>} />
+                  <Route path="classmates" element={<Classmates/>} />
                   <Route path="parents" element={<Teachers/>} />
                   <Route path="admins" element={<Teachers/>} />
               </Route>
