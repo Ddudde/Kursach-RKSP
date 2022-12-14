@@ -6,7 +6,6 @@ import {useDispatch, useSelector} from "react-redux";
 import {setActived} from "../../main/Main";
 import {setActNew} from "../AnalyticsMain";
 import warn from "../../../media/warn_big.png";
-import dnevCSS from "../../dnevnik/dnevnik.module.css";
 import {changeJournal} from "../../../store/actions";
 
 let dispatch, journalsInfo, maxEl = 0;

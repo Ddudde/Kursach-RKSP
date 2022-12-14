@@ -16,7 +16,7 @@ import button from "../button.module.css";
 import {Helmet} from "react-helmet-async";
 import CheckBox from "./CheckBox";
 import {useDispatch, useSelector} from "react-redux";
-import {all, getCheckBoxState, clients, getThemeState, getIndicatorState} from "../../store/selector";
+import {getCheckBoxState, getIndicatorState} from "../../store/selector";
 import {
     changeCB,
     changeCL,

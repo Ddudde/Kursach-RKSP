@@ -3,6 +3,7 @@ export const states = state => state.states || {};
 export const dnevnik = state => state.dnevnik || {};
 export const periods = state => state.periods || {};
 export const schedules = state => state.schedules || {};
+export const marks = state => state.marks || {};
 export const journals = state => state.journals || {};
 export const zvonki = state => state.zvonki || {};
 export const newsSelec = state => state.news || {"newsYo": {}, "newsPor": {}};

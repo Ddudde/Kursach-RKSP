@@ -1,16 +1,16 @@
 import { combineReducers } from "redux";
-import checkBoxReducer from "./reducers/checkBoxReducer";
-import clientReducer from "./reducers/clientReducer";
-import themeReducer from "./reducers/themeReducer";
-import indicatorReducer from "./reducers/indicatorReducer";
+import checkBoxReducer from "./reducers/start/checkBoxReducer";
+import themeReducer from "./reducers/main/themeReducer";
+import indicatorReducer from "./reducers/start/indicatorReducer";
 import newsReducer from "./reducers/newsReducer";
 import contactReducer from "./reducers/contactReducer";
-import statusReducer from "./reducers/statusReducer";
+import statusReducer from "./reducers/main/statusReducer";
 import dnevnikReducer from "./reducers/dnevnikReducer";
-import zvonkiReducer from "./reducers/zvonkiReducer";
-import periodsReducer from "./reducers/periodsReducer";
-import scheduleReducer from "./reducers/scheduleReducer";
-import journalReducer from "./reducers/journalReducer";
+import zvonkiReducer from "./reducers/analytics/zvonkiReducer";
+import periodsReducer from "./reducers/analytics/periodsReducer";
+import scheduleReducer from "./reducers/analytics/scheduleReducer";
+import journalReducer from "./reducers/analytics/journalReducer";
+import marksReducer from "./reducers/analytics/marksReducer";
 
 export default combineReducers({
     checkbox: checkBoxReducer,
@@ -23,5 +23,6 @@ export default combineReducers({
     zvonki: zvonkiReducer,
     periods: periodsReducer,
     schedules: scheduleReducer,
-    journals: journalReducer
+    journals: journalReducer,
+    marks: marksReducer
 });
