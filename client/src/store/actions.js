@@ -6,6 +6,7 @@ export const CHANGE_PERIODS = "CHANGE_PERIODS";
 export const CHANGE_SCHEDULE = "CHANGE_SCHEDULE";
 export const CHANGE_JOURNAL = "CHANGE_JOURNAL";
 export const CHANGE_TEACHERS = "CHANGE_TEACHERS";
+export const CHANGE_HTEACHERS = "CHANGE_HTEACHERS";
 export const CHANGE_MARKS = "CHANGE_MARKS";
 export const CHANGE_DNEVNIK = "CHANGE_DNEVNIK";
 export const CHANGE_DNEVNIK_DAY_UP = "CHANGE_DNEVNIK_DAY_UP";
@@ -33,6 +34,15 @@ export function changeState(id, state) {
         payload: {
             stateId: id,
             cState: state
+        }
+    };
+}
+
+export function changeHTeachers(id, state) {
+    return { type: CHANGE_HTEACHERS,
+        payload: {
+            hteaId: id,
+            hteaState: state
         }
     };
 }

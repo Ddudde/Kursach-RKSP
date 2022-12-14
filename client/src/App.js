@@ -19,6 +19,7 @@ import AnalyticsJournal from "./components/analytics/journal/AnalyticsJournal";
 import Marks from "./components/analytics/marks/Marks";
 import PeopleMain from "./components/people/PeopleMain";
 import Teachers from "./components/people/teachers/Teachers";
+import HTeachers from "./components/people/hteachers/HTeachers";
 
 function App() {
     const cState = useSelector(states);
@@ -56,7 +57,7 @@ function App() {
               <Route path="people" element={<PeopleMain/>}>
                   <Route index element={<Teachers/>} />
                   <Route path="teachers" element={<Teachers/>} />
-                  <Route path="hteachers" element={<Teachers/>} />
+                  <Route path="hteachers" element={<HTeachers/>} />
                   <Route path="classmates" element={<Teachers/>} />
                   <Route path="parents" element={<Teachers/>} />
                   <Route path="admins" element={<Teachers/>} />
