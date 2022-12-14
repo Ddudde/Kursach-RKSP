@@ -22,6 +22,7 @@ import Teachers from "./components/people/teachers/Teachers";
 import HTeachers from "./components/people/hteachers/HTeachers";
 import Classmates from "./components/people/classmates/Classmates";
 import Parents from "./components/people/parents/Parents";
+import Admins from "./components/people/admins/Admins";
 
 function App() {
     const cState = useSelector(states);
@@ -62,7 +63,7 @@ function App() {
                   <Route path="hteachers" element={<HTeachers/>} />
                   <Route path="classmates" element={<Classmates/>} />
                   <Route path="parents" element={<Parents/>} />
-                  <Route path="admins" element={<Teachers/>} />
+                  <Route path="admins" element={<Admins/>} />
               </Route>
               <Route path="*" element={<ErrNotFound/>} />
           </Route>

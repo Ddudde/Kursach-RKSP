@@ -5,6 +5,7 @@ export const periods = state => state.periods || {};
 export const teachers = state => state.teachers || {};
 export const classmates = state => state.classmates || {};
 export const parents = state => state.parents || {};
+export const admins = state => state.admins || {};
 export const hteachers = state => state.hteachers || {};
 export const schedules = state => state.schedules || {};
 export const marks = state => state.marks || {};
