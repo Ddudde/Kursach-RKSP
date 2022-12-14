@@ -2,6 +2,7 @@ export const all = state => state
 export const states = state => state.states || {};
 export const dnevnik = state => state.dnevnik || {};
 export const periods = state => state.periods || {};
+export const teachers = state => state.teachers || {};
 export const schedules = state => state.schedules || {};
 export const marks = state => state.marks || {};
 export const journals = state => state.journals || {};

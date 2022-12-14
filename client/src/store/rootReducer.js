@@ -11,6 +11,7 @@ import periodsReducer from "./reducers/analytics/periodsReducer";
 import scheduleReducer from "./reducers/analytics/scheduleReducer";
 import journalReducer from "./reducers/analytics/journalReducer";
 import marksReducer from "./reducers/analytics/marksReducer";
+import teachersReducer from "./reducers/people/teachersReducer";
 
 export default combineReducers({
     checkbox: checkBoxReducer,
@@ -24,5 +25,6 @@ export default combineReducers({
     periods: periodsReducer,
     schedules: scheduleReducer,
     journals: journalReducer,
-    marks: marksReducer
+    marks: marksReducer,
+    teachers: teachersReducer
 });

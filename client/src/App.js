@@ -17,6 +17,8 @@ import Periods from "./components/analytics/periods/Periods";
 import Schedule from "./components/analytics/schedule/Schedule";
 import AnalyticsJournal from "./components/analytics/journal/AnalyticsJournal";
 import Marks from "./components/analytics/marks/Marks";
+import PeopleMain from "./components/people/PeopleMain";
+import Teachers from "./components/people/teachers/Teachers";
 
 function App() {
     const cState = useSelector(states);
@@ -50,6 +52,14 @@ function App() {
                   <Route path="schedule" element={<Schedule/>} />
                   <Route path="journal" element={<AnalyticsJournal/>} />
                   <Route path="marks" element={<Marks/>} />
+              </Route>
+              <Route path="people" element={<PeopleMain/>}>
+                  <Route index element={<Teachers/>} />
+                  <Route path="teachers" element={<Teachers/>} />
+                  <Route path="hteachers" element={<Teachers/>} />
+                  <Route path="classmates" element={<Teachers/>} />
+                  <Route path="parents" element={<Teachers/>} />
+                  <Route path="admins" element={<Teachers/>} />
               </Route>
               <Route path="*" element={<ErrNotFound/>} />
           </Route>

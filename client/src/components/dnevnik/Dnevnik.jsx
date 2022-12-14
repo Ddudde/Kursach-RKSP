@@ -21,7 +21,6 @@ function getDoW() {
     let s = incDow;
     incDow++;
     shd = 0;
-    console.log("dfs13567 " + DoW[s]);
     return DoW[s];
 }
 

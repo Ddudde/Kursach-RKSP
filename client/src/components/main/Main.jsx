@@ -83,7 +83,7 @@ export function Main() {
                 {!cState.auth && getPan("Главная", "GL", "/")}
                 {getPan("Объявления", "New", "news")}
                 {getPan("Контакты", "Con", "contacts")}
-                {getPan("Люди", "Pep", "start")}
+                {getPan("Люди", "Pep", "people")}
                 {(!cState.auth || (cState.auth && cState.role == 3)) && getPan("Школам", "Sch", "start")}
                 {(!cState.auth || (cState.auth && cState.role == 2)) && getPan("Педагогам", "Tea", "start")}
                 {(!cState.auth || (cState.auth && cState.role == 1)) && getPan("Родителям", "Par", "start")}

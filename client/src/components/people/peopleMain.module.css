@@ -61,22 +61,22 @@
 	transition: left 1s ease;
 }
 
-.panZvon[data-act="1"] ~ .lin{
+.panTea[data-act="1"] ~ .lin{
 	left: 0;
 }
 
-.panPer[data-act="1"] ~ .lin{
+.panHT[data-act="1"] ~ .lin{
 	left: 20%;
 }
 
-.panRas[data-act="1"] ~ .lin{
+.panCM[data-act="1"] ~ .lin{
 	left: 40%;
 }
 
-.panZhu[data-act="1"] ~ .lin{
+.panPar[data-act="1"] ~ .lin{
 	left: 60%;
 }
 
-.panIto[data-act="1"] ~ .lin{
+.panAdm[data-act="1"] ~ .lin{
 	left: 80%;
 }
