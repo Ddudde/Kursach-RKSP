@@ -10,7 +10,7 @@ import warn from "../../../media/warn_big.png";
 import profl from "../../../media/profl.png";
 import profd from "../../../media/profd.png";
 
-let dispatch, hteachersInfo, maxEl = 0;
+let dispatch, hteachersInfo;
 
 export function HTeachers() {
     hteachersInfo = useSelector(hteachers);
@@ -57,8 +57,8 @@ export function HTeachers() {
                             К сожалению, информация не найдена... Можете попробовать попросить завуча заполнить информацию.
                         </div>
                     </div> :
-                    <div className={hteachersCSS.blockTea}>
-                        <div className={hteachersCSS.tea}>
+                    <div className={hteachersCSS.blockHTea}>
+                        <div className={hteachersCSS.htea}>
                             <div className={hteachersCSS.nav_i+" "+hteachersCSS.nav_iZag} id={hteachersCSS.nav_i}>
                                 Завучи
                                 {Object.getOwnPropertyNames(hteachersInfo).map(param =>

@@ -10,7 +10,7 @@ import warn from "../../../media/warn_big.png";
 import profl from "../../../media/profl.png";
 import profd from "../../../media/profd.png";
 
-let dispatch, classmatesInfo, maxEl = 0;
+let dispatch, classmatesInfo;
 
 export function Classmates() {
     classmatesInfo = useSelector(classmates);
@@ -57,8 +57,8 @@ export function Classmates() {
                             К сожалению, информация не найдена... Можете попробовать попросить завуча заполнить информацию.
                         </div>
                     </div> :
-                    <div className={classmatesCSS.blockTea}>
-                        <div className={classmatesCSS.tea}>
+                    <div className={classmatesCSS.blockCM}>
+                        <div className={classmatesCSS.cm}>
                             <div className={classmatesCSS.nav_i+" "+classmatesCSS.nav_iZag} id={classmatesCSS.nav_i}>
                                 Одноклассники
                                 {Object.getOwnPropertyNames(classmatesInfo).map(param =>

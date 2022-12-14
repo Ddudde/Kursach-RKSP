@@ -6,13 +6,13 @@
 	top: 7vh;
 }
 
-.blockCM{
+.blockPar{
 	text-align: center;
 	margin: auto;
 	width: 75%;
 }
 
-.cm{
+.par{
 	background-color: #DBDBDBe6;
 	padding: 10px;
 	border-radius: 5px;
@@ -52,12 +52,18 @@
 .nav_iZag1{
 	text-align: initial;
 	margin-left: 1vw;
+	margin-block: 1vw;
+}
+
+.nav_iZag2{
+	text-align: initial;
+	margin-left: 2vw;
 	border: none;
 	display: inline-block;
 	vertical-align: middle;
 }
 
-.nav_iZag img{
+.nav_iZag1 img{
 	width: 2vw;
 	vertical-align: middle;
 	cursor: pointer;

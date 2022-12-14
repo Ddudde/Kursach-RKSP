@@ -10,7 +10,7 @@ import warn from "../../../media/warn_big.png";
 import profl from "../../../media/profl.png";
 import profd from "../../../media/profd.png";
 
-let dispatch, teachersInfo, maxEl = 0;
+let dispatch, teachersInfo;
 
 export function Teachers() {
     teachersInfo = useSelector(teachers);
