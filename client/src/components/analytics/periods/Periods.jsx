@@ -47,32 +47,34 @@ export function Periods() {
                 <title>Расписание периодов</title>
             </Helmet>
             <div className={periodsCSS.AppHeader}>
-                {Object.getOwnPropertyNames(periodsInfo).length == 0 && (<div className={periodsCSS.block}>
-                    <img alt="banner" src={warn}/>
-                    <div className={periodsCSS.block_text}>
-                        К сожалению, информация не найдена... Можете попробовать попросить завуча заполнить информацию.
-                    </div>
-                </div>)}
-                {Object.getOwnPropertyNames(periodsInfo).length > 0 && (<div className={periodsCSS.blockPer}>
-                    <div className={periodsCSS.per}>
-                        <div className={periodsCSS.nav_i} id={periodsCSS.nav_i}>
-                            Название учебного периода
+                {Object.getOwnPropertyNames(periodsInfo).length == 0 ?
+                    <div className={periodsCSS.block}>
+                        <img alt="banner" src={warn}/>
+                        <div className={periodsCSS.block_text}>
+                            К сожалению, информация не найдена... Можете попробовать попросить завуча заполнить информацию.
                         </div>
-                        <div className={periodsCSS.nav_i} id={periodsCSS.nav_i}>
-                            Период
+                    </div> :
+                    <div className={periodsCSS.blockPer}>
+                        <div className={periodsCSS.per}>
+                            <div className={periodsCSS.nav_i} id={periodsCSS.nav_i}>
+                                Название учебного периода
+                            </div>
+                            <div className={periodsCSS.nav_i} id={periodsCSS.nav_i}>
+                                Период
+                            </div>
+                            {Object.getOwnPropertyNames(periodsInfo).map(param =>
+                                <>
+                                    <div className={periodsCSS.nav_i} id={periodsCSS.nav_i}>
+                                        {periodsInfo[param].name}
+                                    </div>
+                                    <div className={periodsCSS.nav_i} id={periodsCSS.nav_i}>
+                                        {periodsInfo[param].per}
+                                    </div>
+                                </>
+                            )}
                         </div>
-                        {Object.getOwnPropertyNames(periodsInfo).map(param =>
-                            <>
-                                <div className={periodsCSS.nav_i} id={periodsCSS.nav_i}>
-                                    {periodsInfo[param].name}
-                                </div>
-                                <div className={periodsCSS.nav_i} id={periodsCSS.nav_i}>
-                                    {periodsInfo[param].per}
-                                </div>
-                            </>
-                        )}
                     </div>
-                </div>)}
+                }
             </div>
         </>
     )

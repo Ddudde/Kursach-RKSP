@@ -116,69 +116,71 @@ export function AnalyticsJournal() {
                 <title>Журнал</title>
             </Helmet>
             <div className={journalCSS.AppHeader}>
-                {Object.getOwnPropertyNames(journalsInfo).length == 0 && (<div className={journalCSS.block}>
-                    <img alt="banner" src={warn}/>
-                    <div className={journalCSS.block_text}>
-                        К сожалению, информация не найдена... Можете попробовать попросить завуча заполнить информацию.
-                    </div>
-                </div>)}
-                {Object.getOwnPropertyNames(journalsInfo).length > 0 && (<div className={journalCSS.blockPredm}>
-                    <div className={journalCSS.predm}>
-                        <div className={journalCSS.days}>
-                            <div className={journalCSS.daysGrid} style={{gridTemplate: "15vh /22vw repeat(" + (maxEl + 1) + ", 2vw)"}}>
-                                <div className={journalCSS.nav_i} id={journalCSS.nav_i}>
-                                    <br/>
-                                </div>
-                                {Array(maxEl).fill('').map(param =>
-                                    <div className={journalCSS.nav_i+" "+journalCSS.nav_iTextD} id={journalCSS.nav_i}>
+                {Object.getOwnPropertyNames(journalsInfo).length == 0 ?
+                    <div className={journalCSS.block}>
+                        <img alt="banner" src={warn}/>
+                        <div className={journalCSS.block_text}>
+                            К сожалению, информация не найдена... Можете попробовать попросить завуча заполнить информацию.
+                        </div>
+                    </div> :
+                    <div className={journalCSS.blockPredm}>
+                        <div className={journalCSS.predm}>
+                            <div className={journalCSS.days}>
+                                <div className={journalCSS.daysGrid} style={{gridTemplate: "15vh /22vw repeat(" + (maxEl + 1) + ", 2vw)"}}>
+                                    <div className={journalCSS.nav_i} id={journalCSS.nav_i}>
                                         <br/>
                                     </div>
-                                )}
-                                <div className={journalCSS.nav_i}>
-                                    <div className={journalCSS.nav_iText}>
-                                        Средняя
-                                    </div>
-                                </div>
-                            </div>
-                            {Object.getOwnPropertyNames(journalsInfo).map(param =>
-                                <div className={journalCSS.predmGrid} style={{gridTemplate: "5vh /20vw repeat(" + (maxEl + 2) + ", 2vw)"}} id={param}>
-                                    <div className={journalCSS.nav_i+" nam " + journalCSS.nam} id={journalCSS.nav_i}>
-                                        {param}
-                                    </div>
-                                    <div className={journalCSS.nav_i+" "+journalCSS.nav_iBr} id={journalCSS.nav_i}>
-                                        <br/>
-                                    </div>
-                                    <div className={journalCSS.nav_i+" "+journalCSS.nav_iBr} id={journalCSS.nav_i}>
-                                        <br/>
-                                    </div>
-                                    {Object.getOwnPropertyNames(journalsInfo[param].days).map(param1 =>
-                                        <div className={journalCSS.nav_i} id={journalCSS.nav_i}>
-                                            {journalsInfo[param].days[param1].mark}
-                                            {journalsInfo[param].days[param1].weight > 1 && (<div className={journalCSS.nav_i+" "+journalCSS.nav_iWeight} id={journalCSS.nav_i}>
-                                                {journalsInfo[param].days[param1].weight}
-                                            </div>)}
-                                        </div>
-                                    )}
-                                    {Object.getOwnPropertyNames(journalsInfo[param].days).length < maxEl && Array(maxEl-Object.getOwnPropertyNames(journalsInfo[param].days).length).fill('').map(param =>
-                                        <div className={journalCSS.nav_i} id={journalCSS.nav_i}>
+                                    {Array(maxEl).fill('').map(param =>
+                                        <div className={journalCSS.nav_i+" "+journalCSS.nav_iTextD} id={journalCSS.nav_i}>
                                             <br/>
                                         </div>
                                     )}
-                                    <div className={journalCSS.nav_i + " " + journalCSS.nav_iTextM}>
-                                        {journalsInfo[param].avg.mark}
+                                    <div className={journalCSS.nav_i}>
+                                        <div className={journalCSS.nav_iText}>
+                                            Средняя
+                                        </div>
                                     </div>
                                 </div>
-                            )}
-                        </div>
-                        <div className={journalCSS.descr}>
-                            {Array(maxEl).fill('').map(param =>
-                                <div className={journalCSS.nav_i+" "+journalCSS.nav_iTextDescr} id={journalCSS.nav_i}>
-                                    <br/>
-                                </div>
-                            )}
+                                {Object.getOwnPropertyNames(journalsInfo).map(param =>
+                                    <div className={journalCSS.predmGrid} style={{gridTemplate: "5vh /20vw repeat(" + (maxEl + 2) + ", 2vw)"}} id={param}>
+                                        <div className={journalCSS.nav_i+" nam " + journalCSS.nam} id={journalCSS.nav_i}>
+                                            {param}
+                                        </div>
+                                        <div className={journalCSS.nav_i+" "+journalCSS.nav_iBr} id={journalCSS.nav_i}>
+                                            <br/>
+                                        </div>
+                                        <div className={journalCSS.nav_i+" "+journalCSS.nav_iBr} id={journalCSS.nav_i}>
+                                            <br/>
+                                        </div>
+                                        {Object.getOwnPropertyNames(journalsInfo[param].days).map(param1 =>
+                                            <div className={journalCSS.nav_i} id={journalCSS.nav_i}>
+                                                {journalsInfo[param].days[param1].mark}
+                                                {journalsInfo[param].days[param1].weight > 1 && (<div className={journalCSS.nav_i+" "+journalCSS.nav_iWeight} id={journalCSS.nav_i}>
+                                                    {journalsInfo[param].days[param1].weight}
+                                                </div>)}
+                                            </div>
+                                        )}
+                                        {Object.getOwnPropertyNames(journalsInfo[param].days).length < maxEl && Array(maxEl-Object.getOwnPropertyNames(journalsInfo[param].days).length).fill('').map(param =>
+                                            <div className={journalCSS.nav_i} id={journalCSS.nav_i}>
+                                                <br/>
+                                            </div>
+                                        )}
+                                        <div className={journalCSS.nav_i + " " + journalCSS.nav_iTextM}>
+                                            {journalsInfo[param].avg.mark}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                            <div className={journalCSS.descr}>
+                                {Array(maxEl).fill('').map(param =>
+                                    <div className={journalCSS.nav_i+" "+journalCSS.nav_iTextDescr} id={journalCSS.nav_i}>
+                                        <br/>
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     </div>
-                </div>)}
+                }
             </div>
         </>
     )

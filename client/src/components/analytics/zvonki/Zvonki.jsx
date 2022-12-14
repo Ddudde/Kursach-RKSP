@@ -58,37 +58,39 @@ export function Zvonki() {
             <Helmet>
                 <title>Расписание звонков</title>
             </Helmet>
-            {Object.getOwnPropertyNames(zvonkiInfo).length == 0 && (<div className={zvonkiCSS.block}>
-                <img alt="banner" src={warn}/>
-                <div className={zvonkiCSS.block_text}>
-                    К сожалению, информация не найдена... Можете попробовать попросить завуча заполнить информацию.
-                </div>
-            </div>)}
-            {Object.getOwnPropertyNames(zvonkiInfo).length > 0 && (<div className={zvonkiCSS.blockSmen}>
-                {setSmen(1)}
-                <div className={zvonkiCSS.smena}>
-                    {Object.getOwnPropertyNames(zvonkiInfo).map(param =>
-                        <div className={zvonkiCSS.smenaGrid}>
-                            <div className={zvonkiCSS.nav_i} id={zvonkiCSS.nav_i}>
-                                №
+            {Object.getOwnPropertyNames(zvonkiInfo).length == 0 ?
+                <div className={zvonkiCSS.block}>
+                    <img alt="banner" src={warn}/>
+                    <div className={zvonkiCSS.block_text}>
+                        К сожалению, информация не найдена... Можете попробовать попросить завуча заполнить информацию.
+                    </div>
+                </div> :
+                <div className={zvonkiCSS.blockSmen}>
+                    {setSmen(1)}
+                    <div className={zvonkiCSS.smena}>
+                        {Object.getOwnPropertyNames(zvonkiInfo).map(param =>
+                            <div className={zvonkiCSS.smenaGrid}>
+                                <div className={zvonkiCSS.nav_i} id={zvonkiCSS.nav_i}>
+                                    №
+                                </div>
+                                <div className={zvonkiCSS.nav_i} id={zvonkiCSS.nav_i}>
+                                    {getSmen()} смена
+                                </div>
+                                {zvonkiInfo[param].map(param =>
+                                    <>
+                                        <div className={zvonkiCSS.nav_i} id={zvonkiCSS.nav_i}>
+                                            {les++ + 1}
+                                        </div>
+                                        <div className={zvonkiCSS.nav_i} id={zvonkiCSS.nav_i}>
+                                            {param}
+                                        </div>
+                                    </>
+                                )}
                             </div>
-                            <div className={zvonkiCSS.nav_i} id={zvonkiCSS.nav_i}>
-                                {getSmen()} смена
-                            </div>
-                            {zvonkiInfo[param].map(param =>
-                                <>
-                                    <div className={zvonkiCSS.nav_i} id={zvonkiCSS.nav_i}>
-                                        {les++ + 1}
-                                    </div>
-                                    <div className={zvonkiCSS.nav_i} id={zvonkiCSS.nav_i}>
-                                        {param}
-                                    </div>
-                                </>
-                            )}
-                        </div>
-                    )}
+                        )}
+                    </div>
                 </div>
-            </div>)}
+            }
         </div>
     )
 }

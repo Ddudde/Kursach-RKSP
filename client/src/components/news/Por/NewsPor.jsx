@@ -47,21 +47,23 @@ export function NewsPor() {
                 <title>Объявления портала</title>
             </Helmet>
             <div className={newsCSS.AppHeader}>
-                {Object.getOwnPropertyNames(newsInfo.newsPor).length == 0 && (<div className={newsCSS.block}>
-                    <img alt="banner" src={warn}/>
-                    <div className={newsCSS.block_text}>
-                        Новостей нет... Ждите новой информации.
-                    </div>
-                </div>)}
-                {Object.getOwnPropertyNames(newsInfo.newsPor).length > 0 && (<section className={newsCSS.center_colum}>
-                    {Object.getOwnPropertyNames(newsInfo.newsPor).map(param =>
-                        <div className={newsCSS.news_line} key={param}>
-                            <h2>{newsInfo.newsPor[param].title}</h2>
-                            <span className="date">{newsInfo.newsPor[param].date}</span>
-                            <p><img alt="banner" src={newsInfo.newsPor[param].img_url+''} onError={errorLoad}/>{newsInfo.newsPor[param].text}</p>
+                {Object.getOwnPropertyNames(newsInfo.newsPor).length == 0 ?
+                    <div className={newsCSS.block}>
+                        <img alt="banner" src={warn}/>
+                        <div className={newsCSS.block_text}>
+                            Новостей нет... Ждите новой информации.
                         </div>
-                    )}
-                </section>)}
+                    </div> :
+                    <section className={newsCSS.center_colum}>
+                        {Object.getOwnPropertyNames(newsInfo.newsPor).map(param =>
+                            <div className={newsCSS.news_line} key={param}>
+                                <h2>{newsInfo.newsPor[param].title}</h2>
+                                <span className="date">{newsInfo.newsPor[param].date}</span>
+                                <p><img alt="banner" src={newsInfo.newsPor[param].img_url+''} onError={errorLoad}/>{newsInfo.newsPor[param].text}</p>
+                            </div>
+                        )}
+                    </section>
+                }
             </div>
         </>
     )

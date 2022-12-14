@@ -28,7 +28,6 @@ export function ErrNotFound() {
         <>
             <Helmet>
                 <title>Ошибка</title>
-                <link rel="canonical" href="http://example.com/example" />
             </Helmet>
             <div className={errCSS.AppHeader}>
                 <div className={errCSS.block}>

@@ -31,6 +31,7 @@ function getLogin(login, ico, desc) {
             <div className={main.logMenu}>
                 {getPan("Профиль", "Pro", "start", true, main.logMenuBlock)}
                 {getPan("Сменить роль", "Rol", "start", true, main.logMenuBlock)}
+                {getPan("Настройки", "Set", "start", true, main.logMenuBlock)}
                 {getPan("Выход", "Exi", "start", true, main.logMenuBlock)}
             </div>
         </div>

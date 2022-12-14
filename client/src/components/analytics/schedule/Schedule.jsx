@@ -63,53 +63,55 @@ export function Schedule() {
                 <title>Расписание</title>
             </Helmet>
             <div className={scheduleCSS.AppHeader}>
-                {Object.getOwnPropertyNames(schedulesInfo.days).length == 0 && (<div className={scheduleCSS.block}>
-                    <img alt="banner" src={warn}/>
-                    <div className={scheduleCSS.block_text}>
-                        К сожалению, информация не найдена... Можете попробовать попросить завуча заполнить информацию.
+                {Object.getOwnPropertyNames(schedulesInfo.days).length == 0 ?
+                    <div className={scheduleCSS.block}>
+                        <img alt="banner" src={warn}/>
+                        <div className={scheduleCSS.block_text}>
+                            К сожалению, информация не найдена... Можете попробовать попросить завуча заполнить информацию.
+                        </div>
+                    </div> :
+                    <div className={scheduleCSS.blockDay}>
+                        {Object.getOwnPropertyNames(schedulesInfo.days).map(param =>
+                            <div className={scheduleCSS.day}>
+                                {setNull()}
+                                <div className={scheduleCSS.nav_i} id={scheduleCSS.nav_i}>
+                                    {DoW[param]}
+                                </div>
+                                <div className={scheduleCSS.nav_i} id={scheduleCSS.nav_i}>
+                                    Кабинет
+                                </div>
+                                <div className={scheduleCSS.nav_i} id={scheduleCSS.nav_i}>
+                                    Преподаватель
+                                </div>
+                                {schedulesInfo.days[param].lessons.map(param1 =>
+                                    <>
+                                        <div className={scheduleCSS.nav_i} id={scheduleCSS.nav_i}>
+                                            {param1.name ? param1.name : schedulesInfo.schedule[param][shd++]}
+                                        </div>
+                                        <div className={scheduleCSS.nav_i} id={scheduleCSS.nav_i}>
+                                            {param1.cabinet}
+                                        </div>
+                                        <div className={scheduleCSS.nav_i} id={scheduleCSS.nav_i}>
+                                            {param1.prepod}
+                                        </div>
+                                    </>
+                                )}
+                                {schedulesInfo.days[param].lessons.length < 5 && Array(5-schedulesInfo.days[param].lessons.length).fill('').map(param =>
+                                    <>
+                                        <div className={scheduleCSS.nav_i} id={scheduleCSS.nav_i}>
+                                            <br />
+                                        </div>
+                                        <div className={scheduleCSS.nav_i} id={scheduleCSS.nav_i}>
+                                            <br />
+                                        </div>
+                                        <div className={scheduleCSS.nav_i} id={scheduleCSS.nav_i}>
+                                            <br />
+                                        </div>
+                                    </>
+                                )}
+                            </div>)}
                     </div>
-                </div>)}
-                {Object.getOwnPropertyNames(schedulesInfo.days).length > 0 && (<div className={scheduleCSS.blockDay}>
-                    {Object.getOwnPropertyNames(schedulesInfo.days).map(param =>
-                        <div className={scheduleCSS.day}>
-                            {setNull()}
-                            <div className={scheduleCSS.nav_i} id={scheduleCSS.nav_i}>
-                                {DoW[param]}
-                            </div>
-                            <div className={scheduleCSS.nav_i} id={scheduleCSS.nav_i}>
-                                Кабинет
-                            </div>
-                            <div className={scheduleCSS.nav_i} id={scheduleCSS.nav_i}>
-                                Преподаватель
-                            </div>
-                            {schedulesInfo.days[param].lessons.map(param1 =>
-                                <>
-                                    <div className={scheduleCSS.nav_i} id={scheduleCSS.nav_i}>
-                                        {param1.name ? param1.name : schedulesInfo.schedule[param][shd++]}
-                                    </div>
-                                    <div className={scheduleCSS.nav_i} id={scheduleCSS.nav_i}>
-                                        {param1.cabinet}
-                                    </div>
-                                    <div className={scheduleCSS.nav_i} id={scheduleCSS.nav_i}>
-                                        {param1.prepod}
-                                    </div>
-                                </>
-                            )}
-                            {schedulesInfo.days[param].lessons.length < 5 && Array(5-schedulesInfo.days[param].lessons.length).fill('').map(param =>
-                                <>
-                                    <div className={scheduleCSS.nav_i} id={scheduleCSS.nav_i}>
-                                        <br />
-                                    </div>
-                                    <div className={scheduleCSS.nav_i} id={scheduleCSS.nav_i}>
-                                        <br />
-                                    </div>
-                                    <div className={scheduleCSS.nav_i} id={scheduleCSS.nav_i}>
-                                        <br />
-                                    </div>
-                                </>
-                            )}
-                        </div>)}
-                </div>)}
+                }
             </div>
         </>
     )

@@ -3,12 +3,20 @@ import {Helmet} from "react-helmet-async";
 import dnevCSS from './dnevnik.module.css';
 import warn from '../../media/warn_big.png';
 import {dnevnik, states} from "../../store/selector";
+import { renderToStaticMarkup } from "react-dom/server"
 import {useDispatch, useSelector} from "react-redux";
-import {CHANGE_DNEVNIK_DAY_DOWN, CHANGE_DNEVNIK_DAY_UP, changeDnevnik, changeDnevnikDay} from "../../store/actions";
+import {
+    CHANGE_DNEVNIK_DAY_DOWN,
+    CHANGE_DNEVNIK_DAY_UP,
+    changeDnevnik,
+    changeDnevnikDay,
+    changeIndPrev
+} from "../../store/actions";
+import knopka from "../../media/knopka.png";
 
 let DoW = ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье"], incDow = 0, shd = 0, scrolling = false, elem = {lessons: []};
 
-let ev, dnev, dispatch
+let ev, dnev, dispatch;
 
 function fun1(x, x1) {
     console.log("dsfsfddsf12" + x);
@@ -51,6 +59,9 @@ function tim() {
                 dispatch(changeDnevnik(date.toLocaleString("ru", {day:"2-digit", month: "2-digit", year:"2-digit"}), elem, CHANGE_DNEVNIK_DAY_DOWN));
             }
         }
+        let x = document.querySelector("#CW1").getBoundingClientRect().top + Math.round(window.innerHeight / 100) * 7 - window.innerHeight;
+        let x1 = document.querySelector("#CW").getBoundingClientRect().top + Math.round(window.innerHeight / 100) * 7 - window.innerHeight;
+        document.querySelector("#CWSEL").style.display = x > 0 && x1 < 0 ? "none" : "flex";
     }
 }
 
@@ -59,11 +70,27 @@ function getDate(dat) {
     return new Date("20" + [d[2], d[1], d[0]].join("-"));
 }
 
-function getDiff(dat, dat1, bol) {
+function getDiff(dat, dat1, bol, bol1) {
     let diff = (((getDate(dat) - getDate(dat1)) / 8.64e7)-(bol ? 6 : 0)) / 7
-    if(diff > -1 && diff < 1) return undefined;
+    if(!bol1 && diff > -1 && diff < 1) return undefined;
     if(diff < 0) return diff + "";
     if(diff > 0) return "+" + diff;
+}
+
+function getName(d, n, n1) {
+    let x = n1 ? n1 : n;
+    console.log("fsdsd1 " + x);
+    console.log("fsdsd12 " + n);
+    console.log("fsdsd13 " + n1);
+    console.log("fsdsd14 " + getDiff(dnev.min, d, false, true));
+    console.log("fsdsd15 " + getDiff(d, dnev.max, false, true));
+    return (getDiff(dnev.min, d, false, true) > 0 || getDiff(d, dnev.max, false, true) > 0) ? "" : x;
+}
+
+function goTo() {
+    document.querySelector("#CW").scrollIntoView(true);
+    let sinc = window.scrollY - Math.round(window.innerHeight / 100) * 7;
+    window.scrollTo(0, sinc);
 }
 
 export function Dnevnik() {
@@ -102,73 +129,83 @@ export function Dnevnik() {
                 <title>Дневник</title>
             </Helmet>
             <div className={dnevCSS.AppHeader}>
-                {Object.getOwnPropertyNames(dnev.days).length == 0 && (<div className={dnevCSS.block}>
-                    <img alt="banner" src={warn}/>
-                    <div className={dnevCSS.block_text}>
-                        К сожалению, информация не найдена... Можете попробовать попросить завуча заполнить информацию.
-                    </div>
-                </div>)}
-                {Object.getOwnPropertyNames(dnev.days).length > 0 && (<div className={dnevCSS.blockDay}>
-                    {setDoW(0)}
-                    {Object.getOwnPropertyNames(dnev.days).map(param =>
-                        <>
-                            {(incDow == 0 || incDow == 7) && <div className={dnevCSS.blockL+" "+dnevCSS.blockLU}>
-                                <div className={dnevCSS.blockLine}/>
-                                <div className={dnevCSS.blockLText}>
-                                    {getDiff(param, dnev.currWeek) ? "Неделя " + getDiff(param, dnev.currWeek) : "Текущая неделя"}
+                {Object.getOwnPropertyNames(dnev.days).length == 0 ?
+                    <div className={dnevCSS.block}>
+                        <img alt="banner" src={warn}/>
+                        <div className={dnevCSS.block_text}>
+                            К сожалению, информация не найдена... Можете попробовать попросить завуча заполнить информацию.
+                        </div>
+                    </div> :
+                    <div className={dnevCSS.blockDay}>
+                        {setDoW(0)}
+                        {Object.getOwnPropertyNames(dnev.days).map(param =>
+                            <>
+                                {(incDow == 0 || incDow == 7) && <div className={dnevCSS.blockL+" "+dnevCSS.blockLU}>
+                                    <div className={dnevCSS.blockLine} id={dnev.currWeek == param ? "CW" : ""}/>
+                                    <div className={dnevCSS.blockLText}>
+                                        {getDiff(param, dnev.currWeek) ? "Неделя " + getDiff(param, dnev.currWeek) : "Текущая неделя"}
+                                    </div>
+                                </div>}
+                                <div className={dnevCSS.day}>
+                                    <div className={dnevCSS.nav_i} id={dnevCSS.nav_i}>
+                                        {getDoW()} / {param}
+                                    </div>
+                                    <div className={dnevCSS.nav_i} id={dnevCSS.nav_i}>
+                                        Домашнее задание
+                                    </div>
+                                    <div className={dnevCSS.nav_i} id={dnevCSS.nav_i}>
+                                        Оценка
+                                    </div>
+                                    {dnev.days[param].lessons.map(param1 =>
+                                        <>
+                                            <div className={dnevCSS.nav_i} id={dnevCSS.nav_i}>
+                                                {getName(param, dnev.schedule[incDow-1][shd++], param1.name)}
+                                            </div>
+                                            <div className={dnevCSS.nav_i+" "+dnevCSS.dayHomework} id={dnevCSS.nav_i}>
+                                                {param1.homework}
+                                            </div>
+                                            <div className={dnevCSS.nav_i} id={dnevCSS.nav_i}>
+                                                {param1.mark}
+                                                {param1.weight > 1 && (<div className={dnevCSS.nav_i+" "+dnevCSS.nav_iWeight} id={dnevCSS.nav_i}>
+                                                    {param1.weight}
+                                                </div>)}
+                                                {param1.type && (<div className={dnevCSS.nav_i+" "+dnevCSS.nav_iType} id={dnevCSS.nav_i}>
+                                                    {param1.type}
+                                                </div>)}
+                                            </div>
+                                        </>
+                                    )}
+                                    {dnev.days[param].lessons.length < 5 && Array(5-dnev.days[param].lessons.length).fill('').map(param1 =>
+                                        <>
+                                            <div className={dnevCSS.nav_i} id={dnevCSS.nav_i}>
+                                                {getName(param, dnev.schedule[incDow-1][shd++])}
+                                            </div>
+                                            <div className={dnevCSS.nav_i+" "+dnevCSS.dayHomework} id={dnevCSS.nav_i}>
+                                                <br />
+                                            </div>
+                                            <div className={dnevCSS.nav_i} id={dnevCSS.nav_i}>
+                                                <br />
+                                            </div>
+                                        </>
+                                    )}
                                 </div>
-                            </div>}
-                            <div className={dnevCSS.day}>
-                                <div className={dnevCSS.nav_i} id={dnevCSS.nav_i}>
-                                    {getDoW()} / {param}
+                                {incDow == 7 && <div className={dnevCSS.blockL+" "+dnevCSS.blockLD}>
+                                    <div className={dnevCSS.blockLText+" "+dnevCSS.blockLTextD}>
+                                        {getDiff(param, dnev.currWeek, true) ? "Неделя " + getDiff(param, dnev.currWeek, true) : "Текущая неделя"}
+                                    </div>
+                                    <div className={dnevCSS.blockLine} id={!getDiff(param, dnev.currWeek, true) ? "CW1" : ""}/>
+                                </div>}
+                            </>)}
+                        <div className={dnevCSS.GotCW} id={"CWSEL"}>
+                            <div>
+                                <img src={knopka} alt="" onClick={() => {goTo()}}/>
+                                <div className={dnevCSS.GotCWText}>
+                                    Перейти к текущей неделе
                                 </div>
-                                <div className={dnevCSS.nav_i} id={dnevCSS.nav_i}>
-                                    Домашнее задание
-                                </div>
-                                <div className={dnevCSS.nav_i} id={dnevCSS.nav_i}>
-                                    Оценка
-                                </div>
-                                {dnev.days[param].lessons.map(param =>
-                                    <>
-                                        <div className={dnevCSS.nav_i} id={dnevCSS.nav_i}>
-                                            {param.name ? param.name : dnev.schedule[incDow-1][shd++]}
-                                        </div>
-                                        <div className={dnevCSS.nav_i+" "+dnevCSS.dayHomework} id={dnevCSS.nav_i}>
-                                            {param.homework}
-                                        </div>
-                                        <div className={dnevCSS.nav_i} id={dnevCSS.nav_i}>
-                                            {param.mark}
-                                            {param.weight > 1 && (<div className={dnevCSS.nav_i+" "+dnevCSS.nav_iWeight} id={dnevCSS.nav_i}>
-                                                {param.weight}
-                                            </div>)}
-                                            {param.type && (<div className={dnevCSS.nav_i+" "+dnevCSS.nav_iType} id={dnevCSS.nav_i}>
-                                                {param.type}
-                                            </div>)}
-                                        </div>
-                                    </>
-                                )}
-                                {dnev.days[param].lessons.length < 5 && Array(5-dnev.days[param].lessons.length).fill('').map(param =>
-                                    <>
-                                        <div className={dnevCSS.nav_i} id={dnevCSS.nav_i}>
-                                            <br />
-                                        </div>
-                                        <div className={dnevCSS.nav_i+" "+dnevCSS.dayHomework} id={dnevCSS.nav_i}>
-                                            <br />
-                                        </div>
-                                        <div className={dnevCSS.nav_i} id={dnevCSS.nav_i}>
-                                            <br />
-                                        </div>
-                                    </>
-                                )}
                             </div>
-                            {incDow == 7 && <div className={dnevCSS.blockL+" "+dnevCSS.blockLD}>
-                                <div className={dnevCSS.blockLText+" "+dnevCSS.blockLTextD}>
-                                    {getDiff(param, dnev.currWeek, true) ? "Неделя " + getDiff(param, dnev.currWeek, true) : "Текущая неделя"}
-                                </div>
-                                <div className={dnevCSS.blockLine}/>
-                            </div>}
-                        </>)}
-                </div>)}
+                        </div>
+                    </div>
+                }
             </div>
         </>
     )

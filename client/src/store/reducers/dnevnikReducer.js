@@ -2,6 +2,8 @@ import {CHANGE_DNEVNIK, CHANGE_DNEVNIK_DAY_DOWN, CHANGE_DNEVNIK_DAY_UP} from '..
 
 const initialState = {
     currWeek: "14.05.22",
+    min: "09.05.22",
+    max: "23.05.22",
     schedule: {
         0 : ["Англ. яз.", "Русский яз.", "Математика", "Окруж. мир"],
         1 : ["Русский яз.", "Математика", "Англ. яз.", "Русский яз.", "Математика", "Окруж. мир"],
