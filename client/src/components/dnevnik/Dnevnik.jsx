@@ -59,10 +59,14 @@ function tim() {
                 dispatch(changeDnevnik(date.toLocaleString("ru", {day:"2-digit", month: "2-digit", year:"2-digit"}), elem, CHANGE_DNEVNIK_DAY_DOWN));
             }
         }
-        let x = document.querySelector("#CW1").getBoundingClientRect().top + Math.round(window.innerHeight / 100) * 7 - window.innerHeight;
-        let x1 = document.querySelector("#CW").getBoundingClientRect().top + Math.round(window.innerHeight / 100) * 7 - window.innerHeight;
-        document.querySelector("#CWSEL").style.display = x > 0 && x1 < 0 ? "none" : "flex";
+        knop();
     }
+}
+
+function knop() {
+    let x = document.querySelector("#CW1").getBoundingClientRect().top + Math.round(window.innerHeight / 100) * 7 - window.innerHeight;
+    let x1 = document.querySelector("#CW").getBoundingClientRect().top + Math.round(window.innerHeight / 100) * 7 - window.innerHeight;
+    document.querySelector("#CWSEL").style.display = x > 0 && x1 < 0 ? "none" : "flex";
 }
 
 function getDate(dat) {
@@ -79,11 +83,6 @@ function getDiff(dat, dat1, bol, bol1) {
 
 function getName(d, n, n1) {
     let x = n1 ? n1 : n;
-    console.log("fsdsd1 " + x);
-    console.log("fsdsd12 " + n);
-    console.log("fsdsd13 " + n1);
-    console.log("fsdsd14 " + getDiff(dnev.min, d, false, true));
-    console.log("fsdsd15 " + getDiff(d, dnev.max, false, true));
     return (getDiff(dnev.min, d, false, true) > 0 || getDiff(d, dnev.max, false, true) > 0) ? "" : x;
 }
 
@@ -109,8 +108,9 @@ export function Dnevnik() {
                 setTimeout(tim,1000);
             }
         };
+        knop();
         return function() {
-            console.log("I was triggered during componentWillUnmount Dnevnik.jsx");
+            console.log("I was triggered during componentWillUnmount Dnevnik1.jsx");
         }
     }, []);
     useEffect(() => {

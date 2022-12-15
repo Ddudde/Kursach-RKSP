@@ -7,7 +7,7 @@ import {getThemeState, states} from "../../store/selector";
 import {changeTheme} from "../../store/actions";
 import * as def from "./default";
 
-let act = ".panGL", elems = 0;
+let act = ".panGL", elems = 0, cState;
 
 function getPan(name, namecl, link, inc, dopClass) {
     if(!inc) elems++;
@@ -30,7 +30,7 @@ function getLogin(login, ico, desc) {
             </div>
             <div className={main.logMenu}>
                 {getPan("Профиль", "Pro", "start", true, main.logMenuBlock)}
-                {getPan("Сменить роль", "Rol", "start", true, main.logMenuBlock)}
+                {cState.roles && getPan("Сменить роль", "Rol", "start", true, main.logMenuBlock)}
                 {getPan("Настройки", "Set", "start", true, main.logMenuBlock)}
                 {getPan("Выход", "Exi", "start", true, main.logMenuBlock)}
             </div>
@@ -48,7 +48,7 @@ export function setActived(name) {
 
 export function Main() {
     const themeState = useSelector(getThemeState("theme"));
-    const cState = useSelector(states);
+    cState = useSelector(states);
     const themeCheckBoxState = useSelector(getThemeState("theme_ch"));
     const isFirstUpdate = useRef(true);
     const dispatch = useDispatch();

@@ -6,7 +6,7 @@ const initialState = {
         ico: 2,
         role: 0, // 0-обучающийся, 1-родитель, 2-педагог, 3-завуч, 4-админ
         roleDesc: "обучающийся",
-        roles: false
+        roles: true
     };
 
 export default function statusReducer(state = initialState, action) {
