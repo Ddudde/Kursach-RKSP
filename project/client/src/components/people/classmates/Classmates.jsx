@@ -28,8 +28,6 @@ export function Classmates() {
         // }, 5000);
         setActived(".panPep");
         setActNew(".panCM");
-        for(let el of document.querySelectorAll("." + classmatesCSS.AppHeader + " *"))
-            el.style.cssText += "background-color:" + window.getComputedStyle(el).backgroundColor + "; color:" + window.getComputedStyle(el).color + "; border-color:" + window.getComputedStyle(el).borderColor;
         return function() {
             console.log("I was triggered during componentWillUnmount Classmates.jsx");
         }
@@ -39,8 +37,6 @@ export function Classmates() {
             isFirstUpdate.current = false;
             return;
         }
-        for(let el of document.querySelectorAll("." + classmatesCSS.AppHeader + " *"))
-            if(!el.style.cssText) el.style.cssText += "background-color:" + window.getComputedStyle(el).backgroundColor + "; color:" + window.getComputedStyle(el).color + "; border-color:" + window.getComputedStyle(el).borderColor;
         console.log('componentDidUpdate Classmates.jsx');
     });
     return (

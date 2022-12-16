@@ -40,8 +40,6 @@ export function Schedule() {
         // }, 5000);
         setActived(".panAna");
         setActNew(".panRas");
-        for(let el of document.querySelectorAll("." + scheduleCSS.AppHeader + " *"))
-            el.style.cssText += "background-color:" + window.getComputedStyle(el).backgroundColor + "; color:" + window.getComputedStyle(el).color + "; border-color:" + window.getComputedStyle(el).borderColor;
         return function() {
             console.log("I was triggered during componentWillUnmount Schedule.jsx");
         }
@@ -50,9 +48,6 @@ export function Schedule() {
         if (isFirstUpdate.current) {
             isFirstUpdate.current = false;
             return;
-        }
-        for(let el of document.querySelectorAll("." + scheduleCSS.AppHeader + " *")) {
-            if(!el.style.cssText) el.style.cssText += "background-color:" + window.getComputedStyle(el).backgroundColor + "; color:" + window.getComputedStyle(el).color + "; border-color:" + window.getComputedStyle(el).borderColor;
         }
         console.log('componentDidUpdate Schedule.jsx');
     });

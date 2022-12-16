@@ -28,8 +28,6 @@ export function Teachers() {
         // }, 5000);
         setActived(".panPep");
         setActNew(".panPTea");
-        for(let el of document.querySelectorAll("." + teachersCSS.AppHeader + " *"))
-            el.style.cssText += "background-color:" + window.getComputedStyle(el).backgroundColor + "; color:" + window.getComputedStyle(el).color + "; border-color:" + window.getComputedStyle(el).borderColor;
         return function() {
             console.log("I was triggered during componentWillUnmount Teachers.jsx");
         }
@@ -39,8 +37,6 @@ export function Teachers() {
             isFirstUpdate.current = false;
             return;
         }
-        for(let el of document.querySelectorAll("." + teachersCSS.AppHeader + " *"))
-            if(!el.style.cssText) el.style.cssText += "background-color:" + window.getComputedStyle(el).backgroundColor + "; color:" + window.getComputedStyle(el).color + "; border-color:" + window.getComputedStyle(el).borderColor;
         console.log('componentDidUpdate Teachers.jsx');
     });
     return (

@@ -37,6 +37,7 @@ function updDateP(id) {
 }
 
 function updDate(e) {
+    console.log("sdfsf135");
     updDateP(this.id);
 }
 
@@ -87,15 +88,13 @@ export function AnalyticsJournal() {
         //         }
         //     }));
         // document.querySelector("." + journalCSS.predm).addEventListener('mouseover', updDate, {capture: true});
-        for(let el of document.querySelectorAll("." + journalCSS.predmGrid))
+        for(let el of document.querySelectorAll("div[class='" + journalCSS.predmGrid+"']"))
         {
             el.addEventListener('mouseover', updDate);
         }
         updDateP(Object.getOwnPropertyNames(journalsInfo)[0]);
         let scr = document.querySelector("." + journalCSS.days);
         scr.scrollTo(scr.scrollWidth, 0);
-        for(let el of document.querySelectorAll("." + journalCSS.AppHeader + " *"))
-            if(!el.style.cssText) el.style.cssText += "background-color:" + window.getComputedStyle(el).backgroundColor + "; color:" + window.getComputedStyle(el).color + "; border-color:" + window.getComputedStyle(el).borderColor;
         return function() {
             console.log("I was triggered during componentWillUnmount AnalyticsJournal.jsx");
         }
@@ -105,8 +104,6 @@ export function AnalyticsJournal() {
             isFirstUpdate.current = false;
             return;
         }
-        for(let el of document.querySelectorAll("." + journalCSS.AppHeader + " *"))
-            if(!el.style.cssText) el.style.cssText += "background-color:" + window.getComputedStyle(el).backgroundColor + "; color:" + window.getComputedStyle(el).color + "; border-color:" + window.getComputedStyle(el).borderColor;
         console.log('componentDidUpdate AnalyticsJournal.jsx');
     });
     return (

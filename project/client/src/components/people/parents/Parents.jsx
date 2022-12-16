@@ -28,8 +28,6 @@ export function Parents() {
         // }, 5000);
         setActived(".panPep");
         setActNew(".panPar");
-        for(let el of document.querySelectorAll("." + parentsCSS.AppHeader + " *"))
-            el.style.cssText += "background-color:" + window.getComputedStyle(el).backgroundColor + "; color:" + window.getComputedStyle(el).color + "; border-color:" + window.getComputedStyle(el).borderColor;
         return function() {
             console.log("I was triggered during componentWillUnmount Parents.jsx");
         }
@@ -39,8 +37,6 @@ export function Parents() {
             isFirstUpdate.current = false;
             return;
         }
-        for(let el of document.querySelectorAll("." + parentsCSS.AppHeader + " *"))
-            if(!el.style.cssText) el.style.cssText += "background-color:" + window.getComputedStyle(el).backgroundColor + "; color:" + window.getComputedStyle(el).color + "; border-color:" + window.getComputedStyle(el).borderColor;
         console.log('componentDidUpdate Parents.jsx');
     });
     return (

@@ -27,8 +27,6 @@ export function NewsPor() {
         // }, 5000);
         setActived(".panNew");
         setActNew(".panPor");
-        for(let el of document.querySelectorAll("." + newsCSS.AppHeader + " *"))
-            el.style.cssText += "background-color:" + window.getComputedStyle(el).backgroundColor + "; color:" + window.getComputedStyle(el).color + "; border-color:" + window.getComputedStyle(el).borderColor;
         return function() {
             console.log("I was triggered during componentWillUnmount NewsPor.jsx");
         }

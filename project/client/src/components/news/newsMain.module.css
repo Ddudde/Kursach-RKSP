@@ -23,9 +23,9 @@
 
 .nav_i{
 	text-decoration: none;
-	border: 1px solid #4d4d4d;
+	border: 1px solid var(--bcV1);
 	cursor: pointer;
-	color: #006600;
+	color: var(--cV1);
 	font-size: 1.25vw;
 	font-weight: bold;
 	margin: -1px -0.5px;
@@ -37,7 +37,7 @@
 	-o-transition: color 1s ease;
 	transition: color 1s ease;
 	transition-property: color, text-shadow, border-color, background-color;
-	background-color: #dbdbdbe6;
+	background-color: var(--bgcV1);
 }
 
 #nav_i:hover{
@@ -55,7 +55,7 @@
 .lin{
 	width: 50%;
 	height: 20%;
-	background: #242424e6;
+	background: var(--bgcV2);
 	position: absolute;
 	bottom: 0;
 	left: 0;

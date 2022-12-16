@@ -93,8 +93,6 @@ export function Dnevnik() {
     useEffect(() => {
         if(isFirstUpdate.current) return;
         console.log("I was triggered during componentDidMount Dnevnik.jsx");
-        for(let el of document.querySelectorAll("." + dnevCSS.AppHeader + " *"))
-            el.style.cssText += "background-color:" + window.getComputedStyle(el).backgroundColor + "; color:" + window.getComputedStyle(el).color + "; border-color:" + window.getComputedStyle(el).borderColor;
         window.onwheel = (e) => {
             if(!scrolling) {
                 scrolling = true;
@@ -111,9 +109,6 @@ export function Dnevnik() {
         if (isFirstUpdate.current) {
             isFirstUpdate.current = false;
             return;
-        }
-        for(let el of document.querySelectorAll("." + dnevCSS.AppHeader + " *")) {
-            if(!el.style.cssText) el.style.cssText += "background-color:" + window.getComputedStyle(el).backgroundColor + "; color:" + window.getComputedStyle(el).color + "; border-color:" + window.getComputedStyle(el).borderColor;
         }
         console.log('componentDidUpdate Dnevnik.jsx');
     });

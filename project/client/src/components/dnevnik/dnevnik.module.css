@@ -11,7 +11,7 @@
 }
 
 .day{
-	background-color: #DBDBDBe6;
+	background-color: var(--bgcV1);
 	padding: 10px;
 	border-radius: 5px;
 	margin-bottom: 10px;
@@ -29,9 +29,9 @@
 
 .nav_i{
 	text-decoration: none;
-	border: 1px solid #4d4d4d;
+	border: 1px solid var(--bcV1);
 	cursor: pointer;
-	color: #006600;
+	color: var(--cV1);
 	font-size: 1.25vw;
 	font-weight: bold;
 	display: flex;
@@ -72,7 +72,7 @@
 	padding: 5px 10px;
 	align-self: center;
 	justify-content: stretch;
-	background-color: #242424e6;
+	background-color: var(--bgcV2);
 	opacity: 0;
 	transition-property: opacity;
 }
@@ -95,7 +95,7 @@
 
 .blockLText{
 	text-align: center;
-	color:#009900;
+	color:var(--cV2);
 	font-weight: bold;
 	font-size: 1.5vw;
 	text-shadow: 2px 2px 2px #000;
@@ -130,7 +130,7 @@
 }
 
 .GotCWText{
-	color: #009900;
+	color: var(--cV2);
 	font-size: 2vmax;
 	font-weight: bold;
 	text-shadow: 2px 2px 2px #000;
@@ -149,7 +149,7 @@
 
 .block_text{
 	width: 70vmin;
-	color:#009900;
+	color:var(--cV2);
 	font-weight: bold;
 	font-size: 1.5vw;
 	text-shadow: 2px 2px 2px #000;

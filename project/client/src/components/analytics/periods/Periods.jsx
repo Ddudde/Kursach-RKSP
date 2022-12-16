@@ -25,8 +25,6 @@ export function Periods() {
         // }, 5000);
         setActived(".panAna");
         setActNew(".panPer");
-        for(let el of document.querySelectorAll("." + periodsCSS.AppHeader + " *"))
-            el.style.cssText += "background-color:" + window.getComputedStyle(el).backgroundColor + "; color:" + window.getComputedStyle(el).color + "; border-color:" + window.getComputedStyle(el).borderColor;
         return function() {
             console.log("I was triggered during componentWillUnmount Periods.jsx");
         }
@@ -35,9 +33,6 @@ export function Periods() {
         if (isFirstUpdate.current) {
             isFirstUpdate.current = false;
             return;
-        }
-        for(let el of document.querySelectorAll("." + periodsCSS.AppHeader + " *")) {
-            if(!el.style.cssText) el.style.cssText += "background-color:" + window.getComputedStyle(el).backgroundColor + "; color:" + window.getComputedStyle(el).color + "; border-color:" + window.getComputedStyle(el).borderColor;
         }
         console.log('componentDidUpdate Periods.jsx');
     });

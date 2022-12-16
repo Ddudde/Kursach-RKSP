@@ -29,10 +29,8 @@ export function Marks() {
         // }, 5000);
         setActived(".panAna");
         setActNew(".panIto");
-        let scr = document.querySelector("." + marksCSS.pers);
+        let scr = document.querySelector("." + marksCSS.predm);
         scr.scrollTo(scr.scrollWidth, 0);
-        for(let el of document.querySelectorAll("." + marksCSS.AppHeader + " *"))
-            el.style.cssText += "background-color:" + window.getComputedStyle(el).backgroundColor + "; color:" + window.getComputedStyle(el).color + "; border-color:" + window.getComputedStyle(el).borderColor;
         return function() {
             console.log("I was triggered during componentWillUnmount Marks.jsx");
         }
@@ -42,8 +40,6 @@ export function Marks() {
             isFirstUpdate.current = false;
             return;
         }
-        for(let el of document.querySelectorAll("." + marksCSS.AppHeader + " *"))
-            if(!el.style.cssText) el.style.cssText += "background-color:" + window.getComputedStyle(el).backgroundColor + "; color:" + window.getComputedStyle(el).color + "; border-color:" + window.getComputedStyle(el).borderColor;
         console.log('componentDidUpdate Marks.jsx');
     });
     return (

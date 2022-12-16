@@ -55,8 +55,6 @@ export function Main() {
         if(isFirstUpdate.current) return;
         console.log("I was triggered during componentDidMount Main.jsx");
         def.ini();
-        for(let el of document.querySelectorAll("body *"))
-            if(el.style.cssText === "")el.style.cssText += "background-color:" + window.getComputedStyle(el).backgroundColor + "; color:" + window.getComputedStyle(el).color + "; border-color:" + window.getComputedStyle(el).borderColor;
         const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
         dispatch(changeTheme(prefersDarkScheme));
         return function() {
@@ -69,8 +67,6 @@ export function Main() {
             return;
         }
         elems = 0;
-        for(let el of document.querySelectorAll("body *"))
-            if(el.style.cssText === "")el.style.cssText += "background-color:" + window.getComputedStyle(el).backgroundColor + "; color:" + window.getComputedStyle(el).color + "; border-color:" + window.getComputedStyle(el).borderColor;
         console.log('componentDidUpdate Main.jsx');
     });
     return (

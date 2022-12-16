@@ -172,9 +172,25 @@ export function changeTheme(themeState) {
     if (stat) {
         document.body.setAttribute('theme_light', '');
         if(document.body.hasAttribute("theme_dark")) document.body.removeAttribute("theme_dark")
+        document.documentElement.style.setProperty('--bgcV1', '#DBDBDBe6');
+        document.documentElement.style.setProperty('--bgcV2', '#242424e6');
+        document.documentElement.style.setProperty('--bgcV3', '#000000b3');
+        document.documentElement.style.setProperty('--cV1', '#006600');
+        document.documentElement.style.setProperty('--cV2', '#009900');
+        document.documentElement.style.setProperty('--cV3', '#090a0b');
+        document.documentElement.style.setProperty('--bcV1', '#4d4d4d');
+        document.documentElement.style.setProperty('--bcV2', '#090a0b');
     } else {
         document.body.setAttribute('theme_dark', '');
         if(document.body.hasAttribute("theme_light")) document.body.removeAttribute("theme_light")
+        document.documentElement.style.setProperty('--bgcV1', '#242424e6');
+        document.documentElement.style.setProperty('--bgcV2', '#DBDBDBe6');
+        document.documentElement.style.setProperty('--bgcV3', '#0000004d');
+        document.documentElement.style.setProperty('--cV1', '#009900');
+        document.documentElement.style.setProperty('--cV2', '#00bb00');
+        document.documentElement.style.setProperty('--cV3', '#f5f6f7');
+        document.documentElement.style.setProperty('--bcV1', '#b3b3b3');
+        document.documentElement.style.setProperty('--bcV2', '#f5f6f7');
     }
     return { type: CHANGE_THEME, payload: stat};
 }

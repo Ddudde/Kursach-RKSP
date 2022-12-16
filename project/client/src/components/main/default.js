@@ -5,11 +5,11 @@ let d1 = document.createElement('img'), d = document.createElement('div');
 
 export function ini() {
 	scr();
-	d.innerHTML='© 2020 ООО "Рога и Копыта" Все права защищены. Project on <a href="https://github.com/Ddudde/Kursach-HTML" style="color: rgb(0, 153, 0);">github</a>.';
+	d.innerHTML='© 2020 ООО "Рога и Копыта" Все права защищены. Project on <a href="https://github.com/Ddudde/Kursach-HTML" style="color: var(--cV2);">github</a>.';
 	d.setAttribute('style', `position: fixed;
 	right: 12.5vw;
 	font-size: 2vw;
-	color: rgb(0, 153, 0);
+	color: var(--cV2);
 	bottom: 0;
 	font-weight: bold;
 	text-shadow: 2px 2px 2px #000;`);

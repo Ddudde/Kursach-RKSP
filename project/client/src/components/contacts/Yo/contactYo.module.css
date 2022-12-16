@@ -7,7 +7,7 @@
 }
 
 .blockTel{
-	background-color: #DBDBDBe6;
+	background-color: var(--bgcV1);
 	padding: 10px;
 	border-radius: 5px;
 	margin-bottom: 10px;
@@ -29,7 +29,7 @@
 
 .center_colum p a{
 	border:0;
-	color:#006600;
+	color:var(--cV1);
 	text-shadow: 2px 2px 2px #000;
 	transition: color 1s ease;
 }
@@ -40,7 +40,7 @@
 
 h1 {
 	font-weight:bold;
-	color:#006600;
+	color:var(--cV1);
 	text-shadow: 2px 2px 2px #000;
 	transition: color 1s ease;
 }
@@ -57,7 +57,7 @@ h1 {
 
 .block_text{
 	width: 70vmin;
-	color:#009900;
+	color:var(--cV2);
 	font-weight: bold;
 	font-size: 1.5vw;
 	text-shadow: 2px 2px 2px #000;

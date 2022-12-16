@@ -38,8 +38,6 @@ export function ini(clss) {
 	g_id.addEventListener('mouseout', unsetText);
 	regb = false;
 	vxodb = false;
-	for(let el of document.querySelectorAll("." + clss + " *"))
-		el.style.cssText += "background-color:" + window.getComputedStyle(el).backgroundColor + "; color:" + window.getComputedStyle(el).color + "; border-color:" + window.getComputedStyle(el).borderColor;
 	// var clonedNode = document.querySelector("#but1"), crNode = document.createElement("div");
 	// crNode.innerHtml = 'df';
 	// document.body.appendChild(crNode);

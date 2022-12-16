@@ -43,8 +43,6 @@ export function PeopleMain() {
         if(isFirstUpdate.current) return;
         lin = document.querySelector("#lin");
         console.log("I was triggered during componentDidMount PeopleMain.jsx");
-        for(let el of document.querySelectorAll("." + peopleCSS.AppHeader + " *"))
-            if(!el.style.cssText) el.style.cssText += "background-color:" + window.getComputedStyle(el).backgroundColor + "; color:" + window.getComputedStyle(el).color + "; border-color:" + window.getComputedStyle(el).borderColor;
         setActivedMy(act_new);
         return function() {
             console.log("I was triggered during componentWillUnmount PeopleMain.jsx");

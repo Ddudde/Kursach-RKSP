@@ -17,14 +17,14 @@
 .news_line {
 	width:100%;
 	overflow:hidden;
-	background-color: #DBDBDBe6;
+	background-color: var(--bgcV1);
 	padding: 10px;
 	border-radius: 5px;
 	margin-bottom: 10px;
 	transition: background-color 1s ease;
 }
 .news_line h2 {
-	color:#006600;
+	color:var(--cV1);
 	margin: 0;
 	text-shadow: 2px 2px 2px #000;
 	transition: color 1s ease;
@@ -37,7 +37,7 @@
 	transition: color 1s ease;
 }
 .news_line p {
-	color: #006600;
+	color: var(--cV1);
 	margin-bottom:5px;
 	text-shadow: 1px 1px 3px #000;
 	transition: color 1s ease;
@@ -60,7 +60,7 @@
 
 .block_text{
 	width: 70vmin;
-	color:#009900;
+	color:var(--cV2);
 	font-weight: bold;
 	font-size: 1.5vw;
 	text-shadow: 2px 2px 2px #000;

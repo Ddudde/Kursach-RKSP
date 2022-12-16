@@ -13,11 +13,13 @@
 }
 
 .predm{
-	background-color: #DBDBDBe6;
+	background-color: var(--bgcV1);
 	padding: 10px;
 	border-radius: 5px;
 	transition: background-color 1s ease;
 	margin-block: 5vh;
+	overflow-x: auto;
+	overflow-y: hidden;
 }
 
 .days{
@@ -44,9 +46,9 @@
 
 .nav_i{
 	text-decoration: none;
-	border: 1px solid #4d4d4d;
+	border: 1px solid var(--bcV1);
 	cursor: pointer;
-	color: #006600;
+	color: var(--cV1);
 	font-size: 1.25vw;
 	font-weight: 500;
 	display: flex;
@@ -81,7 +83,7 @@
 	width: 22vw;
 	height: 5vh;
 	padding: 0;
-	background-color: #DBDBDBe6;
+	background-color: var(--bgcV1);
 	z-index: 1;
 }
 
@@ -127,7 +129,7 @@
 
 .block_text{
 	width: 70vmin;
-	color:#009900;
+	color:var(--cV2);
 	font-weight: bold;
 	font-size: 1.5vw;
 	text-shadow: 2px 2px 2px #000;
