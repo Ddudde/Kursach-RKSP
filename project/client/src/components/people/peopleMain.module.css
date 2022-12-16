@@ -53,30 +53,10 @@
 }
 
 .lin{
-	width: 20%;
 	height: 20%;
 	background: #242424e6;
 	position: absolute;
 	bottom: 0;
-	transition: left 1s ease;
-}
-
-.panTea[data-act="1"] ~ .lin{
 	left: 0;
-}
-
-.panHT[data-act="1"] ~ .lin{
-	left: 20%;
-}
-
-.panCM[data-act="1"] ~ .lin{
-	left: 40%;
-}
-
-.panPar[data-act="1"] ~ .lin{
-	left: 60%;
-}
-
-.panAdm[data-act="1"] ~ .lin{
-	left: 80%;
+	transition: left 1s ease;
 }

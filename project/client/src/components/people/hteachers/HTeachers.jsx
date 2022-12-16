@@ -1,7 +1,7 @@
 import React, {useEffect, useRef} from "react";
 import {Helmet} from "react-helmet-async";
 import hteachersCSS from './hteachers.module.css';
-import {getThemeState, hteachers} from "../../../store/selector";
+import {hteachers, themes} from "../../../store/selector";
 import {useDispatch, useSelector} from "react-redux";
 import {setActived} from "../../main/Main";
 import {setActNew} from "../PeopleMain";
@@ -13,7 +13,7 @@ let dispatch, hteachersInfo;
 
 export function HTeachers() {
     hteachersInfo = useSelector(hteachers);
-    const themeState = useSelector(getThemeState("theme_ch"));
+    const themeState = useSelector(themes);
     dispatch = useDispatch();
     const isFirstUpdate = useRef(true);
     useEffect(() => {
@@ -65,7 +65,7 @@ export function HTeachers() {
                                         <div className={hteachersCSS.nav_i+" "+hteachersCSS.nav_iZag1} id={hteachersCSS.nav_i}>
                                             {hteachersInfo[param]}
                                         </div>
-                                        <img src={themeState ? profd : profl} alt=""/>
+                                        <img src={themeState.theme_ch ? profd : profl} alt=""/>
                                     </div>
                                 )}
                             </div>

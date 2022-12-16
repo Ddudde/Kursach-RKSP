@@ -16,6 +16,7 @@ import hteachersReducer from "./reducers/people/hteachersReducer";
 import classmatesReducer from "./reducers/people/classmatesReducer";
 import parentsReducer from "./reducers/people/parentsReducer";
 import adminsReducer from "./reducers/people/adminsReducer";
+import profileReducer from "./reducers/profileReducer";
 
 export default combineReducers({
     checkbox: checkBoxReducer,
@@ -34,5 +35,6 @@ export default combineReducers({
     hteachers: hteachersReducer,
     classmates: classmatesReducer,
     parents: parentsReducer,
-    admins: adminsReducer
+    admins: adminsReducer,
+    profiles: profileReducer
 });

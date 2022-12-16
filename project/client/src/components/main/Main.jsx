@@ -3,7 +3,7 @@ import warn from '../../media/warning.png';
 import main from './main.module.css';
 import {Link, Outlet} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
-import {getThemeState, states} from "../../store/selector";
+import {states, themes} from "../../store/selector";
 import {changeTheme} from "../../store/actions";
 import * as def from "./default";
 
@@ -13,7 +13,7 @@ function getPan(name, namecl, link, inc, dopClass) {
     if(!inc) elems++;
     let cl = "pan" + namecl;
     return (
-        <Link className={main.nav_i+" "+cl+" "+dopClass} id={main.nav_i} to={link} onClick={() => {setActived("."+cl)}}>
+        <Link className={main.nav_i+" "+cl+" "+(dopClass ? dopClass : "")} id={main.nav_i} to={link} onClick={() => {setActived("."+cl)}}>
             {name}
         </Link>
     )
@@ -47,9 +47,8 @@ export function setActived(name) {
 }
 
 export function Main() {
-    const themeState = useSelector(getThemeState("theme"));
+    const theme = useSelector(themes);
     cState = useSelector(states);
-    const themeCheckBoxState = useSelector(getThemeState("theme_ch"));
     const isFirstUpdate = useRef(true);
     const dispatch = useDispatch();
     useEffect(() => {
@@ -105,11 +104,11 @@ export function Main() {
             </div>
             <div className={main.switcher}>
                 <label className={main.switch}>
-                    <input className={main.inp_sw} type="checkbox" checked={themeCheckBoxState ? "checked" : ""} onChange={() => {dispatch(changeTheme(themeCheckBoxState))}}/>
+                    <input className={main.inp_sw} type="checkbox" checked={theme.theme_ch ? "checked" : ""} onChange={() => {dispatch(changeTheme(theme.theme_ch))}}/>
                     <span className={main.slider}></span>
                 </label>
                 <div className={main.lab_sw}>
-                    Тема: {themeState}
+                    Тема: {theme.theme}
                 </div>
             </div>
         </>

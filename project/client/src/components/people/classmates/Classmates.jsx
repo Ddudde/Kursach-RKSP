@@ -1,7 +1,7 @@
 import React, {useEffect, useRef} from "react";
 import {Helmet} from "react-helmet-async";
 import classmatesCSS from './classmates.module.css';
-import {classmates, getThemeState} from "../../../store/selector";
+import {classmates, themes} from "../../../store/selector";
 import {useDispatch, useSelector} from "react-redux";
 import {setActived} from "../../main/Main";
 import {setActNew} from "../PeopleMain";
@@ -13,7 +13,7 @@ let dispatch, classmatesInfo;
 
 export function Classmates() {
     classmatesInfo = useSelector(classmates);
-    const themeState = useSelector(getThemeState("theme_ch"));
+    const themeState = useSelector(themes);
     dispatch = useDispatch();
     const isFirstUpdate = useRef(true);
     useEffect(() => {
@@ -65,7 +65,7 @@ export function Classmates() {
                                         <div className={classmatesCSS.nav_i+" "+classmatesCSS.nav_iZag1} id={classmatesCSS.nav_i}>
                                             {classmatesInfo[param]}
                                         </div>
-                                        <img src={themeState ? profd : profl} alt=""/>
+                                        <img src={themeState.theme_ch ? profd : profl} alt=""/>
                                     </div>
                                 )}
                             </div>

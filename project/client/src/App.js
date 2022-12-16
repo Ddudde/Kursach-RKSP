@@ -23,6 +23,7 @@ import HTeachers from "./components/people/hteachers/HTeachers";
 import Classmates from "./components/people/classmates/Classmates";
 import Parents from "./components/people/parents/Parents";
 import Admins from "./components/people/admins/Admins";
+import React from "react";
 
 function App() {
     const cState = useSelector(states);
@@ -40,14 +41,14 @@ function App() {
           <Route path="/" element={<Main/>}>
               <Route index element={indexComp} />
               <Route path="news" element={<NewsMain/>}>
-                  <Route index element={<NewsYo/>} />
+                  <Route index element={<NewsPor/>} />
                   <Route path="por" element={<NewsPor/>} />
-                  <Route path="yo" element={<NewsYo/>} />
+                  {(cState.auth && cState.role != 4) && <Route path="yo" element={<NewsYo/>} />}
               </Route>
               <Route path="contacts" element={<ContactMain/>}>
-                  <Route index element={<ContactYo/>} />
+                  <Route index element={<ContactPor/>} />
                   <Route path="por" element={<ContactPor/>} />
-                  <Route path="yo" element={<ContactYo/>} />
+                  {(cState.auth && cState.role != 4) && <Route path="yo" element={<ContactYo/>} />}
               </Route>
               <Route path="analytics" element={<AnalyticsMain/>}>
                   <Route index element={<Zvonki/>} />
@@ -58,11 +59,11 @@ function App() {
                   <Route path="marks" element={<Marks/>} />
               </Route>
               <Route path="people" element={<PeopleMain/>}>
-                  <Route index element={<Teachers/>} />
-                  <Route path="teachers" element={<Teachers/>} />
-                  <Route path="hteachers" element={<HTeachers/>} />
-                  <Route path="classmates" element={<Classmates/>} />
-                  <Route path="parents" element={<Parents/>} />
+                  <Route index element={<Admins/>} />
+                  {(cState.auth && cState.role != 4) && <Route path="teachers" element={<Teachers/>} />}
+                  {(cState.auth && cState.role != 4) && <Route path="hteachers" element={<HTeachers/>} />}
+                  {(cState.auth && cState.role == 0) && <Route path="classmates" element={<Classmates/>} />}
+                  {(cState.auth && cState.role == 0) && <Route path="parents" element={<Parents/>} />}
                   <Route path="admins" element={<Admins/>} />
               </Route>
               <Route path="*" element={<ErrNotFound/>} />

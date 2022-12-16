@@ -1,7 +1,7 @@
 import React, {useEffect, useRef} from "react";
 import {Helmet} from "react-helmet-async";
 import adminsCSS from './admins.module.css';
-import {admins, getThemeState} from "../../../store/selector";
+import {admins, themes} from "../../../store/selector";
 import {useDispatch, useSelector} from "react-redux";
 import {setActived} from "../../main/Main";
 import {setActNew} from "../PeopleMain";
@@ -13,7 +13,7 @@ let dispatch, adminsInfo;
 
 export function Admins() {
     adminsInfo = useSelector(admins);
-    const themeState = useSelector(getThemeState("theme_ch"));
+    const themeState = useSelector(themes);
     dispatch = useDispatch();
     const isFirstUpdate = useRef(true);
     useEffect(() => {
@@ -65,7 +65,7 @@ export function Admins() {
                                         <div className={adminsCSS.nav_i+" "+adminsCSS.nav_iZag1} id={adminsCSS.nav_i}>
                                             {adminsInfo[param]}
                                         </div>
-                                        <img src={themeState ? profd : profl} alt=""/>
+                                        <img src={themeState.theme_ch ? profd : profl} alt=""/>
                                     </div>
                                 )}
                             </div>

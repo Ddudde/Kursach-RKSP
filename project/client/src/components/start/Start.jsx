@@ -16,7 +16,7 @@ import button from "../button.module.css";
 import {Helmet} from "react-helmet-async";
 import CheckBox from "./CheckBox";
 import {useDispatch, useSelector} from "react-redux";
-import {getCheckBoxState, getIndicatorState} from "../../store/selector";
+import {checkbox, indicators} from "../../store/selector";
 import {changeInd, changeIndNext, changeIndPrev, changeIndTimer} from "../../store/actions";
 import {setActived} from "../main/Main";
 
@@ -24,13 +24,12 @@ let dispatch, timer, indActState;
 
 function reset_timer() {
     clearInterval(timer);
-    timer = setInterval(function() { dispatch(changeIndTimer(indActState)); }, 5000);
+    timer = setInterval(function() { dispatch(changeIndTimer(indActState.actived)); }, 5000);
 }
 
 export function Start() {
-    // clientsInfo = useSelector(clients);
-    const checkBoxState = useSelector(getCheckBoxState("checkbox_lic"));
-    indActState = useSelector(getIndicatorState("actived"));
+    const checkBoxState = useSelector(checkbox);
+    indActState = useSelector(indicators);
     const isFirstUpdate = useRef(true);
     dispatch = useDispatch();
     useEffect(() => {
@@ -42,7 +41,7 @@ export function Start() {
         //put(14, JSON.stringify({id: 14, name: 'nm127', email: 'm@y.ru7'}))
         st.ini(start.AppHeader);
         setActived(".panGL");
-        dispatch(changeInd("ind_0", reset_timer, indActState));
+        dispatch(changeInd("ind_0", reset_timer, indActState.actived));
         return function() {
             console.log("I was triggered during componentWillUnmount Start.jsx");
             st.destroy();
@@ -88,16 +87,16 @@ export function Start() {
                         </div>
                     </div>
                     <div className={start.g_block_shad}/>
-                    <img src={left} className={start.pic_l} alt="" onClick={() => {dispatch(changeIndPrev(indActState, reset_timer))}}/>
-                    <img src={left} className={start.pic_r} alt="" onClick={() => {dispatch(changeIndNext(indActState, reset_timer))}}/>
+                    <img src={left} className={start.pic_l} alt="" onClick={() => {dispatch(changeIndPrev(indActState.actived, reset_timer))}}/>
+                    <img src={left} className={start.pic_r} alt="" onClick={() => {dispatch(changeIndNext(indActState.actived, reset_timer))}}/>
                     <div className={start.indic}>
-                        <div className={start.indic_bl} id="ind_0" onClick={() => {dispatch(changeInd("ind_0", reset_timer, indActState))}}>
+                        <div className={start.indic_bl} id="ind_0" onClick={() => {dispatch(changeInd("ind_0", reset_timer, indActState.actived))}}>
                         </div>
-                        <div className={start.indic_bl} id="ind_1" onClick={() => {dispatch(changeInd("ind_1", reset_timer, indActState))}}>
+                        <div className={start.indic_bl} id="ind_1" onClick={() => {dispatch(changeInd("ind_1", reset_timer, indActState.actived))}}>
                         </div>
-                        <div className={start.indic_bl} id="ind_2" onClick={() => {dispatch(changeInd("ind_2", reset_timer, indActState))}}>
+                        <div className={start.indic_bl} id="ind_2" onClick={() => {dispatch(changeInd("ind_2", reset_timer, indActState.actived))}}>
                         </div>
-                        <div className={start.indic_bl} id="ind_3" onClick={() => {dispatch(changeInd("ind_3", reset_timer, indActState))}}>
+                        <div className={start.indic_bl} id="ind_3" onClick={() => {dispatch(changeInd("ind_3", reset_timer, indActState.actived))}}>
                         </div>
                     </div>
                 </div>
@@ -113,59 +112,59 @@ export function Start() {
                 {/*<pre>{JSON.stringify(clientsInfo, null, "\t")}</pre>*/}
                 {/*<pre style={{position: 'fixed', top: '50%', color: '#fff'}}>{JSON.stringify(themeState, null, "\t")}</pre>*/}
                 {/*<pre style={{position: 'fixed', top: '70%', color: '#fff'}}>{JSON.stringify(themeCheckBoxState, null, "\t")}</pre>*/}
-                {/*<pre style={{position: 'fixed', top: '70%', color: '#fff'}}>{JSON.stringify(indActState, null, "\t")}</pre>*/}
-                    <div className={start.posit} id="posform">
-                        <div className={start.help}>
+                {/*<pre style={{position: 'fixed', top: '70%', color: '#fff'}}>{JSON.stringify(indActState.actived, null, "\t")}</pre>*/}
+                <div className={start.posit} id="posform">
+                    <div className={start.help}>
                             <span className={start.r} id="r">
                                 Нет аккаунта? <a className={start.helpa} onClick={() => st.onreg()}>Регистрация!</a>
                             </span>
-                            <span className={start.v} id="v">
+                        <span className={start.v} id="v">
                                 Есть аккаунт? <a className={start.helpa} onClick={() => st.onvxod()}>Вход!</a>
                             </span>
-                        </div>
-                        <form className={start.vxod} id="vxod">
-                            <input className={start.login} type="text" placeholder="Логин" id="logv" autoComplete="username" required pattern="^[a-zA-Z0-9]+$"/>
-                            <div className={start.grid_cont_l}>
-                                <input className={start.pass} type="password" placeholder="Пароль" id="pasv" autoComplete="current-password" required pattern="^[a-zA-Z0-9]+$"/>
-                                <span className={start.warn+' '+start.warnc} id="warnc">
+                    </div>
+                    <form className={start.vxod} id="vxod">
+                        <input className={start.login} type="text" placeholder="Логин" id="logv" autoComplete="username" required pattern="^[a-zA-Z0-9]+$"/>
+                        <div className={start.grid_cont_l}>
+                            <input className={start.pass} type="password" placeholder="Пароль" id="pasv" autoComplete="current-password" required pattern="^[a-zA-Z0-9]+$"/>
+                            <span className={start.warn+' '+start.warnc} id="warnc">
                                     <img src={warn} className={start.warnimg} alt=""/>Включён Caps Lock!
                                 </span>
-                                <div className={start.button+' '+button.button} id="but1" onClick={() => st.vxo(dispatch)}>
-                                    ВОЙТИ!
-                                </div>
+                            <div className={start.button+' '+button.button} id="but1" onClick={() => st.vxo(dispatch)}>
+                                ВОЙТИ!
                             </div>
-                        </form>
-                        <form className={start.reg} id="reg">
-                            <div className={start.logo}>
-                                <p>Выберите иконку для профиля:</p>
-                                <input id="ch1" name="ico" type="radio" value="1" defaultChecked/>
-                                <img className={start.logoi} src={ls1} alt=""/>
-                                <input id="ch2" name="ico" type="radio" value="2"/>
-                                <img className={start.logoi} src={ls2} alt=""/>
-                                <input id="ch3" name="ico" type="radio" value="3"/>
-                                <img className={start.logoi} src={ls3} alt=""/>
-                            </div>
-                            <input className={start.login} type="text" placeholder="Логин" id="logr" autoComplete="username" required pattern="^[a-zA-Z0-9]+$"/>
-                            <div className={start.grid_cont_r}>
-                                <input className={start.pass} type="password" placeholder="Пароль" id="pasr" autoComplete="new-password" required pattern="^[a-zA-Z0-9]+$"/>
-                                <span className={start.rand+' '+button.button} onClick={() => st.gen_pas()}>
+                        </div>
+                    </form>
+                    <form className={start.reg} id="reg">
+                        <div className={start.logo}>
+                            <p>Выберите иконку для профиля:</p>
+                            <input id="ch1" name="ico" type="radio" value="1" defaultChecked/>
+                            <img className={start.logoi} src={ls1} alt=""/>
+                            <input id="ch2" name="ico" type="radio" value="2"/>
+                            <img className={start.logoi} src={ls2} alt=""/>
+                            <input id="ch3" name="ico" type="radio" value="3"/>
+                            <img className={start.logoi} src={ls3} alt=""/>
+                        </div>
+                        <input className={start.login} type="text" placeholder="Логин" id="logr" autoComplete="username" required pattern="^[a-zA-Z0-9]+$"/>
+                        <div className={start.grid_cont_r}>
+                            <input className={start.pass} type="password" placeholder="Пароль" id="pasr" autoComplete="new-password" required pattern="^[a-zA-Z0-9]+$"/>
+                            <span className={start.rand+' '+button.button} onClick={() => st.gen_pas()}>
                                     <img src={ran} className={start.randimg} alt=""/>Случайный пароль
                                 </span>
-                                <div className={start.lic}>
-                                    <CheckBox name={"a"} value={"согл"} text={"Принимаю условия "} checkbox_id={"checkbox_lic"} checkbox_state={+false}/>
-                                    <span className={start.url} onClick={() => st.setVisibleOver(true)}>
+                            <div className={start.lic}>
+                                <CheckBox name={"a"} value={"согл"} text={"Принимаю условия "} checkbox_id={"checkbox_lic"} checkbox_state={+false}/>
+                                <span className={start.url} onClick={() => st.setVisibleOver(true)}>
                                         соглашения
                                     </span>
-                                    <span className={start.warn} id="warncr">
+                                <span className={start.warn} id="warncr">
                                         <img src={warn} className={start.warnimg} alt=""/>Включён Caps Lock!
                                     </span>
-                                </div>
-                                <div data-enable={+checkBoxState} className={start.button+' '+button.button} onClick={() => st.rego()}>
-                                    ЗАРЕГИСТРИРОВАТЬСЯ!
-                                </div>
                             </div>
-                        </form>
-                    </div>
+                            <div data-enable={+checkBoxState.checkbox_lic} className={start.button+' '+button.button} onClick={() => st.rego()}>
+                                ЗАРЕГИСТРИРОВАТЬСЯ!
+                            </div>
+                        </div>
+                    </form>
+                </div>
             </div>
             <div className={start.over} id="over">
                 <div className={start.dogov}>

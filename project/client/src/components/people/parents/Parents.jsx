@@ -1,7 +1,7 @@
 import React, {useEffect, useRef} from "react";
 import {Helmet} from "react-helmet-async";
 import parentsCSS from './parents.module.css';
-import {getThemeState, parents} from "../../../store/selector";
+import {parents, themes} from "../../../store/selector";
 import {useDispatch, useSelector} from "react-redux";
 import {setActived} from "../../main/Main";
 import {setActNew} from "../PeopleMain";
@@ -13,7 +13,7 @@ let dispatch, parentsInfo;
 
 export function Parents() {
     parentsInfo = useSelector(parents);
-    const themeState = useSelector(getThemeState("theme_ch"));
+    const themeState = useSelector(themes);
     dispatch = useDispatch();
     const isFirstUpdate = useRef(true);
     useEffect(() => {
@@ -68,7 +68,7 @@ export function Parents() {
                                                 <div className={parentsCSS.nav_i+" "+parentsCSS.nav_iZag2} id={parentsCSS.nav_i}>
                                                     {parentsInfo[param].par[param1]}
                                                 </div>
-                                                <img src={themeState ? profd : profl} alt=""/>
+                                                <img src={themeState.theme_ch ? profd : profl} alt=""/>
                                             </div>
                                         )}
                                     </div>

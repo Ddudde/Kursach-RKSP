@@ -1,6 +1,8 @@
 import React, {useEffect, useRef} from "react";
 import newsCSS from './newsMain.module.css';
 import {Link, Outlet} from "react-router-dom";
+import {useSelector} from "react-redux";
+import {states} from "../../store/selector";
 
 let act = ".panYo", act_new = "";
 
@@ -17,6 +19,7 @@ export function setActNew(name) {
 }
 
 export function NewsMain() {
+    const cState = useSelector(states);
     const isFirstUpdate = useRef(true);
     useEffect(() => {
         if(isFirstUpdate.current) return;
@@ -38,7 +41,7 @@ export function NewsMain() {
     return (
         <>
             <div className={newsCSS.AppHeader}>
-                <nav className={newsCSS.panel} id="her">
+                {(cState.auth && cState.role != 4) && <nav className={newsCSS.panel} id="her">
                     <Link className={newsCSS.nav_i+" panPor " + newsCSS.panPor} to="por" id={newsCSS.nav_i} onClick={() => {setActivedMy(".panPor")}}>
                         Объявления портала
                     </Link>
@@ -47,7 +50,7 @@ export function NewsMain() {
                     </Link>
                     <div className={newsCSS.lin}>
                     </div>
-                </nav>
+                </nav>}
                 <Outlet />
             </div>
         </>

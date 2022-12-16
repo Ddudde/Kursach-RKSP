@@ -1,7 +1,7 @@
 import React, {useEffect, useRef} from "react";
 import {Helmet} from "react-helmet-async";
-import teachersCSS from './teachers.module.css';
-import {getThemeState, teachers} from "../../../store/selector";
+import teachersCSS from "./teachers.module.css";
+import {teachers, themes} from "../../../store/selector";
 import {useDispatch, useSelector} from "react-redux";
 import {setActived} from "../../main/Main";
 import {setActNew} from "../PeopleMain";
@@ -13,7 +13,7 @@ let dispatch, teachersInfo;
 
 export function Teachers() {
     teachersInfo = useSelector(teachers);
-    const themeState = useSelector(getThemeState("theme_ch"));
+    const themeState = useSelector(themes);
     dispatch = useDispatch();
     const isFirstUpdate = useRef(true);
     useEffect(() => {
@@ -27,7 +27,7 @@ export function Teachers() {
         //     dispatch(changeContacts("Por", "id_" + Object.getOwnPropertyNames(teachersInfo.contactsPor.numbers).length, '8 (800) 555 35 37', '+78005553537'));
         // }, 5000);
         setActived(".panPep");
-        setActNew(".panTea");
+        setActNew(".panPTea");
         for(let el of document.querySelectorAll("." + teachersCSS.AppHeader + " *"))
             el.style.cssText += "background-color:" + window.getComputedStyle(el).backgroundColor + "; color:" + window.getComputedStyle(el).color + "; border-color:" + window.getComputedStyle(el).borderColor;
         return function() {
@@ -68,7 +68,7 @@ export function Teachers() {
                                                 <div className={teachersCSS.nav_i+" "+teachersCSS.nav_iZag2} id={teachersCSS.nav_i}>
                                                     {teachersInfo.my[param][param1]}
                                                 </div>
-                                                <img src={themeState ? profd : profl} alt=""/>
+                                                <img src={themeState.theme_ch ? profd : profl} alt=""/>
                                             </div>
                                         )}
                                     </div>
@@ -84,7 +84,7 @@ export function Teachers() {
                                                 <div className={teachersCSS.nav_i+" "+teachersCSS.nav_iZag2} id={teachersCSS.nav_i}>
                                                     {teachersInfo.nemy[param][param1]}
                                                 </div>
-                                                <img src={themeState ? profd : profl} alt=""/>
+                                                <img src={themeState.theme_ch ? profd : profl} alt=""/>
                                             </div>
                                         )}
                                     </div>
@@ -94,7 +94,6 @@ export function Teachers() {
                     </div>
                 }
             </div>
-        </>
-    )
+        </>)
 }
 export default Teachers;

@@ -1,6 +1,8 @@
 import React, {useEffect, useRef} from "react";
 import contactCSS from './contactMain.module.css';
 import {Link, Outlet} from "react-router-dom";
+import {useSelector} from "react-redux";
+import {states} from "../../store/selector";
 
 let act = ".panYo", act_new = "";
 
@@ -17,6 +19,7 @@ export function setActNew(name) {
 }
 
 export function ContactMain() {
+    const cState = useSelector(states);
     const isFirstUpdate = useRef(true);
     useEffect(() => {
         if(isFirstUpdate.current) return;
@@ -38,7 +41,7 @@ export function ContactMain() {
     return (
         <>
             <div className={contactCSS.AppHeader}>
-                <nav className={contactCSS.panel} id="her">
+                {(cState.auth && cState.role != 4) && <nav className={contactCSS.panel} id="her">
                     <Link className={contactCSS.nav_i+" panPor " + contactCSS.panPor} to="por" id={contactCSS.nav_i} onClick={() => {setActivedMy(".panPor")}}>
                         Контакты портала
                     </Link>
@@ -47,7 +50,7 @@ export function ContactMain() {
                     </Link>
                     <div className={contactCSS.lin}>
                     </div>
-                </nav>
+                </nav>}
                 <Outlet />
             </div>
         </>
