@@ -1,0 +1,25 @@
+{
+  "files": {
+    "main.css": "/static/css/main.ecaf9ab2.css",
+    "main.js": "/static/js/main.d00ef70b.js",
+    "static/js/787.d8939b6a.chunk.js": "/static/js/787.d8939b6a.chunk.js",
+    "static/media/zavuch.jpg": "/static/media/zavuch.f53e70a6fb02c8cef042.jpg",
+    "static/media/fon.jpg": "/static/media/fon.8bd616adbf9afd5f3bab.jpg",
+    "static/media/detyam.jpeg": "/static/media/detyam.644c8767d6f0107f92ff.jpeg",
+    "static/media/pedagog.jpg": "/static/media/pedagog.1a5c26e46dbd69e34100.jpg",
+    "static/media/warn_big.png": "/static/media/warn_big.e6c37f292d7904fe7cf7.png",
+    "static/media/roditelyam.jpg": "/static/media/roditelyam.6e14c5ae6c56c3b65e23.jpg",
+    "static/media/knopka.png": "/static/media/knopka.c14f1cc6c607bb6edd74.png",
+    "static/media/profl.png": "/static/media/profl.c9dd7a39ad987dad8b2a.png",
+    "static/media/start.gif": "/static/media/start.a57e08d02907efca0b53.gif",
+    "static/media/profd.png": "/static/media/profd.b5e12f415ea64591df73.png",
+    "index.html": "/index.html",
+    "main.ecaf9ab2.css.map": "/static/css/main.ecaf9ab2.css.map",
+    "main.d00ef70b.js.map": "/static/js/main.d00ef70b.js.map",
+    "787.d8939b6a.chunk.js.map": "/static/js/787.d8939b6a.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.ecaf9ab2.css",
+    "static/js/main.d00ef70b.js"
+  ]
+}
