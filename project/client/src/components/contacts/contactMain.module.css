@@ -1,0 +1,71 @@
+.AppHeader {
+	width: 100%;
+	height: 93vh;
+	display: flex;
+	position: relative;
+	top: 7vh;
+}
+
+.panel{
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	position:fixed;
+	width: inherit;
+	height: 7vh;
+	display: grid;
+	place-items: center;
+	grid-template: auto/repeat(2,1fr);
+	justify-items: stretch;
+	z-index: 1;
+}
+
+.nav_i{
+	text-decoration: none;
+	border: 1px solid #4d4d4d;
+	cursor: pointer;
+	color: #006600;
+	font-size: 1.25vw;
+	font-weight: bold;
+	margin: -1px -0.5px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	align-self: stretch;
+	-webkit-transition: color 1s ease;
+	-o-transition: color 1s ease;
+	transition: color 1s ease;
+	transition-property: color, text-shadow, border-color, background-color;
+	background-color: #dbdbdbe6;
+}
+
+#nav_i:hover{
+	color: #00ff00 !important;
+	text-shadow: 0 0 2vw #66ff66;
+}
+
+#nav_i:active, #nav_i[data-act="1"]{
+	-webkit-transition: color 0.1s ease;
+	-o-transition: color 0.1s ease;
+	transition: color 0.1s ease;
+	color: #004d00 !important;
+}
+
+.lin{
+	width: 50%;
+	height: 20%;
+	background: #242424e6;
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	transition: left 1s ease;
+}
+
+.panPor[data-act="1"] + .lin{
+	left: 0;
+}
+
+.panYo[data-act="1"] + .lin{
+	left: 50%;
+}

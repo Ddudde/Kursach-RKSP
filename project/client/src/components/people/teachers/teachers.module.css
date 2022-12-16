@@ -1,0 +1,90 @@
+.AppHeader {
+	width: 100%;
+	height: 86vh;
+	display: flex;
+	position: relative;
+	top: 7vh;
+}
+
+.blockTea{
+	text-align: center;
+	margin: auto;
+	width: 75%;
+}
+
+.tea{
+	background-color: #DBDBDBe6;
+	padding: 10px;
+	border-radius: 5px;
+	transition: background-color 1s ease;
+	margin-block: 5vh;
+	overflow-x: auto;
+	overflow-y: hidden;
+}
+
+.nav_i{
+	text-decoration: none;
+	border: 1px solid #4d4d4d;
+	border-radius: 5px;
+	cursor: pointer;
+	color: #006600;
+	font-size: 1.25vw;
+	font-weight: 500;
+	-webkit-transition: color 1s ease;
+	-o-transition: color 1s ease;
+	transition: color 1s ease;
+	transition-property: color, text-shadow, border-color;
+	margin: -0.5px;
+	padding: 5px;
+	position: relative;
+}
+
+#nav_i:hover{
+	color: #00ff00 !important;
+	text-shadow: 0 0 2vw #66ff66;
+}
+
+.nav_iZag{
+	text-align: initial;
+	margin-block: 1vw;
+}
+
+.nav_iZag1{
+	text-align: initial;
+	margin-left: 1vw;
+	margin-block: 1vw;
+}
+
+.nav_iZag2{
+	text-align: initial;
+	margin-left: 2vw;
+	border: none;
+	display: inline-block;
+	vertical-align: middle;
+}
+
+.nav_iZag1 img{
+	width: 2vw;
+	vertical-align: middle;
+	cursor: pointer;
+}
+
+.block{
+	margin: auto;
+	text-align: center;
+}
+
+.block > img{
+	width: 30vmin;
+	height: 30vmin;
+}
+
+.block_text{
+	width: 70vmin;
+	color:#009900;
+	font-weight: bold;
+	font-size: 1.5vw;
+	text-shadow: 2px 2px 2px #000;
+	transition: color 1s ease;
+	text-align: left;
+}
