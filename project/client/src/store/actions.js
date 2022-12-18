@@ -3,6 +3,8 @@ export const CHANGE_THEME = "CHANGE_THEME";
 export const CHANGE_STATE = "CHANGE_STATE";
 export const CHANGE_ZVONKI = "CHANGE_ZVONKI";
 export const CHANGE_PERIODS = "CHANGE_PERIODS";
+export const CHANGE_PROFILE = "CHANGE_PROFILE";
+export const CHANGE_PROFILE_ROLES = "CHANGE_PROFILE_ROLES";
 export const CHANGE_SCHEDULE = "CHANGE_SCHEDULE";
 export const CHANGE_JOURNAL = "CHANGE_JOURNAL";
 export const CHANGE_TEACHERS = "CHANGE_TEACHERS";
@@ -37,6 +39,25 @@ export function changeState(id, state) {
         payload: {
             stateId: id,
             cState: state
+        }
+    };
+}
+
+export function changeProfileRoles(roleid, id, state) {
+    return { type: CHANGE_PROFILE_ROLES,
+        payload: {
+            Id: id,
+            roleId: roleid,
+            State: state
+        }
+    };
+}
+
+export function changeProfile(id, state) {
+    return { type: CHANGE_PROFILE,
+        payload: {
+            Id: id,
+            State: state
         }
     };
 }

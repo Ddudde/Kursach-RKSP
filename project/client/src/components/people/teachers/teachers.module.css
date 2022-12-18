@@ -23,7 +23,6 @@
 }
 
 .nav_i{
-	text-decoration: none;
 	border: 1px solid var(--bcV1);
 	border-radius: 5px;
 	cursor: pointer;

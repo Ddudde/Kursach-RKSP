@@ -1,13 +1,12 @@
-import {CHANGE_STATE} from "../actions";
+import {CHANGE_PROFILE, CHANGE_PROFILE_ROLES} from "../actions";
 
 const initialState = {
         login: "test",
         ico: 2,
         fio: "Иванов Иван Иванович",
         more: "",
-        roles: [
-            {
-                role: 0,
+        roles: {
+            0: {
                 roleDesc: "обучающийся",
                 yo: "Школа №1541",
                 email: "ya@ya.ru",
@@ -17,8 +16,7 @@ const initialState = {
                 },
                 group: "10A"
             },
-            {
-                role: 1,
+            1: {
                 roleDesc: "родитель",
                 yo: "Школа №1541",
                 kids: {
@@ -27,35 +25,43 @@ const initialState = {
                 },
                 email: "ya@ya.ru"
             },
-            {
-                role: 2,
+            2: {
                 roleDesc: "педагог",
                 yo: "Школа №1541",
                 lessons: ["Англ. Яз.", "Математика"],
                 email: "ya@ya.ru"
             },
-            {
-                role: 3,
+            3: {
                 roleDesc: "завуч",
                 yo: "Школа №1541",
                 email: "ya@ya.ru"
             },
-            {
-                role: 4,
-                roleDesc: "админ",
+            4: {
+                roleDesc: "администратор портала",
                 email: "ya@ya.ru",
             }
-        ]
+        }
     };
 
 export default function profileReducer(state = initialState, action) {
     console.log('reducer', state, action);
     switch(action.type) {
-        case CHANGE_STATE:
+        case CHANGE_PROFILE:
             return {
                     ...state,
-                    [action.payload.stateId]: action.payload.cState
+                    [action.payload.Id]: action.payload.State
                 };
+        case CHANGE_PROFILE_ROLES:
+            return {
+                ...state,
+                roles: {
+                    ...state.roles,
+                    [action.payload.roleId] : {
+                        ...state.roles[action.payload.roleId],
+                        [action.payload.Id]: action.payload.State
+                    }
+                }
+            };
         default:
             return state;
     }

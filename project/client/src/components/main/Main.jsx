@@ -29,7 +29,7 @@ function getLogin(login, ico, desc) {
                 <div className={main.logText}>Я - {desc}</div>
             </div>
             <div className={main.logMenu}>
-                {getPan("Профиль", "Pro", "start", true, main.logMenuBlock)}
+                {getPan("Профиль", "Pro", "profiles", true, main.logMenuBlock)}
                 {cState.roles && getPan("Сменить роль", "Rol", "start", true, main.logMenuBlock)}
                 {getPan("Настройки", "Set", "start", true, main.logMenuBlock)}
                 {getPan("Выход", "Exi", "start", true, main.logMenuBlock)}

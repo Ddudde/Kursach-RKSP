@@ -1,5 +1,6 @@
 export const all = state => state
 export const states = state => state.states || {};
+export const profiles = state => state.profiles || {};
 export const indicators = state => state.indicators || {};
 export const checkbox = state => state.checkbox || {};
 export const themes = state => state.themes || {};

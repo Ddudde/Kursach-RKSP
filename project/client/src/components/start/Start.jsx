@@ -127,8 +127,8 @@ export function Start() {
                         <div className={start.grid_cont_l}>
                             <input className={start.pass} type="password" placeholder="Пароль" id="pasv" autoComplete="current-password" required pattern="^[a-zA-Z0-9]+$"/>
                             <span className={start.warn+' '+start.warnc} id="warnc">
-                                    <img src={warn} className={start.warnimg} alt=""/>Включён Caps Lock!
-                                </span>
+                                <img src={warn} className={start.warnimg} alt=""/>Включён Caps Lock!
+                            </span>
                             <div className={start.button+' '+button.button} id="but1" onClick={() => st.vxo(dispatch)}>
                                 ВОЙТИ!
                             </div>
@@ -148,8 +148,8 @@ export function Start() {
                         <div className={start.grid_cont_r}>
                             <input className={start.pass} type="password" placeholder="Пароль" id="pasr" autoComplete="new-password" required pattern="^[a-zA-Z0-9]+$"/>
                             <span className={start.rand+' '+button.button} onClick={() => st.gen_pas()}>
-                                    <img src={ran} className={start.randimg} alt=""/>Случайный пароль
-                                </span>
+                                <img src={ran} className={start.randimg} alt=""/>Случайный пароль
+                            </span>
                             <div className={start.lic}>
                                 <CheckBox name={"a"} value={"согл"} text={"Принимаю условия "} checkbox_id={"checkbox_lic"} checkbox_state={+false}/>
                                 <span className={start.url} onClick={() => st.setVisibleOver(true)}>
