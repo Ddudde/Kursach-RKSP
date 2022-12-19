@@ -14,21 +14,48 @@ import start from './start.module.css';
 import * as st from "./start.js";
 import button from "../button.module.css";
 import {Helmet} from "react-helmet-async";
-import CheckBox from "./CheckBox";
+import CheckBox from "../checkBox/CheckBox";
 import {useDispatch, useSelector} from "react-redux";
 import {checkbox, indicators} from "../../store/selector";
 import {changeInd, changeIndNext, changeIndPrev, changeIndTimer} from "../../store/actions";
 import {setActived} from "../main/Main";
 
-let dispatch, timer, indActState;
+let dispatch, timer, indActState, checkBoxState, regbut, regb, lrb = false, prb = false, vxbut, lvb = false, pvb = false;
 
 function reset_timer() {
     clearInterval(timer);
     timer = setInterval(function() { dispatch(changeIndTimer(indActState.actived)); }, 5000);
 }
 
+function chStatLrb(e) {
+    let el = e.target;
+    lrb = (el ? !el.validity.patternMismatch && el.value.length != 0 : false);
+    regb = (checkBoxState.checkbox_lic & lrb & prb) || false;
+    regbut.setAttribute("data-enable", +regb);
+}
+
+function chStatPrb(e) {
+    let el = e.target;
+    prb = (el ? !el.validity.patternMismatch && el.value.length != 0 : false);
+    regb = (checkBoxState.checkbox_lic & lrb & prb) || false;
+    regbut.setAttribute("data-enable", +regb);
+}
+
+function chStatLvb(e) {
+    let el = e.target;
+    lvb = (el ? !el.validity.patternMismatch && el.value.length != 0 : false);
+    vxbut.setAttribute("data-enable", +((lvb & pvb) || false));
+}
+
+function chStatPvb(e) {
+    let el = e.target;
+    pvb = (el ? !el.validity.patternMismatch && el.value.length != 0 : false);
+    vxbut.setAttribute("data-enable", +((lvb & pvb) || false));
+}
+
 export function Start() {
-    const checkBoxState = useSelector(checkbox);
+    checkBoxState = useSelector(checkbox);
+    regb = (checkBoxState.checkbox_lic & lrb & prb) || false;
     indActState = useSelector(indicators);
     const isFirstUpdate = useRef(true);
     dispatch = useDispatch();
@@ -39,7 +66,9 @@ export function Start() {
         //del(9);
         //post(JSON.stringify({id: 9, name: 'nm124', email: 'm@y.ru'}))
         //put(14, JSON.stringify({id: 14, name: 'nm127', email: 'm@y.ru7'}))
-        st.ini(start.AppHeader);
+        regbut = document.getElementById("regbut");
+        vxbut = document.getElementById("but1");
+        st.ini();
         setActived(".panGL");
         dispatch(changeInd("ind_0", reset_timer, indActState.actived));
         return function() {
@@ -58,7 +87,6 @@ export function Start() {
         <>
             <Helmet>
                 <title>Главная</title>
-                <link rel="canonical" href="http://example.com/example" />
             </Helmet>
             <div className={start.AppHeader}>
                 <div className={start.g} id="g_id">
@@ -116,16 +144,16 @@ export function Start() {
                 <div className={start.posit} id="posform">
                     <div className={start.help}>
                             <span className={start.r} id="r">
-                                Нет аккаунта? <a className={start.helpa} onClick={() => st.onreg()}>Регистрация!</a>
+                                Нет аккаунта? <a className={start.helpa} onClick={st.onreg}>Регистрация!</a>
                             </span>
                         <span className={start.v} id="v">
-                                Есть аккаунт? <a className={start.helpa} onClick={() => st.onvxod()}>Вход!</a>
+                                Есть аккаунт? <a className={start.helpa} onClick={st.onvxod}>Вход!</a>
                             </span>
                     </div>
                     <form className={start.vxod} id="vxod">
-                        <input className={start.login} type="text" placeholder="Логин" id="logv" autoComplete="username" required pattern="^[a-zA-Z0-9]+$"/>
+                        <input className={start.login} type="text" onChange={chStatLvb} placeholder="Логин" id="logv" autoComplete="username" required pattern="^[a-zA-Z0-9]+$"/>
                         <div className={start.grid_cont_l}>
-                            <input className={start.pass} type="password" placeholder="Пароль" id="pasv" autoComplete="current-password" required pattern="^[a-zA-Z0-9]+$"/>
+                            <input className={start.pass} type="password" onChange={chStatPvb} placeholder="Пароль" id="pasv" autoComplete="current-password" required pattern="^[a-zA-Z0-9]+$"/>
                             <span className={start.warn+' '+start.warnc} id="warnc">
                                 <img src={warn} className={start.warnimg} alt=""/>Включён Caps Lock!
                             </span>
@@ -136,7 +164,7 @@ export function Start() {
                     </form>
                     <form className={start.reg} id="reg">
                         <div className={start.logo}>
-                            <p>Выберите иконку для профиля:</p>
+                            <p style={{marginBlock: "0.5vw"}}>Выберите аватар для профиля:</p>
                             <input id="ch1" name="ico" type="radio" value="1" defaultChecked/>
                             <img className={start.logoi} src={ls1} alt=""/>
                             <input id="ch2" name="ico" type="radio" value="2"/>
@@ -144,22 +172,26 @@ export function Start() {
                             <input id="ch3" name="ico" type="radio" value="3"/>
                             <img className={start.logoi} src={ls3} alt=""/>
                         </div>
-                        <input className={start.login} type="text" placeholder="Логин" id="logr" autoComplete="username" required pattern="^[a-zA-Z0-9]+$"/>
+                        <input className={start.login} type="text" placeholder="Логин" onChange={chStatLrb} id="logr" autoComplete="username" required pattern="^[a-zA-Z0-9]+$"/>
                         <div className={start.grid_cont_r}>
-                            <input className={start.pass} type="password" placeholder="Пароль" id="pasr" autoComplete="new-password" required pattern="^[a-zA-Z0-9]+$"/>
-                            <span className={start.rand+' '+button.button} onClick={() => st.gen_pas()}>
-                                <img src={ran} className={start.randimg} alt=""/>Случайный пароль
-                            </span>
-                            <div className={start.lic}>
-                                <CheckBox name={"a"} value={"согл"} text={"Принимаю условия "} checkbox_id={"checkbox_lic"} checkbox_state={+false}/>
-                                <span className={start.url} onClick={() => st.setVisibleOver(true)}>
-                                        соглашения
-                                    </span>
-                                <span className={start.warn} id="warncr">
-                                        <img src={warn} className={start.warnimg} alt=""/>Включён Caps Lock!
-                                    </span>
+                            <input className={start.pass} type="password" placeholder="Пароль" onChange={chStatPrb} id="pasr" autoComplete="new-password" required pattern="^[a-zA-Z0-9]+$"/>
+                            <div className={start.rand+' '+button.button} onClick={st.gen_pas}>
+                                <img src={ran} className={start.randimg} alt=""/>
+                                <div className={start.tex}>Случайный пароль</div>
                             </div>
-                            <div data-enable={+checkBoxState.checkbox_lic} className={start.button+' '+button.button} onClick={() => st.rego()}>
+                            <div className={start.lic}>
+                                <CheckBox text={"Принимаю условия "} checkbox_id={"checkbox_lic"}/>
+                                <span className={start.url} onClick={() => st.setVisibleOver(true)}>
+                                    соглашения
+                                </span>
+                                <div className={start.warn} id="warncr">
+                                    <img src={warn} className={start.warnimg} alt=""/>
+                                    <div className={start.tex}>
+                                        Включён Caps Lock!
+                                    </div>
+                                </div>
+                            </div>
+                            <div data-enable={+regb} id="regbut" className={start.button+' '+button.button} onClick={st.rego}>
                                 ЗАРЕГИСТРИРОВАТЬСЯ!
                             </div>
                         </div>

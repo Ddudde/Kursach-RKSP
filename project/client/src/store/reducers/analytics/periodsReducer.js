@@ -8,7 +8,6 @@ const initialState = {
     };
 
 export default function periodsReducer(state = initialState, action) {
-    console.log('reducer', state, action);
     switch(action.type) {
         case CHANGE_PERIODS:
             return {

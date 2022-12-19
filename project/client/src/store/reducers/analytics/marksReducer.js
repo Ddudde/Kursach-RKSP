@@ -49,7 +49,6 @@ const initialState = {
 };
 
 export default function marksReducer(state = initialState, action) {
-    console.log('reducer', state, action);
     switch(action.type) {
         case CHANGE_MARKS:
             return {

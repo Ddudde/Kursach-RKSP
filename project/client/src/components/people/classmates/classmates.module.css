@@ -24,8 +24,6 @@
 
 .nav_i{
 	text-decoration: none;
-	border: 1px solid var(--bcV1);
-	border-radius: 5px;
 	cursor: pointer;
 	color: var(--cV1);
 	font-size: 1.25vw;
@@ -33,7 +31,7 @@
 	-webkit-transition: color 1s ease;
 	-o-transition: color 1s ease;
 	transition: color 1s ease;
-	transition-property: color, text-shadow, border-color;
+	transition-property: color, text-shadow;
 	margin: -0.5px;
 	padding: 5px;
 	position: relative;
@@ -47,6 +45,8 @@
 .nav_iZag{
 	text-align: initial;
 	margin-block: 1vw;
+	border: 1px solid var(--bcV1);
+	border-radius: 5px;
 }
 
 .nav_iZag1{

@@ -100,6 +100,11 @@
 	width: 50%;
 }
 
+.imginp[data-enable="0"] {
+	pointer-events: none;
+	opacity: 0.4;
+}
+
 .inp[data-act='0'], .inp[data-act='0'] ~ .imginp{
 	display: none;
 }
@@ -128,105 +133,6 @@ pre.field{
 
 .field[data-act='1'], .field[data-act='1'] ~ .imgfield{
 	display: inline-block;
-}
-
-.chPass{
-	text-decoration: underline;
-	cursor: pointer;
-	margin-block: 1vw;
-}
-
-.blockPass[data-act='0']{
-	display: none;
-}
-
-.blockPass[data-act='1']{
-	display: block;
-}
-
-.nPasBlock{
-	display: flex;
-	margin-bottom: 1vw;
-}
-
-.oPasBlock{
-	display: flex;
-}
-
-.oPasBlock[data-act='0']{
-	display: none;
-}
-
-.oPasBlock[data-act='1']{
-	display: flex;
-}
-
-.inpPass{
-	display: block;
-	margin-bottom: 1vw;
-}
-
-.nPass{
-	margin-bottom: 0;
-}
-
-.blockKnops{
-	margin-left: 1.5vmax;
-	width: 21.5vw;
-	position: relative;
-}
-
-.tex{
-	pointer-events: none;
-}
-
-.but > div{
-	display: inline-block;
-	align-self: center;
-}
-
-.but{
-	-webkit-border-radius: 5px;
-	border-radius: 5px !important;
-	margin-left: 9px;
-	font-size: 2vmin !important;
-	height: 5vh;
-	padding-inline: 1vw;
-	font-weight: normal !important;
-	align-self: center;
-	display: flex;
-}
-
-.but:hover
-{
-	text-shadow: none;
-	-webkit-box-shadow: 0 0 5px 5px #B8860B, inset 0 -50px 2px rgba(255, 255, 255, 0.2);
-	box-shadow: 0 0 5px 5px #B8860B, inset 0 -50px 2px rgba(255, 255, 255, 0.2);
-}
-
-.but:active
-{
-	text-shadow: none;
-	-webkit-box-shadow: 0 0 10px 10px #B8860B, inset 0 -50px 2px rgba(0, 0, 0, 0.2);
-	box-shadow: 0 0 10px 10px #B8860B, inset 0 -50px 2px rgba(0, 0, 0, 0.2);
-}
-
-.butL{
-	width: fit-content;
-	margin-left: 0;
-}
-
-.butR{
-	position: absolute;
-	right: 0;
-	top: 0;
-}
-
-.randimg{
-	width: 4vmin;
-	height: 4vmin;
-	align-self: center;
-	pointer-events: none;
 }
 
 .block{

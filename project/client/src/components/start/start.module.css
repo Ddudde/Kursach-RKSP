@@ -229,7 +229,9 @@
 .url{
 	cursor: pointer;
 	text-decoration: underline;
-	font-size: large;
+	font-size: 1.1vw;
+	vertical-align: middle;
+	margin-left: 5px;
 }
 
 .over{
@@ -258,7 +260,7 @@
 	box-shadow: 0 1px white, inset 0 2px 2px rgba(0, 0, 0, 0.1);
 	border: 1px solid var(--bcV2);
 	font-size: 2.2vmax;
-	height: 7vmax;
+	height: 10vh;
 	margin-left: 1.5vmax;
 	padding-left: 1.5vmax;
 	width: 30vw;
@@ -283,11 +285,13 @@
 	-webkit-border-radius: 5px;
 	border-radius: 5px !important;
 	margin-left: 9px;
-	margin-top: 9px;
 	font-size: 2vmin !important;
-	height: 52px;
+	height: 5vh;
 	padding-inline: 1vw;
 	font-weight: normal !important;
+	display: flex;
+	align-self: center;
+	margin-top: 9px;
 }
 
 .rand:hover
@@ -302,6 +306,25 @@
 	text-shadow: none;
 	-webkit-box-shadow: 0 0 10px 10px #B8860B, inset 0 -50px 2px rgba(0, 0, 0, 0.2);
 	box-shadow: 0 0 10px 10px #B8860B, inset 0 -50px 2px rgba(0, 0, 0, 0.2);
+}
+
+.tex{
+	pointer-events: none;
+	display: inline-block;
+	align-self: center;
+}
+
+.randimg{
+	width: 4vmin;
+	height: 4vmin;
+	align-self: center;
+	pointer-events: none;
+}
+
+.warnimg{
+	transform: translate(0%, -5%);
+	vertical-align: middle;
+	width: 2vw;
 }
 
 .pass{
@@ -336,18 +359,10 @@
 	font-weight: bolder;
 	margin-left: 0.5vmax;
 	opacity: 0;
+	vertical-align: sub;
 }
 
 .warnc{
 	margin-left: 1.5vmax;
 	grid-column: 1/2;
-}
-
-.randimg{
-	position: relative;
-	-webkit-transform: translate(0%, 30%);
-	-ms-transform: translate(0%, 30%);
-	transform: translate(0%, 30%);
-	width: 4vmin;
-	height: 4vmin;
 }

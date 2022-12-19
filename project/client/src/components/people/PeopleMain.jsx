@@ -53,6 +53,8 @@ export function PeopleMain() {
             isFirstUpdate.current = false;
             return;
         }
+        if(lin) lin.style.width = (100/elems)+"%";
+        setActivedMy(act);
         console.log('componentDidUpdate PeopleMain.jsx');
     });
     return (

@@ -1,8 +1,8 @@
 import {changeCL, changeState} from "../../store/actions";
 
-let reg, vxod, logr, r, v, pasr, logv, pasv, warnev, warner, warnew, regb, vxodb, ch1, ch2, ch3, wt, butr, warnc, warncr, posform, over, g_id, g_text_id_1, g_text_id_2, g_text_id_3, g_text_id_4;
+let reg, vxod, logr, r, v, pasr, logv, pasv, warnev, warner, warnew, regb, ch1, ch2, wt, warnc, warncr, over, g_id, g_text_id_1, g_text_id_2, g_text_id_3, g_text_id_4;
 
-export function ini(clss) {
+export function ini() {
 	reg = document.getElementById("reg");
 	vxod = document.getElementById("vxod");
 	r = document.getElementById("r");
@@ -18,10 +18,7 @@ export function ini(clss) {
 	pasv = document.getElementById("pasv");
 	ch1 = document.getElementById("ch1");
 	ch2 = document.getElementById("ch2");
-	ch3 = document.getElementById("ch3");
 	wt = document.getElementById("wt");
-	butr = document.getElementById("butr");
-	posform = document.getElementById("posform");
 	over = document.getElementById("over");
 	g_id = document.getElementById("g_id");
 	g_text_id_1 = document.getElementById("g_text_id_1");
@@ -37,7 +34,6 @@ export function ini(clss) {
 	g_id.addEventListener('mouseover', onsetText);
 	g_id.addEventListener('mouseout', unsetText);
 	regb = false;
-	vxodb = false;
 	// var clonedNode = document.querySelector("#but1"), crNode = document.createElement("div");
 	// crNode.innerHtml = 'df';
 	// document.body.appendChild(crNode);
@@ -196,7 +192,6 @@ export function vxo(disp){
 
 function inpchr(event){
 	var dat = event.target;
-	regb = !(dat.validity.patternMismatch || dat.value.length == 0);
 	if (dat.validity.patternMismatch || dat.value.length == 0) {
 		dat.style.animation = "but 1s ease infinite";
 		setTimeout(function () {dat.style.animation = "none"}, 1000)

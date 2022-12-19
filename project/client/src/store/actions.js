@@ -34,7 +34,11 @@ export function changeCB(checkboxId, checkBoxState) {
     };
 }
 
-export function changeState(id, state) {
+export function changeState(id, state, dispatch, roleDescrs) {
+    if(id == "role")
+    {
+        dispatch(changeState("roleDesc", roleDescrs[state]));
+    }
     return { type: CHANGE_STATE,
         payload: {
             stateId: id,

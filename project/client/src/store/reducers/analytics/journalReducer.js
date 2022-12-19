@@ -211,7 +211,6 @@ const initialState = {
 };
 
 export default function journalReducer(state = initialState, action) {
-    console.log('reducer', state, action);
     switch(action.type) {
         case CHANGE_JOURNAL:
             return {

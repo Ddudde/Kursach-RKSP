@@ -4,15 +4,19 @@ import main from './main.module.css';
 import {Link, Outlet} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 import {states, themes} from "../../store/selector";
-import {changeTheme} from "../../store/actions";
+import {changeState, changeTheme} from "../../store/actions";
 import * as def from "./default";
 
-let act = ".panGL", elems = 0, cState;
+let act = ".panGL", elems = 0, cState, dispatch;
 
-function getPan(name, namecl, link, inc, dopClass) {
+function getPan(name, namecl, link, inc, dopClass, fun) {
     if(!inc) elems++;
     let cl = "pan" + namecl;
-    return (
+    return fun ? (
+        <div className={main.nav_i+" "+cl+" "+(dopClass ? dopClass : "")} id={main.nav_i} onClick={fun}>
+            {name}
+        </div>
+    ):(
         <Link className={main.nav_i+" "+cl+" "+(dopClass ? dopClass : "")} id={main.nav_i} to={link} onClick={() => {setActived("."+cl)}}>
             {name}
         </Link>
@@ -30,12 +34,23 @@ function getLogin(login, ico, desc) {
             </div>
             <div className={main.logMenu}>
                 {getPan("Профиль", "Pro", "profiles", true, main.logMenuBlock)}
-                {cState.roles && getPan("Сменить роль", "Rol", "start", true, main.logMenuBlock)}
-                {getPan("Настройки", "Set", "start", true, main.logMenuBlock)}
-                {getPan("Выход", "Exi", "start", true, main.logMenuBlock)}
+                {cState.roles && getPan("Сменить роль", "Rol", "", true, main.logMenuBlock,() => {chRoles()})}
+                {getPan("Настройки", "Set", "settings", true, main.logMenuBlock)}
+                {getPan("Выход", "Exi", "", true, main.logMenuBlock,() => {onExit()})}
             </div>
         </div>
     )
+}
+
+function chRoles() {
+    let r = cState.role;
+    r++;
+    if(r > 4) r = 0;
+    dispatch(changeState("role", r, dispatch, cState.rolesDescrs));
+}
+
+function onExit() {
+    dispatch(changeState("auth", !cState.auth));
 }
 
 export function setActived(name) {
@@ -50,7 +65,7 @@ export function Main() {
     const theme = useSelector(themes);
     cState = useSelector(states);
     const isFirstUpdate = useRef(true);
-    const dispatch = useDispatch();
+    dispatch = useDispatch();
     useEffect(() => {
         if(isFirstUpdate.current) return;
         console.log("I was triggered during componentDidMount Main.jsx");

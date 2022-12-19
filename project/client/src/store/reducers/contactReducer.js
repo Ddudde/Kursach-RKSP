@@ -22,7 +22,6 @@ const initialState = {
     }
 };
 export default function contactReducer(state = initialState, action) {
-    console.log('reducer', state, action);
     switch(action.type) {
         case CHANGE_CONTACT_YO_IMAGEURL:
             return {

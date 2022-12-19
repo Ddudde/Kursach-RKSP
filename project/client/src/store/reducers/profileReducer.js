@@ -44,7 +44,6 @@ const initialState = {
     };
 
 export default function profileReducer(state = initialState, action) {
-    console.log('reducer', state, action);
     switch(action.type) {
         case CHANGE_PROFILE:
             return {

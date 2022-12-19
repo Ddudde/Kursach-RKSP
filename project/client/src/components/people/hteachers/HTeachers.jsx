@@ -54,14 +54,16 @@ export function HTeachers() {
                     </div> :
                     <div className={hteachersCSS.blockHTea}>
                         <div className={hteachersCSS.htea}>
-                            <div className={hteachersCSS.nav_i+" "+hteachersCSS.nav_iZag} id={hteachersCSS.nav_i}>
-                                Завучи
+                            <div className={hteachersCSS.nav_iZag}>
+                                <div className={hteachersCSS.nav_i} id={hteachersCSS.nav_i}>
+                                    Завучи
+                                </div>
                                 {Object.getOwnPropertyNames(hteachersInfo).map(param =>
                                     <div>
                                         <div className={hteachersCSS.nav_i+" "+hteachersCSS.nav_iZag1} id={hteachersCSS.nav_i}>
                                             {hteachersInfo[param]}
                                         </div>
-                                        <img src={themeState.theme_ch ? profd : profl} alt=""/>
+                                        <img src={themeState.theme_ch ? profd : profl} title="Перейти в профиль" alt=""/>
                                     </div>
                                 )}
                             </div>

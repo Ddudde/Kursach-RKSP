@@ -113,7 +113,6 @@ const initialState = {
 };
 
 export default function dnevnikReducer(state = initialState, action) {
-    console.log('reducer', state, action);
     switch(action.type) {
         case CHANGE_DNEVNIK:
             return {

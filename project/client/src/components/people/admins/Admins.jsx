@@ -54,14 +54,16 @@ export function Admins() {
                     </div> :
                     <div className={adminsCSS.blockAdm}>
                         <div className={adminsCSS.adm}>
-                            <div className={adminsCSS.nav_i+" "+adminsCSS.nav_iZag} id={adminsCSS.nav_i}>
-                                Администраторы портала
+                            <div className={adminsCSS.nav_iZag}>
+                                <div className={adminsCSS.nav_i} id={adminsCSS.nav_i}>
+                                    Администраторы портала
+                                </div>
                                 {Object.getOwnPropertyNames(adminsInfo).map(param =>
                                     <div>
                                         <div className={adminsCSS.nav_i+" "+adminsCSS.nav_iZag1} id={adminsCSS.nav_i}>
                                             {adminsInfo[param]}
                                         </div>
-                                        <img src={themeState.theme_ch ? profd : profl} alt=""/>
+                                        <img src={themeState.theme_ch ? profd : profl} title="Перейти в профиль" alt=""/>
                                     </div>
                                 )}
                             </div>

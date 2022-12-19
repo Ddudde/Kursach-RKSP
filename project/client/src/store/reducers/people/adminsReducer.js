@@ -7,7 +7,6 @@ const initialState = {
     };
 
 export default function adminsReducer(state = initialState, action) {
-    console.log('reducer', state, action);
     switch(action.type) {
         case CHANGE_ADMINS:
             return {

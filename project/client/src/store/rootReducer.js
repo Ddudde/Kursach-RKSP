@@ -1,5 +1,5 @@
 import {combineReducers} from "redux";
-import checkBoxReducer from "./reducers/start/checkBoxReducer";
+import checkBoxReducer from "./reducers/checkBoxReducer";
 import themeReducer from "./reducers/main/themeReducer";
 import indicatorReducer from "./reducers/start/indicatorReducer";
 import newsReducer from "./reducers/newsReducer";

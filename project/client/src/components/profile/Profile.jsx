@@ -1,4 +1,5 @@
 import React, {useEffect, useRef} from "react";
+import {useParams} from "react-router-dom"
 import {Helmet} from "react-helmet-async";
 import profileCSS from './profile.module.css';
 import warn from '../../media/warn_big.png';
@@ -10,10 +11,8 @@ import ed from "../../media/edit.png";
 import profd from "../../media/profd.png";
 import profl from "../../media/profl.png";
 import {changeProfile, changeProfileRoles, changeState} from "../../store/actions";
-import ran from "../../media/random.png";
-import button from "../button.module.css";
 
-let profilesInfo, dispatch, warner, moore, npasinp, powpasinp, oldPasSt = true;
+let profilesInfo, dispatch, warner, moore;
 
 moore = `/*
 Можете что-то рассказать о себе
@@ -23,7 +22,7 @@ moore = `/*
 	Телеграмм: https://t.me/id
 	e-mail1: fsdfdsfd@ya.ru
 	e-mail2: fsdfdsfd2@ya.ru
-*/`
+*/`;
 
 function inpchr(event){
     var dat = event.target;
@@ -36,12 +35,6 @@ function inpchr(event){
         dat.style.outline = "none black";
         warner.style.display = "none";
     }
-}
-
-function onEditPass(e) {
-    let par = e.target.parentElement, field = par.querySelector("." + profileCSS.field), blockPass = par.querySelector("." + profileCSS.blockPass);
-    field.setAttribute('data-act', '0');
-    blockPass.setAttribute('data-act', '1');
 }
 
 function onEdit(e) {
@@ -91,45 +84,30 @@ function onFinMore(e) {
 }
 
 function onClose(e) {
-    let par = e.target.parentElement, field = par.querySelector("." + profileCSS.field), inp = par.querySelector("." + profileCSS.field);
+    let par = e.target.parentElement, field = par.querySelector("." + profileCSS.field), inp = par.querySelector("." + profileCSS.inp);
     field.setAttribute('data-act', '1');
     inp.setAttribute('data-act', '0');
     warner.style.display = "none";
 }
 
-function onChSt(e) {
-    let par = e.target.parentElement.parentElement, old = par.querySelector("#old"), sec = par.querySelector("#sec");
-    oldPasSt = !oldPasSt;
-    old.setAttribute('data-act', oldPasSt ? '1' : '0');
-    sec.setAttribute('data-act', oldPasSt ? '0' : '1');
+function chStatLb(e) {
+    let el = e.target;
+    el.parentElement.querySelector(".yes").setAttribute("data-enable", +(el ? !el.validity.patternMismatch && el.value.length != 0 : false));
 }
 
-function onClosePas(e) {
-    let par = e.target.parentElement.parentElement.parentElement, chPass = par.querySelector("." + profileCSS.chPass), blockPass = par.querySelector("." + profileCSS.blockPass);
-    chPass.setAttribute('data-act', '1');
-    blockPass.setAttribute('data-act', '0');
+function chStatEb(e) {
+    let el = e.target;
+    el.parentElement.querySelector(".yes").setAttribute("data-enable", +(el ? !el.validity.typeMismatch && el.value.length != 0 : false));
 }
 
-export function gen_pas(){
-    var password = "";
-    var symbols = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    for (var i = 0; i < 15; i++){
-        password += symbols.charAt(Math.floor(Math.random() * symbols.length));
-    }
-    npasinp.value = password;
-    powpasinp.value = password;
-    navigator.clipboard.writeText(password);
-    let wt = warner.querySelector("#wt");
-    wt.innerHTML = `Сгенерирован пароль: ${password}. Он скопирован в буфер обмена`;
-    warner.style.display = "inline";
-    setTimeout(function (){
-        warner.style.display = "none";
-        wt.innerHTML = `Допустимы только латинница и цифры`;
-    }, 10000);
+function chStatMb(e) {
+    let el = e.target;
+    el.parentElement.querySelector(".yes").setAttribute("data-enable", +(el ? el.value.length != 0 : false));
 }
 
 export function Profile() {
     profilesInfo = useSelector(profiles);
+    const { log } = useParams();
     const themeState = useSelector(themes);
     dispatch = useDispatch();
     const isFirstUpdate = useRef(true);
@@ -137,8 +115,6 @@ export function Profile() {
         if(isFirstUpdate.current) return;
         console.log("I was triggered during componentDidMount Profile.jsx");
         warner = document.getElementsByClassName("warner")[0];
-        npasinp = document.querySelector("#npasinp");
-        powpasinp = document.querySelector("#powpasinp");
         document.querySelector("#loginp").addEventListener('input', inpchr);
         return function() {
             console.log("I was triggered during componentWillUnmount Profile.jsx");
@@ -176,8 +152,8 @@ export function Profile() {
                                         <div className={profileCSS.field} data-act='1'>
                                             {profilesInfo.login}
                                         </div>
-                                        <input className={profileCSS.inp} id="loginp" defaultValue={profilesInfo.login} type="text" pattern="^[a-zA-Z0-9]+$" data-act='0'/>
-                                        <img className={profileCSS.imginp} src={yes} onClick={onFinLog} title="Подтвердить изменения" alt=""/>
+                                        <input className={profileCSS.inp} id="loginp" onChange={chStatLb} defaultValue={profilesInfo.login} type="text" pattern="^[a-zA-Z0-9]+$" data-act='0'/>
+                                        <img className={profileCSS.imginp+" yes"} src={yes} onClick={onFinLog} title="Подтвердить изменения" alt=""/>
                                         <img className={profileCSS.imginp} src={no} onClick={onClose} title="Отменить изменения и выйти из режима редактирования" alt=""/>
                                         <img className={profileCSS.imgfield} src={ed} onClick={onEdit} title="Редактировать" alt=""/>
                                     </div>
@@ -193,49 +169,12 @@ export function Profile() {
                                         <pre className={profileCSS.field} data-act='1'>
                                             {profilesInfo.more}
                                         </pre>
-                                        <textarea className={profileCSS.inp+" "+profileCSS.inparea} defaultValue={profilesInfo.more ? profilesInfo.more : moore} data-act='0'/>
-                                        <img className={profileCSS.imginp} src={yes} onClick={onFinMore} title="Подтвердить изменения" alt=""/>
+                                        <textarea className={profileCSS.inp+" "+profileCSS.inparea} onChange={chStatMb} defaultValue={profilesInfo.more ? profilesInfo.more : moore} data-act='0'/>
+                                        <img className={profileCSS.imginp+" yes"} src={yes} onClick={onFinMore} title="Подтвердить изменения" alt=""/>
                                         <img className={profileCSS.imginp} src={no} onClick={onClose} title="Отменить изменения и выйти из режима редактирования" alt=""/>
                                         <img className={profileCSS.imgfield} src={ed} onClick={onEdit} title="Редактировать" alt=""/>
                                     </div>
                                 </span>
-                                <div className={profileCSS.nav_iZag}>
-                                    <div className={profileCSS.nav_i+" "+profileCSS.chPass+" "+profileCSS.field} id={profileCSS.nav_i} data-act='1' onClick={onEditPass}>
-                                        Сменить пароль
-                                    </div>
-                                    <div className={profileCSS.blockPass} data-act='0'>
-                                        <div className={profileCSS.nPasBlock}>
-                                            <div className={profileCSS.oPasBlock} id="old" data-act='1'>
-                                                <input className={profileCSS.inp+" "+profileCSS.inpPass+" "+profileCSS.nPass} id="oldinp" placeholder="Старый пароль" type="password" pattern="^[a-zA-Z0-9]+$"/>
-                                                <div className={profileCSS.but+' '+button.button} onClick={onChSt}>
-                                                    <div className={profileCSS.tex}>Забыл пароль?</div>
-                                                </div>
-                                            </div>
-                                            <div className={profileCSS.oPasBlock} id="sec" data-act='0'>
-                                                <input className={profileCSS.inp+" "+profileCSS.inpPass+" "+profileCSS.nPass} id="secinp" placeholder="Секретная фраза" type="password" pattern="^[a-zA-Z0-9]+$"/>
-                                                <div className={profileCSS.but+' '+button.button} onClick={onChSt}>
-                                                    <div className={profileCSS.tex}>Вспомнил пароль</div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className={profileCSS.nPasBlock}>
-                                            <input className={profileCSS.inp+" "+profileCSS.inpPass+" "+profileCSS.nPass} id="npasinp" placeholder="Новый пароль" type="password" autoComplete="new-password" pattern="^[a-zA-Z0-9]+$"/>
-                                            <div className={profileCSS.but+' '+button.button} onClick={gen_pas}>
-                                                <img src={ran} className={profileCSS.randimg} alt=""/>
-                                                <div className={profileCSS.tex}>Случайный пароль</div>
-                                            </div>
-                                        </div>
-                                        <input className={profileCSS.inp+" "+profileCSS.inpPass} id="powpasinp" placeholder="Повторите пароль" type="password" autoComplete="new-password" pattern="^[a-zA-Z0-9]+$"/>
-                                        <div className={profileCSS.blockKnops}>
-                                            <div className={profileCSS.but+' '+button.button+' '+profileCSS.butL} onClick={onClosePas}>
-                                                <div className={profileCSS.tex}>Замена!</div>
-                                            </div>
-                                            <div className={profileCSS.but+' '+button.button+' '+profileCSS.butR} onClick={onClosePas}>
-                                                <div className={profileCSS.tex}>Отменить</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
                                 {Object.getOwnPropertyNames(profilesInfo.roles).map(param =>
                                     <div className={profileCSS.nav_iZag}>
                                         <div className={profileCSS.nav_i} id={profileCSS.nav_i}>
@@ -252,8 +191,8 @@ export function Profile() {
                                                 <div className={profileCSS.field} data-act='1'>
                                                     {profilesInfo.roles[param].email}
                                                 </div>
-                                                <input className={profileCSS.inp} defaultValue={profilesInfo.roles[param].email} type="email" data-act='0'/>
-                                                <img className={profileCSS.imginp} src={yes} onClick={onFinEm} title="Подтвердить изменения" data-id={param} alt=""/>
+                                                <input className={profileCSS.inp} onChange={chStatEb} defaultValue={profilesInfo.roles[param].email} type="email" data-act='0'/>
+                                                <img className={profileCSS.imginp+" yes"} src={yes} onClick={onFinEm} title="Подтвердить изменения" data-id={param} alt=""/>
                                                 <img className={profileCSS.imginp} src={no} onClick={onClose} title="Отменить изменения и выйти из режима редактирования" alt=""/>
                                                 <img className={profileCSS.imgfield} src={ed} onClick={onEdit} title="Редактировать" alt=""/>
                                             </div>

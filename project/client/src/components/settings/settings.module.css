@@ -1,0 +1,221 @@
+.AppHeader {
+	width: 100%;
+	display: flex;
+	position: relative;
+	top: 7vh;
+	height: 93vh;
+}
+
+.blockNotif[data-act='0']{
+	opacity: 0.5;
+	pointer-events: none;
+}
+
+.blockNotif[data-act='1']{
+	opacity: 1;
+	pointer-events: initial;
+}
+
+.blockPro{
+	margin: auto;
+	width: 75%;
+}
+
+.pro{
+	background-color: var(--bgcV1);
+	padding: 10px;
+	margin-block: 5vh;
+	border-radius: 5px;
+	transition: background-color 1s ease;
+}
+
+.nav_i{
+	cursor: default;
+	color: var(--cV1);
+	font-size: 1.25vw;
+	font-weight: 500;
+	margin-block: 0.2vw;
+	-webkit-transition: color 1s ease;
+	-o-transition: color 1s ease;
+	transition: color 1s ease;
+	transition-property: color, text-shadow, border-color;
+}
+
+#nav_i:hover{
+	color: #00ff00 !important;
+	text-shadow: 0 0 2vw #66ff66;
+}
+
+.nav_iZag{
+	border: 1px solid var(--bcV1);
+	border-radius: 5px;
+	margin-left: 0.5vw;
+	margin-block: 0.5vw;
+	padding-left: 0.5vw;
+	padding-block: 0.5vw;
+}
+
+.chPass{
+	text-decoration: underline;
+	cursor: pointer;
+	margin-block: 1vw;
+}
+
+.field{
+	display: inline-block;
+	vertical-align: middle;
+	margin-left: 5px;
+}
+
+.field[data-act='0']{
+	display: none;
+}
+
+.field[data-act='1']{
+	display: inline-block;
+}
+
+.blockPass[data-act='0']{
+	display: none;
+}
+
+.blockPass[data-act='1']{
+	display: block;
+}
+
+.nPasBlock{
+	display: flex;
+	margin-bottom: 1vw;
+}
+
+.oPasBlock[data-act='0']{
+	display: none;
+}
+
+.oPasBlock[data-act='1']{
+	display: flex;
+}
+
+.inp {
+	-webkit-border-radius: 0.5vmax;
+	border-radius: 0.5vmax;
+	background-color: #4d4d4d;
+	user-select: none;
+	-webkit-box-shadow: 0 1px white, inset 0 2px 2px rgba(0, 0, 0, 0.1);
+	box-shadow: 0 1px white, inset 0 2px 2px rgba(0, 0, 0, 0.1);
+	border: 1px solid var(--bcV2);
+	font-size: 2.2vmax;
+	height: 7vh;
+	margin-left: 1.5vmax;
+	padding-left: 1.5vmax;
+	width: 20vw;
+	position:relative;
+	transition: background-color 1s ease;
+	transition-property: background-color, border-color;
+	vertical-align: middle;
+}
+
+.inp[data-act='0']{
+	display: none;
+}
+
+.inp[data-act='1']{
+	display: inline-block;
+}
+
+.inpPass{
+	display: block;
+	margin-bottom: 1vw;
+}
+
+.nPass{
+	margin-bottom: 0;
+}
+
+.tex{
+	pointer-events: none;
+	display: inline-block;
+	align-self: center;
+}
+
+.but{
+	-webkit-border-radius: 5px;
+	border-radius: 5px !important;
+	margin-left: 9px;
+	font-size: 2vmin !important;
+	height: 5vh;
+	padding-inline: 1vw;
+	font-weight: normal !important;
+	align-self: center;
+	display: flex;
+}
+
+.randimg{
+	width: 4vmin;
+	height: 4vmin;
+	align-self: center;
+	pointer-events: none;
+}
+
+.but:hover
+{
+	text-shadow: none;
+	-webkit-box-shadow: 0 0 5px 5px #B8860B, inset 0 -50px 2px rgba(255, 255, 255, 0.2);
+	box-shadow: 0 0 5px 5px #B8860B, inset 0 -50px 2px rgba(255, 255, 255, 0.2);
+}
+
+.but:active
+{
+	text-shadow: none;
+	-webkit-box-shadow: 0 0 10px 10px #B8860B, inset 0 -50px 2px rgba(0, 0, 0, 0.2);
+	box-shadow: 0 0 10px 10px #B8860B, inset 0 -50px 2px rgba(0, 0, 0, 0.2);
+}
+
+.blockKnops{
+	margin-left: 1.5vmax;
+	width: 21.5vw;
+	position: relative;
+}
+
+.butL {
+	width: fit-content;
+	margin-left: 0;
+}
+
+.butL[data-enable="0"] {
+	pointer-events: none;
+	opacity: 0.4;
+}
+
+.butR{
+	position: absolute;
+	right: 0;
+	top: 0;
+}
+
+.logo{
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	color: var(--cV1);
+	font-size: 3vw;
+	font-weight: bolder;
+	margin-left: 12px;
+	margin-bottom: 9px;
+	transition: color 1s ease;
+}
+
+.logoi{
+	width: 8vw;
+	height: 8vw;
+}
+
+.blockAva{
+	display: inline-block;
+	cursor: pointer;
+}
+
+.blockAva *{
+	pointer-events: none;
+}

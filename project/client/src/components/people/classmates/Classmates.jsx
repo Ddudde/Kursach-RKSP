@@ -54,14 +54,16 @@ export function Classmates() {
                     </div> :
                     <div className={classmatesCSS.blockCM}>
                         <div className={classmatesCSS.cm}>
-                            <div className={classmatesCSS.nav_i+" "+classmatesCSS.nav_iZag} id={classmatesCSS.nav_i}>
-                                Одноклассники
+                            <div className={classmatesCSS.nav_iZag}>
+                                <div className={classmatesCSS.nav_i} id={classmatesCSS.nav_i}>
+                                    Одноклассники
+                                </div>
                                 {Object.getOwnPropertyNames(classmatesInfo).map(param =>
                                     <div>
                                         <div className={classmatesCSS.nav_i+" "+classmatesCSS.nav_iZag1} id={classmatesCSS.nav_i}>
                                             {classmatesInfo[param]}
                                         </div>
-                                        <img src={themeState.theme_ch ? profd : profl} alt=""/>
+                                        <img src={themeState.theme_ch ? profd : profl} title="Перейти в профиль" alt=""/>
                                     </div>
                                 )}
                             </div>

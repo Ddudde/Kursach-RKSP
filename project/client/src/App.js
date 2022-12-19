@@ -25,6 +25,7 @@ import Parents from "./components/people/parents/Parents";
 import Admins from "./components/people/admins/Admins";
 import React from "react";
 import Profile from "./components/profile/Profile";
+import Settings from "./components/settings/Settings";
 
 function App() {
     const cState = useSelector(states);
@@ -67,7 +68,9 @@ function App() {
                   {(cState.auth && cState.role == 0) && <Route path="parents" element={<Parents/>} />}
                   <Route path="admins" element={<Admins/>} />
               </Route>
-              <Route path="profiles" element={<Profile/>} />
+              {cState.auth && <Route path="profiles" element={<Profile/>} />}
+              <Route path="profiles/:log" element={<Profile/>} />
+              {cState.auth && <Route path="settings" element={<Settings/>} />}
               <Route path="*" element={<ErrNotFound/>} />
           </Route>
       </Routes>

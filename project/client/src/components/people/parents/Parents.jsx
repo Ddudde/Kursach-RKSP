@@ -54,17 +54,21 @@ export function Parents() {
                     </div> :
                     <div className={parentsCSS.blockPar}>
                         <div className={parentsCSS.par}>
-                            <div className={parentsCSS.nav_i+" "+parentsCSS.nav_iZag} id={parentsCSS.nav_i}>
-                                Родители
+                            <div className={parentsCSS.nav_iZag}>
+                                <div className={parentsCSS.nav_i} id={parentsCSS.nav_i}>
+                                    Родители
+                                </div>
                                 {Object.getOwnPropertyNames(parentsInfo).map(param =>
-                                    <div className={parentsCSS.nav_i+" "+parentsCSS.nav_iZag1} id={parentsCSS.nav_i}>
-                                        {parentsInfo[param].name}
+                                    <div className={parentsCSS.nav_iZag+" "+parentsCSS.nav_iZag1}>
+                                        <div className={parentsCSS.nav_i} id={parentsCSS.nav_i}>
+                                            {parentsInfo[param].name}
+                                        </div>
                                         {Object.getOwnPropertyNames(parentsInfo[param].par).map(param1 =>
                                             <div>
                                                 <div className={parentsCSS.nav_i+" "+parentsCSS.nav_iZag2} id={parentsCSS.nav_i}>
                                                     {parentsInfo[param].par[param1]}
                                                 </div>
-                                                <img src={themeState.theme_ch ? profd : profl} alt=""/>
+                                                <img src={themeState.theme_ch ? profd : profl} title="Перейти в профиль" alt=""/>
                                             </div>
                                         )}
                                     </div>

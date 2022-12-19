@@ -54,33 +54,41 @@ export function Teachers() {
                     </div> :
                     <div className={teachersCSS.blockTea}>
                         <div className={teachersCSS.tea}>
-                            <div className={teachersCSS.nav_i+" "+teachersCSS.nav_iZag} id={teachersCSS.nav_i}>
-                                Мои педагоги
+                            <div className={teachersCSS.nav_iZag}>
+                                <div className={teachersCSS.nav_i} id={teachersCSS.nav_i}>
+                                    Мои педагоги
+                                </div>
                                 {Object.getOwnPropertyNames(teachersInfo.my).map(param =>
-                                    <div className={teachersCSS.nav_i+" "+teachersCSS.nav_iZag1} id={teachersCSS.nav_i}>
-                                        {param}
+                                    <div className={teachersCSS.nav_iZag+" "+teachersCSS.nav_iZag1}>
+                                        <div className={teachersCSS.nav_i} id={teachersCSS.nav_i}>
+                                            {param}
+                                        </div>
                                         {Object.getOwnPropertyNames(teachersInfo.my[param]).map(param1 =>
                                             <div>
                                                 <div className={teachersCSS.nav_i+" "+teachersCSS.nav_iZag2} id={teachersCSS.nav_i}>
                                                     {teachersInfo.my[param][param1]}
                                                 </div>
-                                                <img src={themeState.theme_ch ? profd : profl} alt=""/>
+                                                <img src={themeState.theme_ch ? profd : profl} title="Перейти в профиль" alt=""/>
                                             </div>
                                         )}
                                     </div>
                                 )}
                             </div>
-                            <div className={teachersCSS.nav_i+" "+teachersCSS.nav_iZag} id={teachersCSS.nav_i}>
-                                Другие педагоги
+                            <div className={teachersCSS.nav_iZag}>
+                                <div className={teachersCSS.nav_i} id={teachersCSS.nav_i}>
+                                    Другие педагоги
+                                </div>
                                 {Object.getOwnPropertyNames(teachersInfo.nemy).map(param =>
-                                    <div className={teachersCSS.nav_i+" "+teachersCSS.nav_iZag1} id={teachersCSS.nav_i}>
-                                        {param}
+                                    <div className={teachersCSS.nav_iZag+" "+teachersCSS.nav_iZag1}>
+                                        <div className={teachersCSS.nav_i} id={teachersCSS.nav_i}>
+                                            {param}
+                                        </div>
                                         {Object.getOwnPropertyNames(teachersInfo.nemy[param]).map(param1 =>
                                             <div>
                                                 <div className={teachersCSS.nav_i+" "+teachersCSS.nav_iZag2} id={teachersCSS.nav_i}>
                                                     {teachersInfo.nemy[param][param1]}
                                                 </div>
-                                                <img src={themeState.theme_ch ? profd : profl} alt=""/>
+                                                <img src={themeState.theme_ch ? profd : profl} title="Перейти в профиль" alt=""/>
                                             </div>
                                         )}
                                     </div>
