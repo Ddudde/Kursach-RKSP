@@ -1,21 +1,18 @@
 import {changeCL, changeState} from "../../store/actions";
 
-let reg, vxod, logr, r, v, pasr, logv, pasv, warnev, warner, warnew, regb, ch1, ch2, wt, warnc, warncr, over, g_id, g_text_id_1, g_text_id_2, g_text_id_3, g_text_id_4;
+let reg, vxod, logr, r, v, pasr, logv, warnev, warner, warnew, regb, ch1, ch2, wt, over, g_id, g_text_id_1, g_text_id_2, g_text_id_3, g_text_id_4;
 
 export function ini() {
 	reg = document.getElementById("reg");
 	vxod = document.getElementById("vxod");
 	r = document.getElementById("r");
 	v = document.getElementById("v");
-	warnc = document.getElementById("warnc");
-	warncr = document.getElementById("warncr");
 	warnev = document.getElementsByClassName("warnev")[0];
 	warner = document.getElementsByClassName("warner")[0];
 	warnew = document.getElementsByClassName("warnew")[0];
 	logr = document.getElementById("logr");
 	pasr = document.getElementById("pasr");
 	logv = document.getElementById("logv");
-	pasv = document.getElementById("pasv");
 	ch1 = document.getElementById("ch1");
 	ch2 = document.getElementById("ch2");
 	wt = document.getElementById("wt");
@@ -27,10 +24,9 @@ export function ini() {
 	g_text_id_4 = document.getElementById("g_text_id_4");
 	window.addEventListener('click', checkCaps);
 	window.addEventListener('keydown', checkCaps);
-	logv.addEventListener('input', inpchr);
-	pasv.addEventListener('input', inpchr);
-	logr.addEventListener('input', inpchr);
-	pasr.addEventListener('input', inpchr);
+	for(let el of document.getElementsByClassName("ic")){
+		el.addEventListener('input', inpchr);
+	}
 	g_id.addEventListener('mouseover', onsetText);
 	g_id.addEventListener('mouseout', unsetText);
 	regb = false;
@@ -205,12 +201,8 @@ function inpchr(event){
 
 function checkCaps(event) {
     var caps = event.getModifierState && event.getModifierState('CapsLock');
-	if (caps){
-		warnc.style.opacity = "1";
-		warncr.style.opacity = "1";
-	}else{
-		warnc.style.opacity = "0";
-		warncr.style.opacity = "0";
+	for(let el of document.getElementsByClassName("warnc")){
+		el.style.opacity = caps ? "1" : "0";
 	}
 }
 

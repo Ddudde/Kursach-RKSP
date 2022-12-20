@@ -100,7 +100,7 @@ export function Main() {
                 {(!cState.auth || (cState.auth && cState.role == 1)) && getPan("Родителям", "Par", "start")}
                 {(cState.auth && cState.role == 0) && getPan("Дневник", "Dnev", "/")}
                 {(cState.auth && cState.role == 0) && getPan("Аналитика", "Ana", "analytics")}
-                {(!cState.auth || (cState.auth && cState.role == 0)) && getPan("Обучающимся", "Kid", "start")}
+                {(!cState.auth || (cState.auth && cState.role == 0)) && getPan("Обучающимся", "Kid", "tutor/kids")}
                 {cState.auth && getLogin(cState.login, cState.ico, cState.roleDesc)}
             </nav>
             <Outlet />

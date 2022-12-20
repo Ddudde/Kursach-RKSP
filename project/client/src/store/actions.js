@@ -220,51 +220,23 @@ export function changeTheme(themeState) {
     return { type: CHANGE_THEME, payload: stat};
 }
 
-function preInd(pay, actived) {
-    let idind = document.querySelector("#" + actived);
-    if(idind) idind.setAttribute('data-activated', '0');
-    let idb = document.querySelector('#g_block_' + (parseInt(actived.split('_')[1]) + 1));
-    if(idb)
-    {
-        idb.style.display = 'none';
-        idb.style.opacity = '0';
-    }
-    idb = document.querySelector('#g_block_' + (parseInt(pay.split('_')[1]) + 1));
-    if(idb)
-    {
-        idb.style.display = 'block';
-        idb.style.opacity = '1';
-    }
-    idind = document.querySelector("#" + pay);
-    if(idind) idind.setAttribute('data-activated', '1');
-    return { type: CHANGE_INDICATOR,
-        payload: pay
-    };
-}
-
-export function changeIndTimer(indState) {
-    let stat = parseInt(indState.split('_')[1]) + 1;
-    if(stat > 3) stat = 0;
-    return preInd('ind_' + stat, indState);
-}
-
 export function changeIndNext(indState, res) {
-    res();
-    let stat = parseInt(indState.split('_')[1]) + 1;
+    if(res) res();
+    let stat = indState + 1;
     if(stat > 3) stat = 0;
-    return preInd('ind_' + stat, indState);
+    return { type: CHANGE_INDICATOR, payload: stat};
 }
 
 export function changeIndPrev(indState, res) {
     res();
-    let stat = parseInt(indState.split('_')[1]) - 1;
+    let stat = indState - 1;
     if(stat < 0) stat = 3;
-    return preInd('ind_' + stat, indState);
+    return { type: CHANGE_INDICATOR, payload: stat};
 }
 
-export function changeInd(indState, res, actived) {
+export function changeInd(indState, res) {
     res();
-    return preInd(indState, actived);
+    return { type: CHANGE_INDICATOR, payload: indState};
 }
 
 export function changeCL(body) {

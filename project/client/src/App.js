@@ -26,6 +26,7 @@ import Admins from "./components/people/admins/Admins";
 import React from "react";
 import Profile from "./components/profile/Profile";
 import Settings from "./components/settings/Settings";
+import Kids from "./components/tutor/kids/Kids";
 
 function App() {
     const cState = useSelector(states);
@@ -68,9 +69,16 @@ function App() {
                   {(cState.auth && cState.role == 0) && <Route path="parents" element={<Parents/>} />}
                   <Route path="admins" element={<Admins/>} />
               </Route>
+              <Route path="tutor">
+                  <Route path="kids" element={<Kids/>} />
+                  <Route path="teachers" element={<Kids/>} />
+                  <Route path="parents" element={<Kids/>} />
+                  <Route path="hteachers" element={<Kids/>} />
+              </Route>
               {cState.auth && <Route path="profiles" element={<Profile/>} />}
               <Route path="profiles/:log" element={<Profile/>} />
               {cState.auth && <Route path="settings" element={<Settings/>} />}
+              <Route path="invite/:inv" element={<Start/>} />
               <Route path="*" element={<ErrNotFound/>} />
           </Route>
       </Routes>

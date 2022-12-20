@@ -11,7 +11,7 @@ import ls1 from "../../media/ls-icon1.png";
 import ls2 from "../../media/ls-icon2.png";
 import ls3 from "../../media/ls-icon3.png";
 
-let checkBoxInfo, dispatch, warner, npasinp, powpasinp, oldPasSt = true, zambut, zambut1, ob = false, sb = false, nb = false, pb = false;
+let checkBoxInfo, dispatch, warner, npasinp, powpasinp, oldPasSt = true, zambut, zambut1, ob = false, sb = false, nb = false, pb = false, icos = {"ch1": 1, "ch2": 2, "ch3": 3};
 
 function inpchr(event){
     var dat = event.target;
@@ -78,19 +78,9 @@ function onClosePasAva(e) {
     warner.style.display = "none";
 }
 
-function chStatAv1(e) {
+function chStatAv(e) {
     e.target.firstChild.checked = true;
-    dispatch(changeState("ico", 1));
-}
-
-function chStatAv2(e) {
-    e.target.firstChild.checked = true;
-    dispatch(changeState("ico", 2));
-}
-
-function chStatAv3(e) {
-    e.target.firstChild.checked = true;
-    dispatch(changeState("ico", 3));
+    dispatch(changeState("ico", icos[e.target.firstChild.id]));
 }
 
 function chStatSb1(e) {
@@ -216,15 +206,15 @@ export function Settings() {
                             <div className={settingsCSS.blockPass} data-act='0'>
                                 <div className={settingsCSS.logo}>
                                     <p style={{marginBlock: "0.5vw"}}>Выберите аватар для профиля:</p>
-                                    <div className={settingsCSS.blockAva} onClick={chStatAv1}>
+                                    <div className={settingsCSS.blockAva} onClick={chStatAv}>
                                         <input id="ch1" name="ico" type="radio" value="1"/>
                                         <img className={settingsCSS.logoi} src={ls1} alt=""/>
                                     </div>
-                                    <div className={settingsCSS.blockAva} onClick={chStatAv2}>
+                                    <div className={settingsCSS.blockAva} onClick={chStatAv}>
                                         <input id="ch2" name="ico" type="radio" value="2"/>
                                         <img className={settingsCSS.logoi} src={ls2} alt=""/>
                                     </div>
-                                    <div className={settingsCSS.blockAva} onClick={chStatAv3}>
+                                    <div className={settingsCSS.blockAva} onClick={chStatAv}>
                                         <input id="ch3" name="ico" type="radio" value="3"/>
                                         <img className={settingsCSS.logoi} src={ls3} alt=""/>
                                     </div>
