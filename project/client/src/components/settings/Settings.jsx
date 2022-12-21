@@ -11,7 +11,8 @@ import ls1 from "../../media/ls-icon1.png";
 import ls2 from "../../media/ls-icon2.png";
 import ls3 from "../../media/ls-icon3.png";
 
-let checkBoxInfo, dispatch, warner, npasinp, powpasinp, oldPasSt = true, zambut, zambut1, ob = false, sb = false, nb = false, pb = false, icos = {"ch1": 1, "ch2": 2, "ch3": 3};
+let checkBoxInfo, dispatch, warner, npasinp, powpasinp, zambut, zambut1;
+let oldPasSt = true, b = [false, false, false, false], els = {"ch1": 1, "ch2": 2, "ch3": 3, "oldinp": 0, "secinp": 1, "npasinp": 2, "powpasinp": 3};
 
 function inpchr(event){
     var dat = event.target;
@@ -35,52 +36,27 @@ function onEditPass(e) {
 function onChSt(e) {
     let par = e.target.parentElement.parentElement, old = par.querySelector("#old"), sec = par.querySelector("#sec");
     oldPasSt = !oldPasSt;
-    oldPasSt ? chStatOb({target:par.querySelector("#oldinp")}) : chStatSb({target:par.querySelector("#secinp")});
+    chStatB({target:par.querySelector(oldPasSt ? "#oldinp":"#secinp")});
     old.setAttribute('data-act', oldPasSt ? '1' : '0');
     sec.setAttribute('data-act', oldPasSt ? '0' : '1');
 }
 
 function onClosePas(e) {
-    let par = e.target.parentElement.parentElement.parentElement, chPass = par.querySelector("." + settingsCSS.chPass), blockPass = par.querySelector("." + settingsCSS.blockPass);
+    let par = e.target.classList.contains("clA") ? e.target.parentElement.parentElement : e.target.parentElement.parentElement.parentElement, chPass = par.querySelector("." + settingsCSS.chPass), blockPass = par.querySelector("." + settingsCSS.blockPass);
     chPass.setAttribute('data-act', '1');
     blockPass.setAttribute('data-act', '0');
     warner.style.display = "none";
 }
 
-function chStatOb(e) {
+function chStatB(e) {
     let el = e.target;
-    ob = (el ? !el.validity.patternMismatch && el.value.length != 0 : false);
-    zambut.setAttribute("data-enable", +(((oldPasSt ? ob : sb) & nb & pb) || false));
-}
-
-function chStatSb(e) {
-    let el = e.target;
-    sb = (el ? el.value.length != 0 : false);
-    zambut.setAttribute("data-enable", +(((oldPasSt ? ob : sb) & nb & pb) || false));
-}
-
-function chStatNb(e) {
-    let el = e.target;
-    nb = (el ? !el.validity.patternMismatch && el.value.length != 0 : false);
-    zambut.setAttribute("data-enable", +(((oldPasSt ? ob : sb) & nb & pb) || false));
-}
-
-function chStatPb(e) {
-    let el = e.target;
-    pb = (el ? !el.validity.patternMismatch && el.value.length != 0 : false);
-    zambut.setAttribute("data-enable", +(((oldPasSt ? ob : sb) & nb & pb) || false));
-}
-
-function onClosePasAva(e) {
-    let par = e.target.parentElement, chPass = par.parentElement.querySelector("." + settingsCSS.chPass);
-    chPass.setAttribute('data-act', '1');
-    par.setAttribute('data-act', '0');
-    warner.style.display = "none";
+    b[els[el.id]] = (el ? (els[el.id] == 1 ? true : !el.validity.patternMismatch) && el.value.length != 0 : false);
+    zambut.setAttribute("data-enable", +(((oldPasSt ? b[0] : b[1]) & b[2] & b[3]) || false));
 }
 
 function chStatAv(e) {
     e.target.firstChild.checked = true;
-    dispatch(changeState("ico", icos[e.target.firstChild.id]));
+    dispatch(changeState("ico", els[e.target.firstChild.id]));
 }
 
 function chStatSb1(e) {
@@ -169,26 +145,26 @@ export function Settings() {
                             <div className={settingsCSS.blockPass} data-act='0'>
                                 <div className={settingsCSS.nPasBlock}>
                                     <div className={settingsCSS.oPasBlock} id="old" data-act='1'>
-                                        <input className={settingsCSS.inp+" "+settingsCSS.inpPass+" "+settingsCSS.nPass} onChange={chStatOb} id="oldinp" placeholder="Старый пароль" type="password" pattern="^[a-zA-Z0-9]+$"/>
+                                        <input className={settingsCSS.inp+" "+settingsCSS.inpPass+" "+settingsCSS.nPass} onChange={chStatB} id="oldinp" placeholder="Старый пароль" type="password" pattern="^[a-zA-Z0-9]+$"/>
                                         <div className={settingsCSS.but+' '+button.button} onClick={onChSt}>
                                             <div className={settingsCSS.tex}>Забыл пароль?</div>
                                         </div>
                                     </div>
                                     <div className={settingsCSS.oPasBlock} id="sec" data-act='0'>
-                                        <input className={settingsCSS.inp+" "+settingsCSS.inpPass+" "+settingsCSS.nPass} onChange={chStatSb} id="secinp" placeholder="Секретная фраза" type="password" pattern="^[a-zA-Z0-9]+$"/>
+                                        <input className={settingsCSS.inp+" "+settingsCSS.inpPass+" "+settingsCSS.nPass} onChange={chStatB} id="secinp" placeholder="Секретная фраза" type="password" pattern="^[a-zA-Z0-9]+$"/>
                                         <div className={settingsCSS.but+' '+button.button} onClick={onChSt}>
                                             <div className={settingsCSS.tex}>Вспомнил пароль</div>
                                         </div>
                                     </div>
                                 </div>
                                 <div className={settingsCSS.nPasBlock}>
-                                    <input className={settingsCSS.inp+" "+settingsCSS.inpPass+" "+settingsCSS.nPass} onChange={chStatNb} id="npasinp" placeholder="Новый пароль" type="password" autoComplete="new-password" pattern="^[a-zA-Z0-9]+$"/>
+                                    <input className={settingsCSS.inp+" "+settingsCSS.inpPass+" "+settingsCSS.nPass} onChange={chStatB} id="npasinp" placeholder="Новый пароль" type="password" autoComplete="new-password" pattern="^[a-zA-Z0-9]+$"/>
                                     <div className={settingsCSS.but+' '+button.button} onClick={gen_pas}>
                                         <img src={ran} className={settingsCSS.randimg} alt=""/>
                                         <div className={settingsCSS.tex}>Случайный пароль</div>
                                     </div>
                                 </div>
-                                <input className={settingsCSS.inp+" "+settingsCSS.inpPass} id="powpasinp" onChange={chStatPb} placeholder="Повторите пароль" type="password" autoComplete="new-password" pattern="^[a-zA-Z0-9]+$"/>
+                                <input className={settingsCSS.inp+" "+settingsCSS.inpPass} id="powpasinp" onChange={chStatB} placeholder="Повторите пароль" type="password" autoComplete="new-password" pattern="^[a-zA-Z0-9]+$"/>
                                 <div className={settingsCSS.blockKnops}>
                                     <div className={settingsCSS.but+' '+button.button+' '+settingsCSS.butL} data-enable={"0"} onClick={onClosePas}>
                                         <div className={settingsCSS.tex}>Замена!</div>
@@ -219,7 +195,7 @@ export function Settings() {
                                         <img className={settingsCSS.logoi} src={ls3} alt=""/>
                                     </div>
                                 </div>
-                                <div className={settingsCSS.but+' '+button.button} style={{width:"fit-content"}} onClick={onClosePasAva}>
+                                <div className={settingsCSS.but+' '+button.button + ' clA'} style={{width:"fit-content"}} onClick={onClosePas}>
                                     <div className={settingsCSS.tex}>Закрыть меню выбора</div>
                                 </div>
                             </div>
@@ -232,7 +208,7 @@ export function Settings() {
                                 <input className={settingsCSS.inp+" "+settingsCSS.inpPass} onChange={chStatSb1} id="secinp" placeholder="Секретная фраза" type="password" pattern="^[a-zA-Z0-9]+$"/>
                                 <div className={settingsCSS.blockKnops}>
                                     <div className={settingsCSS.but+' '+button.button+' '+settingsCSS.butL} data-enable={"0"} onClick={onClosePas}>
-                                        <div className={settingsCSS.tex}>Замена!</div>
+                                        <div className={settingsCSS.tex}>Подтвердить</div>
                                     </div>
                                     <div className={settingsCSS.but+' '+button.button+' '+settingsCSS.butR} onClick={onClosePas}>
                                         <div className={settingsCSS.tex}>Отменить</div>

@@ -43,44 +43,34 @@ function onEdit(e) {
     inp.setAttribute('data-act', '1');
 }
 
-function onFinLog(e) {
+function onFin(e) {
     let par = e.target.parentElement, inp = par.querySelector("." + profileCSS.inp), field = par.querySelector("." + profileCSS.field);
-    if (inp.validity.patternMismatch || inp.value.length == 0) {
-        inp.style.animation = "but 1s ease infinite";
-        setTimeout(function () {inp.style.animation = "none"}, 1000)
-        inp.style.outline = "solid red";
-        warner.style.display = "inline";
-    } else {
-        inp.style.outline = "none black";
-        warner.style.display = "none";
-        dispatch(changeState("login", inp.value));
-        dispatch(changeProfile("login", inp.value));
+    if(inp.tagName == "TEXTAREA")
+    {
+        dispatch(changeProfile("more", inp.value));
         field.setAttribute('data-act', '1');
         inp.setAttribute('data-act', '0');
-    }
-}
-
-function onFinEm(e) {
-    let par = e.target.parentElement, inp = par.querySelector("." + profileCSS.inp), field = par.querySelector("." + profileCSS.field);
-    if (inp.validity.typeMismatch || inp.value.length == 0) {
-        inp.style.animation = "but 1s ease infinite";
-        setTimeout(function () {inp.style.animation = "none"}, 1000)
-        inp.style.outline = "solid red";
-        warner.style.display = "inline";
     } else {
-        inp.style.outline = "none black";
-        warner.style.display = "none";
-        dispatch(changeProfileRoles(e.target.getAttribute('data-id'), "email", inp.value));
-        field.setAttribute('data-act', '1');
-        inp.setAttribute('data-act', '0');
+        if ((inp.type == "email" ? inp.validity.typeMismatch : inp.validity.patternMismatch) || inp.value.length == 0) {
+            inp.style.animation = "but 1s ease infinite";
+            setTimeout(function () {
+                inp.style.animation = "none"
+            }, 1000)
+            inp.style.outline = "solid red";
+            warner.style.display = "inline";
+        } else {
+            inp.style.outline = "none black";
+            warner.style.display = "none";
+            if (inp.type == "email") {
+                dispatch(changeProfileRoles(e.target.getAttribute('data-id'), "email", inp.value));
+            } else {
+                dispatch(changeState("login", inp.value));
+                dispatch(changeProfile("login", inp.value));
+            }
+            field.setAttribute('data-act', '1');
+            inp.setAttribute('data-act', '0');
+        }
     }
-}
-
-function onFinMore(e) {
-    let par = e.target.parentElement, inp = par.querySelector("." + profileCSS.inp), field = par.querySelector("." + profileCSS.field);
-    dispatch(changeProfile("more", inp.value));
-    field.setAttribute('data-act', '1');
-    inp.setAttribute('data-act', '0');
 }
 
 function onClose(e) {
@@ -90,19 +80,9 @@ function onClose(e) {
     warner.style.display = "none";
 }
 
-function chStatLb(e) {
-    let el = e.target;
-    el.parentElement.querySelector(".yes").setAttribute("data-enable", +(el ? !el.validity.patternMismatch && el.value.length != 0 : false));
-}
-
-function chStatEb(e) {
-    let el = e.target;
-    el.parentElement.querySelector(".yes").setAttribute("data-enable", +(el ? !el.validity.typeMismatch && el.value.length != 0 : false));
-}
-
-function chStatMb(e) {
-    let el = e.target;
-    el.parentElement.querySelector(".yes").setAttribute("data-enable", +(el ? el.value.length != 0 : false));
+function chStatB(e) {
+    let el = e.target, b = el.tagName == "TEXTAREA" ? true : (el.tagName == "TEXTAREA" ? true : (el.type == "email" ? !el.validity.typeMismatch : !el.validity.patternMismatch));
+    el.parentElement.querySelector(".yes").setAttribute("data-enable", +(el ? b && el.value.length != 0 : false));
 }
 
 export function Profile() {
@@ -152,8 +132,8 @@ export function Profile() {
                                         <div className={profileCSS.field} data-act='1'>
                                             {profilesInfo.login}
                                         </div>
-                                        <input className={profileCSS.inp} id="loginp" onChange={chStatLb} defaultValue={profilesInfo.login} type="text" pattern="^[a-zA-Z0-9]+$" data-act='0'/>
-                                        <img className={profileCSS.imginp+" yes"} src={yes} onClick={onFinLog} title="Подтвердить изменения" alt=""/>
+                                        <input className={profileCSS.inp} id="loginp" onChange={chStatB} defaultValue={profilesInfo.login} type="text" pattern="^[a-zA-Z0-9]+$" data-act='0'/>
+                                        <img className={profileCSS.imginp+" yes"} src={yes} onClick={onFin} title="Подтвердить изменения" alt=""/>
                                         <img className={profileCSS.imginp} src={no} onClick={onClose} title="Отменить изменения и выйти из режима редактирования" alt=""/>
                                         <img className={profileCSS.imgfield} src={ed} onClick={onEdit} title="Редактировать" alt=""/>
                                     </div>
@@ -169,8 +149,8 @@ export function Profile() {
                                         <pre className={profileCSS.field} data-act='1'>
                                             {profilesInfo.more}
                                         </pre>
-                                        <textarea className={profileCSS.inp+" "+profileCSS.inparea} onChange={chStatMb} defaultValue={profilesInfo.more ? profilesInfo.more : moore} data-act='0'/>
-                                        <img className={profileCSS.imginp+" yes"} src={yes} onClick={onFinMore} title="Подтвердить изменения" alt=""/>
+                                        <textarea className={profileCSS.inp+" "+profileCSS.inparea} onChange={chStatB} defaultValue={profilesInfo.more ? profilesInfo.more : moore} data-act='0'/>
+                                        <img className={profileCSS.imginp+" yes"} src={yes} onClick={onFin} title="Подтвердить изменения" alt=""/>
                                         <img className={profileCSS.imginp} src={no} onClick={onClose} title="Отменить изменения и выйти из режима редактирования" alt=""/>
                                         <img className={profileCSS.imgfield} src={ed} onClick={onEdit} title="Редактировать" alt=""/>
                                     </div>
@@ -191,8 +171,8 @@ export function Profile() {
                                                 <div className={profileCSS.field} data-act='1'>
                                                     {profilesInfo.roles[param].email}
                                                 </div>
-                                                <input className={profileCSS.inp} onChange={chStatEb} defaultValue={profilesInfo.roles[param].email} type="email" data-act='0'/>
-                                                <img className={profileCSS.imginp+" yes"} src={yes} onClick={onFinEm} title="Подтвердить изменения" data-id={param} alt=""/>
+                                                <input className={profileCSS.inp} onChange={chStatB} defaultValue={profilesInfo.roles[param].email} type="email" data-act='0'/>
+                                                <img className={profileCSS.imginp+" yes"} src={yes} onClick={onFin} title="Подтвердить изменения" data-id={param} alt=""/>
                                                 <img className={profileCSS.imginp} src={no} onClick={onClose} title="Отменить изменения и выйти из режима редактирования" alt=""/>
                                                 <img className={profileCSS.imgfield} src={ed} onClick={onEdit} title="Редактировать" alt=""/>
                                             </div>

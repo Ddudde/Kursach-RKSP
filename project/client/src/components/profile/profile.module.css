@@ -24,13 +24,6 @@
 	vertical-align: middle;
 }
 
-.imginp, .imgfield{
-	width: 1vw;
-	vertical-align: middle;
-	cursor: pointer;
-	margin-left: 1vw;
-}
-
 .proImg{
 	width: 2vw;
 	vertical-align: middle;
@@ -85,6 +78,7 @@
 	transition: background-color 1s ease;
 	transition-property: background-color, border-color;
     vertical-align: middle;
+	display: none;
 }
 
 .inparea{
@@ -94,13 +88,17 @@
 	width: 50%;
 }
 
+.imginp, .imgfield{
+	width: 1vw;
+	vertical-align: middle;
+	cursor: pointer;
+	margin-left: 1vw;
+	display: none;
+}
+
 .imginp[data-enable="0"] {
 	pointer-events: none;
 	opacity: 0.4;
-}
-
-.inp[data-act='0'], .inp[data-act='0'] ~ .imginp{
-	display: none;
 }
 
 .inp[data-act='1'], .inp[data-act='1'] ~ .imginp{
@@ -114,15 +112,12 @@
 
 .field{
     margin-left: 5px;
+	display: none;
 }
 
 pre.field{
     vertical-align: top;
     margin-top: 0.3em;
-}
-
-.imgfield, .field{
-	display: none;
 }
 
 .field[data-act='1'], .field[data-act='1'] ~ .imgfield{
