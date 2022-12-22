@@ -44,6 +44,12 @@
 	transition: background-color 1s ease;
 }
 
+.pro > img{
+	width: 8vw;
+	float: right;
+	opacity: 0.5;
+}
+
 .nav_i{
 	cursor: default;
 	color: var(--cV1);

@@ -6,10 +6,11 @@ import {useDispatch, useSelector} from "react-redux";
 import {changeState} from "../../store/actions";
 import ran from "../../media/random.png";
 import button from "../button.module.css";
-import CheckBox from "../checkBox/CheckBox";
+import CheckBox from "../other/checkBox/CheckBox";
 import ls1 from "../../media/ls-icon1.png";
 import ls2 from "../../media/ls-icon2.png";
 import ls3 from "../../media/ls-icon3.png";
+import {setActived} from "../main/Main";
 
 let checkBoxInfo, dispatch, warner, npasinp, powpasinp, zambut, zambut1;
 let oldPasSt = true, b = [false, false, false, false], els = {"ch1": 1, "ch2": 2, "ch3": 3, "oldinp": 0, "secinp": 1, "npasinp": 2, "powpasinp": 3};
@@ -89,6 +90,7 @@ export function Settings() {
     const isFirstUpdate = useRef(true);
     useEffect(() => {
         if(isFirstUpdate.current) return;
+        setActived(".panSet");
         console.log("I was triggered during componentDidMount Settings.jsx");
         warner = document.getElementsByClassName("warner")[0];
         npasinp = document.querySelector("#npasinp");
@@ -205,7 +207,7 @@ export function Settings() {
                                 {cState.secFr? "Изменить" : "Добавить"} секретную фразу
                             </div>
                             <div className={settingsCSS.blockPass} data-act='0'>
-                                <input className={settingsCSS.inp+" "+settingsCSS.inpPass} onChange={chStatSb1} id="secinp" placeholder="Секретная фраза" type="password" pattern="^[a-zA-Z0-9]+$"/>
+                                <input className={settingsCSS.inp+" "+settingsCSS.inpPass} onChange={chStatSb1} placeholder="Секретная фраза" type="password" pattern="^[a-zA-Z0-9]+$"/>
                                 <div className={settingsCSS.blockKnops}>
                                     <div className={settingsCSS.but+' '+button.button+' '+settingsCSS.butL} data-enable={"0"} onClick={onClosePas}>
                                         <div className={settingsCSS.tex}>Подтвердить</div>

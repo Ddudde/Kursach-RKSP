@@ -4,17 +4,17 @@ import ls1 from '../../media/ls-icon1.png';
 import ls2 from '../../media/ls-icon2.png';
 import ls3 from '../../media/ls-icon3.png';
 import ran from '../../media/random.png';
-import pedagog from '../../media/pedagog.jpg';
-import roditelyam from '../../media/roditelyam.jpg';
-import zavuch from '../../media/zavuch.jpg';
-import detyam from '../../media/detyam.jpeg';
-import left from '../../media/left.png';
-import sta from '../../media/start.gif';
+import pedagog from '../../media/start/pedagog.jpg';
+import roditelyam from '../../media/start/roditelyam.jpg';
+import zavuch from '../../media/start/zavuch.jpg';
+import detyam from '../../media/start/detyam.jpeg';
+import left from '../../media/start/left.png';
+import sta from '../../media/start/start.gif';
 import start from './start.module.css';
 import * as st from "./start.js";
 import button from "../button.module.css";
 import {Helmet} from "react-helmet-async";
-import CheckBox from "../checkBox/CheckBox";
+import CheckBox from "../other/checkBox/CheckBox";
 import {useDispatch, useSelector} from "react-redux";
 import {checkbox, indicators} from "../../store/selector";
 import {changeInd, changeIndNext, changeIndPrev} from "../../store/actions";
@@ -112,7 +112,7 @@ export function Start() {
                 <div className={start.block}>
                     <img alt="banner" src={warnb}/>
                     <div className={start.block_text}>
-                        В аккаунт добавлена новая роль.
+                        К действующему аккаунту была добавлена новая роль.
                     </div>
                 </div>
             </div>
@@ -257,7 +257,7 @@ export function Start() {
                                     </div>
                                 </div>
                             </div>
-                            <div data-enable={+regb} id="regbut" className={start.button+' '+button.button} onClick={st.rego}>
+                            <div data-enable={+regb} id="regbut" className={start.button+' '+button.button+' regs'} onClick={st.rego}>
                                 ЗАРЕГИСТРИРОВАТЬСЯ!
                             </div>
                         </div>

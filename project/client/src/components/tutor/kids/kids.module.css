@@ -53,7 +53,51 @@
 	cursor: pointer;
 }
 
+.zag{
+	margin-inline: 2vw;
+}
+
 .zag2{
 	font-size: 1vw;
+}
+
+.blockOtv{
 	margin-inline: 2vw;
+	display: none;
+}
+
+.blockOtv[data-act]{
+	display: block;
+}
+
+.blockImg{
+	text-align: center;
+	margin-block: 1vw;
+}
+
+.blockImg > img{
+	max-width: 75%;
+}
+
+.GotCW{
+	position: fixed;
+	width: 12vw;
+	top: 0;
+	bottom: 0;
+	display: flex;
+	align-items: center;
+	text-align: center;
+}
+
+.GotCW img{
+	width: 8vw;
+	cursor: pointer;
+}
+
+.GotCWText{
+	color: var(--cV2);
+	font-size: 2vmax;
+	font-weight: bold;
+	text-shadow: 2px 2px 2px #000;
+	transition: color 1s ease;
 }

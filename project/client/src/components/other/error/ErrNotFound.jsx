@@ -1,8 +1,8 @@
 import React, {useEffect, useRef} from "react";
 import {Helmet} from "react-helmet-async";
 import errCSS from './error.module.css';
-import warn from '../../media/warn_big.png';
-import {states} from "../../store/selector";
+import warn from '../../../media/warn_big.png';
+import {states} from "../../../store/selector";
 import {useSelector} from "react-redux";
 
 export function ErrNotFound() {

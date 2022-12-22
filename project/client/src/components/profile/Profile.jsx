@@ -11,6 +11,7 @@ import ed from "../../media/edit.png";
 import profd from "../../media/profd.png";
 import profl from "../../media/profl.png";
 import {changeProfile, changeProfileRoles, changeState} from "../../store/actions";
+import {setActived} from "../main/Main";
 
 let profilesInfo, dispatch, warner, moore;
 
@@ -93,6 +94,7 @@ export function Profile() {
     const isFirstUpdate = useRef(true);
     useEffect(() => {
         if(isFirstUpdate.current) return;
+        setActived(".panPro");
         console.log("I was triggered during componentDidMount Profile.jsx");
         warner = document.getElementsByClassName("warner")[0];
         document.querySelector("#loginp").addEventListener('input', inpchr);

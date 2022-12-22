@@ -298,6 +298,10 @@
 	margin-top: 9px !important;
 }
 
+.button[class*="regs"] {
+	margin-left: 9px;
+}
+
 .button[data-enable="0"] {
 	pointer-events: none;
 	opacity: 0.4;
@@ -444,7 +448,7 @@
 }
 
 .block_text{
-	width: 70vmin;
+	max-width: 70vmin;
 	color:var(--cV2);
 	font-weight: bold;
 	font-size: 1.5vw;

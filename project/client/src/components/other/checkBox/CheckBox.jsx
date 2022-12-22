@@ -1,8 +1,8 @@
 import React from "react";
 import {useDispatch, useSelector} from "react-redux";
 import checkBoxCSS from './checkBox.module.css';
-import {checkbox} from "../../store/selector";
-import {changeCB} from "../../store/actions";
+import {checkbox} from "../../../store/selector";
+import {changeCB} from "../../../store/actions";
 
 
 const CustomCheckbox = (props) => {

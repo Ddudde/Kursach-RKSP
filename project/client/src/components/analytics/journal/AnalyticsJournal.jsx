@@ -37,7 +37,6 @@ function updDateP(id) {
 }
 
 function updDate(e) {
-    console.log("sdfsf135");
     updDateP(this.id);
 }
 
