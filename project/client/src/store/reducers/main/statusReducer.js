@@ -4,11 +4,16 @@ const initialState = {
         auth: true,
         login: "test",
         ico: 2,
-        role: 0,
-        roleDesc: "обучающийся",
+        role: 1,
+        roleDesc: "родитель",
         roles: true,
         secFr: true,
-        rolesDescrs: ["обучающийся", "родитель", "педагог", "завуч", "администратор портала"]
+        rolesDescrs: ["обучающийся", "родитель", "педагог", "завуч", "администратор портала"],
+        kid: "id1",
+        kids:{
+            "id1": "Петров А.А.",
+            "id2": "Петрова А.Б."
+        }
     };
 
 export default function statusReducer(state = initialState, action) {

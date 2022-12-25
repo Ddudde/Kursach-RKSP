@@ -267,3 +267,24 @@
 	top: 8vh;
 	right: 10px;
 }
+
+.kidImg{
+	width: 2vw;
+	vertical-align: middle;
+	cursor: pointer;
+	margin-left: 1vw;
+}
+
+.kidInf{
+	align-self: end;
+	font-size: 0.75vw;
+}
+
+.kidText{
+	align-self: baseline;
+	font-size: 1vw;
+}
+
+.kidBlock{
+	height: 100%;
+}

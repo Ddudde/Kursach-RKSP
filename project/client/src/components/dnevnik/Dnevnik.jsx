@@ -2,7 +2,7 @@ import React, {useEffect, useRef} from "react";
 import {Helmet} from "react-helmet-async";
 import dnevCSS from './dnevnik.module.css';
 import warn from '../../media/warn_big.png';
-import {dnevnik} from "../../store/selector";
+import {dnevnik, states} from "../../store/selector";
 import {useDispatch, useSelector} from "react-redux";
 import {CHANGE_DNEVNIK_DAY_DOWN, CHANGE_DNEVNIK_DAY_UP, changeDnevnik} from "../../store/actions";
 import knopka from "../../media/dnevnik/knopka.png";
@@ -10,7 +10,7 @@ import {setActived} from "../main/Main";
 
 let DoW = ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье"], incDow = 0, shd = 0, scrolling = false, elem = {lessons: []};
 
-let ev, dnev, dispatch, timid;
+let ev, dnev, dispatch, timid, cState;
 
 function fun1(x, x1) {
     console.log("dsfsfddsf12" + x);
@@ -89,6 +89,7 @@ function goTo() {
 
 export function Dnevnik() {
     dnev = useSelector(dnevnik);
+    cState = useSelector(states);
     dispatch = useDispatch();
     const isFirstUpdate = useRef(true);
     useEffect(() => {

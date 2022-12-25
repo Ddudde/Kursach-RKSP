@@ -26,7 +26,7 @@ import Admins from "./components/people/admins/Admins";
 import React from "react";
 import Profile from "./components/profile/Profile";
 import Settings from "./components/settings/Settings";
-import Kids from "./components/tutor/kids/Kids";
+import Tutor from "./components/tutor/Tutor";
 
 function App() {
     const cState = useSelector(states);
@@ -35,7 +35,7 @@ function App() {
     {
         indexComp = <Start/>;
     } else {
-        if(cState.role == 0) indexComp = <Dnevnik/>;
+        if(cState.role < 2) indexComp = <Dnevnik/>;
 
     }
     return (
@@ -53,14 +53,14 @@ function App() {
                   <Route path="por" element={<ContactPor/>} />
                   {(cState.auth && cState.role != 4) && <Route path="yo" element={<ContactYo/>} />}
               </Route>
-              <Route path="analytics" element={<AnalyticsMain/>}>
+              {cState.auth && <Route path="analytics" element={<AnalyticsMain/>}>
                   <Route index element={<Zvonki/>} />
                   <Route path="zvonki" element={<Zvonki/>} />
                   <Route path="periods" element={<Periods/>} />
                   <Route path="schedule" element={<Schedule/>} />
                   <Route path="journal" element={<AnalyticsJournal/>} />
                   <Route path="marks" element={<Marks/>} />
-              </Route>
+              </Route>}
               <Route path="people" element={<PeopleMain/>}>
                   <Route index element={<Admins/>} />
                   {(cState.auth && cState.role != 4) && <Route path="teachers" element={<Teachers/>} />}
@@ -69,12 +69,7 @@ function App() {
                   {(cState.auth && cState.role == 0) && <Route path="parents" element={<Parents/>} />}
                   <Route path="admins" element={<Admins/>} />
               </Route>
-              <Route path="tutor">
-                  <Route path="kids" element={<Kids/>} />
-                  <Route path="teachers" element={<Kids/>} />
-                  <Route path="parents" element={<Kids/>} />
-                  <Route path="hteachers" element={<Kids/>} />
-              </Route>
+              {cState.role < 4 && <Route path="tutor" element={<Tutor/>} />}
               {cState.auth && <Route path="profiles" element={<Profile/>} />}
               <Route path="profiles/:log" element={<Profile/>} />
               {cState.auth && <Route path="settings" element={<Settings/>} />}

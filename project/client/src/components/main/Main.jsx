@@ -6,8 +6,10 @@ import {useDispatch, useSelector} from "react-redux";
 import {states, themes} from "../../store/selector";
 import {changeState, changeTheme} from "../../store/actions";
 import * as def from "./default";
+import profd from "../../media/profd.png";
+import profl from "../../media/profl.png";
 
-let act = ".panGL", elems = 0, cState, dispatch;
+let act = ".panGL", elems = 0, cState, dispatch, theme;
 
 function getPan(name, namecl, link, inc, dopClass, fun) {
     if(!inc) elems++;
@@ -23,20 +25,42 @@ function getPan(name, namecl, link, inc, dopClass, fun) {
     )
 }
 
-function getLogin(login, ico, desc) {
+function getLogin() {
     elems++;
     return (
         <div className={main.logBlock}>
             <div className={main.nav_i+' '+main.log} id={main.nav_i}>
-                <img alt="ico" src={'/media/ls-icon'+ ico +'.png'}/>
-                <div className={main.logLog}>{login}</div>
-                <div className={main.logText}>Я - {desc}</div>
+                <img alt="ico" src={'/media/ls-icon'+ cState.ico +'.png'}/>
+                <div className={main.logLog}>{cState.login}</div>
+                <div className={main.logText}>Я - {cState.roleDesc}</div>
             </div>
             <div className={main.logMenu}>
                 {getPan("Профиль", "Pro", "profiles", true, main.logMenuBlock)}
                 {cState.roles && getPan("Сменить роль", "Rol", "", true, main.logMenuBlock,() => {chRoles()})}
                 {getPan("Настройки", "Set", "settings", true, main.logMenuBlock)}
                 {getPan("Выход", "Exi", "", true, main.logMenuBlock,() => {onExit()})}
+            </div>
+        </div>
+    )
+}
+
+function getKids() {
+    elems++;
+    return (
+        <div className={main.logBlock}>
+            <div className={main.nav_i+' '+main.log} id={main.nav_i}>
+                <img className={main.kidImg} src={theme.theme_ch ? profd : profl} title="Перейти в профиль" alt=""/>
+                <div className={main.kidInf}>Информация о:</div>
+                <div className={main.kidText}>{cState.kids[cState.kid]}</div>
+            </div>
+            <div className={main.logMenu}>
+                {cState.kids && Object.getOwnPropertyNames(cState.kids).map(param1 =>
+                    <div className={main.nav_i+' '+main.log+' '+main.kidBlock} id={main.nav_i} onClick={() => (dispatch(changeState("kid", param1)))}>
+                        <img className={main.kidImg} src={theme.theme_ch ? profd : profl} title="Перейти в профиль" alt=""/>
+                        <div className={main.kidInf}>Информация о:</div>
+                        <div className={main.kidText}>{cState.kids[param1]}</div>
+                    </div>
+                )}
             </div>
         </div>
     )
@@ -62,7 +86,7 @@ export function setActived(name) {
 }
 
 export function Main() {
-    const theme = useSelector(themes);
+    theme = useSelector(themes);
     cState = useSelector(states);
     const isFirstUpdate = useRef(true);
     dispatch = useDispatch();
@@ -95,13 +119,14 @@ export function Main() {
                 {getPan("Объявления", "New", "news")}
                 {getPan("Контакты", "Con", "contacts")}
                 {getPan("Люди", "Pep", "people")}
-                {(!cState.auth || (cState.auth && cState.role == 3)) && getPan("Школам", "Sch", "start")}
-                {(!cState.auth || (cState.auth && cState.role == 2)) && getPan("Педагогам", "Tea", "start")}
-                {(!cState.auth || (cState.auth && cState.role == 1)) && getPan("Родителям", "Par", "start")}
-                {(cState.auth && cState.role == 0) && getPan("Дневник", "Dnev", "/")}
-                {(cState.auth && cState.role == 0) && getPan("Аналитика", "Ana", "analytics")}
-                {(!cState.auth || (cState.auth && cState.role == 0)) && getPan("Обучающимся", "Kid", "tutor/kids")}
-                {cState.auth && getLogin(cState.login, cState.ico, cState.roleDesc)}
+                {(!cState.auth || (cState.auth && cState.role == 3)) && getPan("Школам", "Sch", "tutor")}
+                {(!cState.auth || (cState.auth && cState.role == 2)) && getPan("Педагогам", "Tea", "tutor")}
+                {(!cState.auth || (cState.auth && cState.role == 1)) && getPan("Родителям", "Par", "tutor")}
+                {(!cState.auth || (cState.auth && cState.role == 0)) && getPan("Обучающимся", "Kid", "tutor")}
+                {(cState.auth && cState.role < 2) && getPan("Дневник", "Dnev", "/")}
+                {(cState.auth && cState.role < 2) && getPan("Аналитика", "Ana", "analytics")}
+                {cState.auth && getLogin()}
+                {(cState.auth && cState.role == 1) && getKids()}
             </nav>
             <Outlet />
             <div className={main.warne+" warnew"} id={main.warnew}>
