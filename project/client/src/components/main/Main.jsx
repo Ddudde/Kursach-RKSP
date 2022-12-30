@@ -8,6 +8,8 @@ import {changeState, changeTheme} from "../../store/actions";
 import * as def from "./default";
 import profd from "../../media/profd.png";
 import profl from "../../media/profl.png";
+import mapd from "../../media/Map_symbolD.png";
+import mapl from "../../media/Map_symbolL.png";
 
 let act = ".panGL", elems = 0, cState, dispatch, theme;
 
@@ -48,10 +50,11 @@ function getKids() {
     elems++;
     return (
         <div className={main.logBlock}>
-            <div className={main.nav_i+' '+main.log} id={main.nav_i}>
+            <div className={main.nav_i+' '+main.kidEl} id={main.nav_i}>
                 <img className={main.kidImg} src={theme.theme_ch ? profd : profl} title="Перейти в профиль" alt=""/>
                 <div className={main.kidInf}>Информация о:</div>
                 <div className={main.kidText}>{cState.kids[cState.kid]}</div>
+                <img className={main.mapImg} src={theme.theme_ch ? mapd : mapl} title="Перейти в профиль" alt=""/>
             </div>
             <div className={main.logMenu}>
                 {cState.kids && Object.getOwnPropertyNames(cState.kids).map(param1 =>
@@ -123,6 +126,8 @@ export function Main() {
                 {(!cState.auth || (cState.auth && cState.role == 2)) && getPan("Педагогам", "Tea", "tutor")}
                 {(!cState.auth || (cState.auth && cState.role == 1)) && getPan("Родителям", "Par", "tutor")}
                 {(!cState.auth || (cState.auth && cState.role == 0)) && getPan("Обучающимся", "Kid", "tutor")}
+                {(cState.auth && cState.role == 2) && getPan("Расписание", "Ras", "/")}
+                {(cState.auth && cState.role == 2) && getPan("Журнал", "Jur", "journal")}
                 {(cState.auth && cState.role < 2) && getPan("Дневник", "Dnev", "/")}
                 {(cState.auth && cState.role < 2) && getPan("Аналитика", "Ana", "analytics")}
                 {cState.auth && getLogin()}

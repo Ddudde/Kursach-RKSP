@@ -7,6 +7,7 @@ export const CHANGE_PROFILE = "CHANGE_PROFILE";
 export const CHANGE_PROFILE_ROLES = "CHANGE_PROFILE_ROLES";
 export const CHANGE_SCHEDULE = "CHANGE_SCHEDULE";
 export const CHANGE_JOURNAL = "CHANGE_JOURNAL";
+export const CHANGE_PJOURNAL = "CHANGE_PJOURNAL";
 export const CHANGE_TEACHERS = "CHANGE_TEACHERS";
 export const CHANGE_HTEACHERS = "CHANGE_HTEACHERS";
 export const CHANGE_CLASSMATES = "CHANGE_CLASSMATES";
@@ -43,6 +44,15 @@ export function changeState(id, state, dispatch, roleDescrs) {
         payload: {
             stateId: id,
             cState: state
+        }
+    };
+}
+
+export function changePjournal(id, state) {
+    return { type: CHANGE_PJOURNAL,
+        payload: {
+            Id: id,
+            State: state
         }
     };
 }

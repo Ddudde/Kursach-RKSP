@@ -1,13 +1,13 @@
 import React, {useEffect, useRef} from "react";
 import {Helmet} from "react-helmet-async";
 import scheduleCSS from './schedule.module.css';
-import {schedules} from "../../../store/selector";
+import {schedules, states} from "../../../store/selector";
 import {useDispatch, useSelector} from "react-redux";
 import {setActived} from "../../main/Main";
 import {setActNew} from "../AnalyticsMain";
 import warn from "../../../media/warn_big.png";
 
-let dispatch, schedulesInfo, shd = 0, DoW = ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье"];
+let dispatch, cState, schedulesInfo, shd = 0, DoW = ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье"];
 
 
 // function fun1(x, x1) {
@@ -26,6 +26,7 @@ function setNull()
 
 export function Schedule() {
     schedulesInfo = useSelector(schedules);
+    cState = useSelector(states);
     dispatch = useDispatch();
     const isFirstUpdate = useRef(true);
     useEffect(() => {
@@ -38,8 +39,12 @@ export function Schedule() {
         // setInterval(function() {
         //     dispatch(changeContacts("Por", "id_" + Object.getOwnPropertyNames(schedulesInfo.contactsPor.numbers).length, '8 (800) 555 35 37', '+78005553537'));
         // }, 5000);
-        setActived(".panAna");
-        setActNew(".panRas");
+        if(cState.role == 2) {
+            setActived(".panRas");
+        }else {
+            setActived(".panAna");
+            setActNew(".panRas");
+        }
         return function() {
             console.log("I was triggered during componentWillUnmount Schedule.jsx");
         }
@@ -75,7 +80,7 @@ export function Schedule() {
                                     Кабинет
                                 </div>
                                 <div className={scheduleCSS.nav_i} id={scheduleCSS.nav_i}>
-                                    Преподаватель
+                                    {cState.role == 2 ? "Группа" : "Преподаватель"}
                                 </div>
                                 {schedulesInfo.days[param].lessons.map(param1 =>
                                     <>
@@ -86,7 +91,7 @@ export function Schedule() {
                                             {param1.cabinet}
                                         </div>
                                         <div className={scheduleCSS.nav_i} id={scheduleCSS.nav_i}>
-                                            {param1.prepod}
+                                            {cState.role == 2 ? param1.group : param1.prepod}
                                         </div>
                                     </>
                                 )}

@@ -22,8 +22,12 @@ import {setActived} from "../main/Main";
 import warnb from '../../media/warn_big.png';
 import {useParams} from "react-router-dom"
 
-let dispatch, timer, indActState, checkBoxState, regbut, regb, vxbut;
-let rb = [false, false], vb = [false, false], sm = false, zb = [false, false, false, false], els = {"logz": 0, "secz": 1, "pasnz": 2, "paspz": 3, "logv": 0, "pasv": 1, "logr": 0, "pasr": 1};
+let dispatch, timer, indActState, checkBoxState, regbut, regb, vxbut, rb, vb, sm, zb, els;
+rb = [false, false];
+vb = [false, false];
+sm = false;
+zb = [false, false, false, false];
+els = {"logz": 0, "secz": 1, "pasnz": 2, "paspz": 3, "logv": 0, "pasv": 1, "logr": 0, "pasr": 1};
 
 function reset_timer() {
     clearInterval(timer);

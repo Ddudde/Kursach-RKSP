@@ -15,19 +15,23 @@ const initialState = {
             lessons: [
                 {
                     cabinet: "300",
-                    prepod: "Петренко А.А."
+                    prepod: "Петренко А.А.",
+                    group: "10A"
                 },
                 {
                     cabinet: "300",
-                    prepod: "Петренко А.А."
+                    prepod: "Петренко А.А.",
+                    group: "10A"
                 },
                 {
                     cabinet: "300",
-                    prepod: "Петренко А.А."
+                    prepod: "Петренко А.А.",
+                    group: "10A"
                 },
                 {
                     cabinet: "300",
-                    prepod: "Петренко А.А."
+                    prepod: "Петренко А.А.",
+                    group: "10A"
                 }
             ]
         },
@@ -35,27 +39,33 @@ const initialState = {
             lessons: [
                 {
                     cabinet: "300",
-                    prepod: "Петренко А.А."
+                    prepod: "Петренко А.А.",
+                    group: "10A"
                 },
                 {
                     cabinet: "300",
-                    prepod: "Петренко А.А."
+                    prepod: "Петренко А.А.",
+                    group: "10A"
                 },
                 {
                     cabinet: "300",
-                    prepod: "Петренко А.А."
+                    prepod: "Петренко А.А.",
+                    group: "10A"
                 },
                 {
                     cabinet: "300",
-                    prepod: "Петренко А.А."
+                    prepod: "Петренко А.А.",
+                    group: "10A"
                 },
                 {
                     cabinet: "300",
-                    prepod: "Петренко А.А."
+                    prepod: "Петренко А.А.",
+                    group: "10A"
                 },
                 {
                     cabinet: "300",
-                    prepod: "Петренко А.А."
+                    prepod: "Петренко А.А.",
+                    group: "10A"
                 }
             ]
         },
@@ -63,23 +73,28 @@ const initialState = {
             lessons: [
                 {
                     cabinet: "300",
-                    prepod: "Петренко А.А."
+                    prepod: "Петренко А.А.",
+                    group: "10A"
                 },
                 {
                     cabinet: "300",
-                    prepod: "Петренко А.А."
+                    prepod: "Петренко А.А.",
+                    group: "10A"
                 },
                 {
                     cabinet: "300",
-                    prepod: "Петренко А.А."
+                    prepod: "Петренко А.А.",
+                    group: "10A"
                 },
                 {
                     cabinet: "300",
-                    prepod: "Петренко А.А."
+                    prepod: "Петренко А.А.",
+                    group: "10A"
                 },
                 {
                     cabinet: "300",
-                    prepod: "Петренко А.А."
+                    prepod: "Петренко А.А.",
+                    group: "10A"
                 }
             ]
         },
@@ -87,11 +102,13 @@ const initialState = {
             lessons: [
                 {
                     cabinet: "300",
-                    prepod: "Петренко А.А."
+                    prepod: "Петренко А.А.",
+                    group: "10A"
                 },
                 {
                     cabinet: "300",
-                    prepod: "Петренко А.А."
+                    prepod: "Петренко А.А.",
+                    group: "10A"
                 }
             ]
         },
@@ -99,11 +116,13 @@ const initialState = {
             lessons: [
                 {
                     cabinet: "300",
-                    prepod: "Петренко А.А."
+                    prepod: "Петренко А.А.",
+                    group: "10A"
                 },
                 {
                     cabinet: "300",
-                    prepod: "Петренко А.А."
+                    prepod: "Петренко А.А.",
+                    group: "10A"
                 }
             ]
         },

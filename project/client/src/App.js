@@ -27,6 +27,7 @@ import React from "react";
 import Profile from "./components/profile/Profile";
 import Settings from "./components/settings/Settings";
 import Tutor from "./components/tutor/Tutor";
+import Journal from "./components/prepjur/Journal";
 
 function App() {
     const cState = useSelector(states);
@@ -36,7 +37,7 @@ function App() {
         indexComp = <Start/>;
     } else {
         if(cState.role < 2) indexComp = <Dnevnik/>;
-
+        if(cState.role == 2) indexComp = <Schedule/>;
     }
     return (
       <Routes>
@@ -53,7 +54,7 @@ function App() {
                   <Route path="por" element={<ContactPor/>} />
                   {(cState.auth && cState.role != 4) && <Route path="yo" element={<ContactYo/>} />}
               </Route>
-              {cState.auth && <Route path="analytics" element={<AnalyticsMain/>}>
+              {(cState.auth && cState.role < 2) && <Route path="analytics" element={<AnalyticsMain/>}>
                   <Route index element={<Zvonki/>} />
                   <Route path="zvonki" element={<Zvonki/>} />
                   <Route path="periods" element={<Periods/>} />
@@ -71,6 +72,7 @@ function App() {
               </Route>
               {cState.role < 4 && <Route path="tutor" element={<Tutor/>} />}
               {cState.auth && <Route path="profiles" element={<Profile/>} />}
+              {(cState.auth && cState.role == 2) && <Route path="journal" element={<Journal/>} />}
               <Route path="profiles/:log" element={<Profile/>} />
               {cState.auth && <Route path="settings" element={<Settings/>} />}
               <Route path="invite/:inv" element={<Start/>} />

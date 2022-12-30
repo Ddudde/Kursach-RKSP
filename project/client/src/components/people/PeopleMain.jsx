@@ -62,7 +62,7 @@ export function PeopleMain() {
             <div className={peopleCSS.AppHeader}>
                 <nav className={peopleCSS.panel} style={{gridTemplate: "auto/repeat("+elems+",1fr)"}} id="her">
                     {ele()}
-                    {(cState.auth && cState.role != 4) && getPan("Педагоги", "PTea", "teachers", peopleCSS.panPTea)}
+                    {(cState.auth && cState.role < 2) && getPan("Педагоги", "PTea", "teachers", peopleCSS.panPTea)}
                     {(cState.auth && cState.role != 4) && getPan("Завучи", "HT", "hteachers", peopleCSS.panHT)}
                     {(cState.auth && cState.role == 0) && getPan("Одноклассники", "CM", "classmates", peopleCSS.panCM)}
                     {(cState.auth && cState.role == 0) && getPan("Родители", "Par", "parents", peopleCSS.panPar)}
