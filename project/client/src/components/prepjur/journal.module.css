@@ -32,7 +32,7 @@
 	cursor: pointer;
 	color: var(--cV1);
 	font-size: 1.25vw;
-	font-weight: 500;
+	font-weight: bold;
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -40,6 +40,15 @@
 	-webkit-transition: color 1s 1s ease;
 	-o-transition: color 1s 1s ease;
 	transition: color 1s 1s ease;
+	transition-property: color, text-shadow, border-color, background-color;
+	background-color: var(--bgcV1);
+	border-radius: 5px;
+}
+
+.nav_iJur{
+	font-weight: 500;
+	background-color: unset;
+	border-radius: unset;
 	transition-property: color, text-shadow, border-color;
 	margin: -0.5px;
 	padding: 5px;

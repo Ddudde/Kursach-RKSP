@@ -28,12 +28,13 @@ function getPan(name, namecl, link, dopClass, fun, inc) {
     let cl = "pan" + namecl;
     st["."+cl] = elems;
     if (!inc) elems++;
+    let cla = [journalCSS.nav_i, journalCSS.nav_iJur, "pa", cl, dopClass ? dopClass : ""].join(" ");
     return fun ? (
-        <div className={journalCSS.nav_i + " pa " + cl + " " + (dopClass ? dopClass : "")} id={journalCSS.nav_i} onClick={fun}>
+        <div className={cla} id={journalCSS.nav_i} onClick={fun}>
             {name}
         </div>
     ) : (
-        <Link className={journalCSS.nav_i + " pa " + cl + " " + (dopClass ? dopClass : "")} id={journalCSS.nav_i} to={link} onClick={() => {setActivedMy("."+cl)}}>
+        <Link className={cla} id={journalCSS.nav_i} to={link} onClick={() => {setActivedMy("."+cl)}}>
             {name}
         </Link>
     )
@@ -290,6 +291,11 @@ export function Journal() {
                                         </div>
                                     )}
                                 </div>
+                            </div>
+                        </div>
+                        <div className={journalCSS.blockInstrum}>
+                            <div className={journalCSS.nav_i} id={journalCSS.nav_i}>
+
                             </div>
                         </div>
                     </>
