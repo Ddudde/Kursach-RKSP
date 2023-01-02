@@ -49,6 +49,7 @@ export function changeState(id, state, dispatch, roleDescrs) {
 }
 
 export function changePjournal(id, state) {
+    console.log("fg1 " + id + " " + state);
     return { type: CHANGE_PJOURNAL,
         payload: {
             Id: id,

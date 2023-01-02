@@ -9,20 +9,22 @@ import mapd from "../../media/Map_symbolD.png";
 import mapl from "../../media/Map_symbolL.png";
 import {changePjournal} from "../../store/actions";
 import warn from "../../media/warn_big.png";
-import {renderToString} from 'react-dom/server'
-import parse from 'html-react-parser';
 
-let act, act_new, elems, elems1, lin, st, jourInfo, dispatch, theme, maxEl, lMonth, mb, wmb, ev, timid, resiz;
+let act, act_new, elems, elems1, lin, st, jourInfo, dispatch, theme, maxEl, lMonth, mb, wmb, ev, timid, resiz, mor, updf, paels, updlb;
 act = ".panYo";
 act_new = "";
 elems = 0;
 elems1 = 0;
 st = {};
 maxEl = 0;
+paels = 0;
 lMonth = 0;
 mb = false;
 wmb = false;
 resiz = false;
+updf = false;
+updlb = false;
+export let gr = {};
 
 function getPan(name, namecl, link, dopClass, fun, inc) {
     let cl = "pan" + namecl;
@@ -30,11 +32,11 @@ function getPan(name, namecl, link, dopClass, fun, inc) {
     if (!inc) elems++;
     let cla = [journalCSS.nav_i, journalCSS.nav_iJur, "pa", cl, dopClass ? dopClass : ""].join(" ");
     return fun ? (
-        <div className={cla} id={journalCSS.nav_i} onClick={fun}>
+        <div className={cla} id={journalCSS.nav_i} onClick={fun} data-id={namecl}>
             {name}
         </div>
     ) : (
-        <Link className={cla} id={journalCSS.nav_i} to={link} onClick={() => {setActivedMy("."+cl)}}>
+        <Link className={cla} id={journalCSS.nav_i} to={link} onClick={() => {setActivedMy("."+cl)}} data-id={namecl}>
             {name}
         </Link>
     )
@@ -44,14 +46,14 @@ function getPredms() {
     elems++;
     return (
         <div className={journalCSS.predBlock}>
-            <div className={journalCSS.nav_i+' '+journalCSS.predEl} id={journalCSS.nav_i}>
+            <div className={journalCSS.nav_i+' '+journalCSS.nav_iJur+' '+journalCSS.predEl} id={journalCSS.nav_i}>
                 <div className={journalCSS.predInf}>Предмет:</div>
                 <div className={journalCSS.predText}>{jourInfo.predms[jourInfo.predm]}</div>
                 <img className={journalCSS.mapImg} src={theme.theme_ch ? mapd : mapl} title="Перейти в профиль" alt=""/>
             </div>
             <div className={journalCSS.predMenu}>
                 {jourInfo.predms && Object.getOwnPropertyNames(jourInfo.predms).map(param1 =>
-                    <div className={journalCSS.nav_i+' '+journalCSS.pred} id={journalCSS.nav_i} onClick={() => (dispatch(changePjournal("predm", param1)))}>
+                    <div className={journalCSS.nav_i+' '+journalCSS.nav_iJur+' '+journalCSS.pred} id={journalCSS.nav_i} onClick={() => (dispatch(changePjournal("predm", param1)))}>
                         <div className={journalCSS.predInf}>Предмет:</div>
                         <div className={journalCSS.predText}>{jourInfo.predms[param1]}</div>
                     </div>
@@ -101,13 +103,13 @@ function getMore(el) {
     }
     return (
         <>
-            <div className={journalCSS.nav_i+' '+journalCSS.predEl} id={journalCSS.nav_i}>
+            <div className={journalCSS.nav_i+' '+journalCSS.nav_iJur+' '+journalCSS.predEl} id={journalCSS.nav_i}>
                 <div className={journalCSS.predInf}>...</div>
             </div>
             <div className={journalCSS.predMenu+" pre "+journalCSS.predMM} style={{width:wmb?"200%":"100%"}}>
                 <div>
                     {el.map(par =>
-                        parse(par.outerHTML)
+                        par
                     )}
                 </div>
             </div>
@@ -116,11 +118,12 @@ function getMore(el) {
 }
 
 function overpan() {
-    let pan, wid, pa, els;
+    let pan, wid, pa, els, morel, upd;
     els = [];
+    upd = false;
+    morel = document.querySelector("#mor");
     pan = document.querySelector("."+journalCSS.panel);
     pa = pan.querySelectorAll(".pa");
-    document.querySelector("#mor").style.display = "none";
     for(let pae of pan.querySelectorAll(".pa")) {
         if(pae.style.display) pae.style.display = "";
     }
@@ -132,19 +135,22 @@ function overpan() {
         for(let i = -1, el, i1 = 0; wid > 0 || i1 < 2; i--) {
             if(wid < 0) i1++;
             el = pa[pa.length+i];
-            //console.log(el.innerHTML);
             wid -= el.getBoundingClientRect().width;
-            //el.remove();
-            let elr = el.cloneNode(true);
-            elr.classList.add(journalCSS.pred);
+            let elc = gr[el.getAttribute("data-id")];
+            let elr = React.cloneElement(elc, {className: elc.props.className+" "+journalCSS.pred});
+            upd = true;
             els[els.length] = elr;
             el.style.display = "none";
             elems--;
         }
         wmb = els.length > 2;
-        // console.log(els);
-        document.querySelector("#mor").style.display = "flex";
-        document.querySelector("#mor").innerHTML = renderToString(getMore(Array.from(els)));
+        let gmor = getMore(els);
+        // if(morel) mor = React.createElement( "div", { ...mor.props, style: {display: els.length > 0 ? "flex" : "none"}}, gmor.props.children);
+        if(morel) mor = React.cloneElement( mor, { children: gmor.props.children, style: {display: els.length > 0 ? "flex" : "none"}});
+        if(upd) {
+            updf = true;
+            dispatch(changePjournal("group", jourInfo.group));
+        }
         pan.style.gridTemplate = "auto/repeat(" + elems + ",1fr)";
     }
 }
@@ -184,6 +190,7 @@ export function Journal() {
     useEffect(() => {
         if(isFirstUpdate.current) return;
         lin = document.querySelector("#lin");
+        mor = <div className={journalCSS.predBlock} id="mor" style={{display: "none"}}/>;
         console.log("I was triggered during componentDidMount Journal.jsx");
         window.onresize = (e) => {
             if(!resiz) {
@@ -206,7 +213,24 @@ export function Journal() {
             isFirstUpdate.current = false;
             return;
         }
-        overpan();
+        if(updf){
+            updf = false;
+            return;
+        }
+        let el = document.querySelector("."+journalCSS.panel).querySelectorAll(".pa");
+        if(updlb) {
+            console.log("dfsfsdfdsf1");
+            updlb = false;
+            overpan();
+        }
+        console.log(el.length);
+        console.log(paels);
+        if(el.length != paels) {
+            console.log("dsffswq");
+            updlb = true;
+            dispatch(changePjournal("group", jourInfo.group));
+        }
+        paels = el.length;
         setActivedMy(".pan" + jourInfo.group);
         console.log('componentDidUpdate Journal.jsx');
     });
@@ -228,9 +252,9 @@ export function Journal() {
                         <nav className={journalCSS.panel} style={{gridTemplate: "auto/repeat(" + elems + ",1fr)"}} id="her">
                             {ele()}
                             {Object.getOwnPropertyNames(jourInfo.groups).map(param =>
-                                getPan(jourInfo.groups[param], param, "", undefined, () => (dispatch(changePjournal("group", param))))
+                                gr[param] = getPan(jourInfo.groups[param], param, "", undefined, () => (dispatch(changePjournal("group", param))))
                             )}
-                            <div className={journalCSS.predBlock} id="mor" style={{display: "none"}}/>
+                            {mor}
                             {getPredms()}
                             <div className={journalCSS.lin} style={{width: (100 / elems) + "%"}} id={"lin"}/>
                         </nav>
@@ -238,19 +262,19 @@ export function Journal() {
                             <div className={journalCSS.predm}>
                                 <div className={journalCSS.days}>
                                     <div className={journalCSS.daysGrid} style={{gridTemplate: "15vh /20vw repeat(" + (maxEl + 1) + ", 2vw)"}}>
-                                        <div className={journalCSS.nav_i+" "+journalCSS.namd} id={journalCSS.nav_i}>
+                                        <div className={journalCSS.nav_i+' '+journalCSS.nav_iJur+" "+journalCSS.namd} id={journalCSS.nav_i}>
                                             <br/>
                                         </div>
-                                        <div className={journalCSS.nav_i+" "+journalCSS.nav_iBr} id={journalCSS.nav_i}>
+                                        <div className={journalCSS.nav_i+' '+journalCSS.nav_iJur+" "+journalCSS.nav_iBr} id={journalCSS.nav_i}>
                                             <br/>
                                         </div>
                                         {lm(0)}
                                         {Object.getOwnPropertyNames(jourInfo.jur.day).map(param =>
-                                            <div className={journalCSS.nav_i+" "+journalCSS.nav_iTextD} id={journalCSS.nav_i}>
+                                            <div className={journalCSS.nav_i+' '+journalCSS.nav_iJur+" "+journalCSS.nav_iTextD} id={journalCSS.nav_i}>
                                                 {getDay(jourInfo.jur.day[param])}
                                             </div>
                                         )}
-                                        <div className={journalCSS.nav_i}>
+                                        <div className={journalCSS.nav_i+' '+journalCSS.nav_iJur}>
                                             <div className={journalCSS.nav_iText}>
                                                 Средняя
                                             </div>
@@ -258,34 +282,34 @@ export function Journal() {
                                     </div>
                                     {Object.getOwnPropertyNames(jourInfo.jur.kids).map(param =>
                                         <div className={journalCSS.predmGrid} style={{gridTemplate: "5vh /20vw repeat(" + (maxEl + 1) + ", 2vw)"}} id={param}>
-                                            <div className={journalCSS.nav_i+" nam " + journalCSS.nam} id={journalCSS.nav_i}>
+                                            <div className={journalCSS.nav_i+' '+journalCSS.nav_iJur+" nam " + journalCSS.nam} id={journalCSS.nav_i}>
                                                 {param}
                                             </div>
-                                            <div className={journalCSS.nav_i+" "+journalCSS.nav_iBr} id={journalCSS.nav_i}>
+                                            <div className={journalCSS.nav_i+' '+journalCSS.nav_iJur+" "+journalCSS.nav_iBr} id={journalCSS.nav_i}>
                                                 <br/>
                                             </div>
                                             {ele1(0)}
                                             {Object.getOwnPropertyNames(jourInfo.jur.kids[param].days).map(param1 => <>
                                                     {parseInt(param1) - elems1 > 0 && Array(parseInt(param1) - elems1).fill('').map(param =>
-                                                        <div className={journalCSS.nav_i} id={journalCSS.nav_i}>
+                                                        <div className={journalCSS.nav_i+' '+journalCSS.nav_iJur} id={journalCSS.nav_i}>
                                                             <br/>
                                                         </div>
                                                     )}
                                                     {ele1(parseInt(param1)+1)}
-                                                    <div className={journalCSS.nav_i} id={journalCSS.nav_i}>
+                                                    <div className={journalCSS.nav_i+' '+journalCSS.nav_iJur} id={journalCSS.nav_i}>
                                                         {jourInfo.jur.kids[param].days[param1].mark}
-                                                        {jourInfo.jur.kids[param].days[param1].weight > 1 && (<div className={journalCSS.nav_i+" "+journalCSS.nav_iWeight} id={journalCSS.nav_i}>
+                                                        {jourInfo.jur.kids[param].days[param1].weight > 1 && (<div className={journalCSS.nav_i+' '+journalCSS.nav_iJur+" "+journalCSS.nav_iWeight} id={journalCSS.nav_i}>
                                                             {jourInfo.jur.kids[param].days[param1].weight}
                                                         </div>)}
                                                     </div>
                                                 </>
                                             )}
                                             {Object.getOwnPropertyNames(jourInfo.jur.kids[param].days)[Object.getOwnPropertyNames(jourInfo.jur.kids[param].days).length-1] < maxEl-1 && Array(maxEl-1-Object.getOwnPropertyNames(jourInfo.jur.kids[param].days)[Object.getOwnPropertyNames(jourInfo.jur.kids[param].days).length-1]).fill('').map(param =>
-                                                <div className={journalCSS.nav_i} id={journalCSS.nav_i}>
+                                                <div className={journalCSS.nav_i+' '+journalCSS.nav_iJur} id={journalCSS.nav_i}>
                                                     <br/>
                                                 </div>
                                             )}
-                                            <div className={journalCSS.nav_i + " " + journalCSS.nav_iTextM}>
+                                            <div className={journalCSS.nav_i+' '+journalCSS.nav_iJur + " " + journalCSS.nav_iTextM}>
                                                 {jourInfo.jur.kids[param].avg.mark}
                                             </div>
                                         </div>
