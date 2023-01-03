@@ -10,11 +10,12 @@ import mapl from "../../media/Map_symbolL.png";
 import {changePjournal} from "../../store/actions";
 import warn from "../../media/warn_big.png";
 
-let act, act_new, elems, elems1, lin, st, jourInfo, dispatch, theme, maxEl, lMonth, mb, wmb, ev, timid, resiz, mor, updf, paels, updlb;
+let act, act_new, elems, elems1, lin, st, jourInfo, dispatch, theme, maxEl, lMonth, mb, wmb, ev, timid, resiz, mor, lmor, updf, paels, updlb, lel, eles;
 act = ".panYo";
 act_new = "";
 elems = 0;
 elems1 = 0;
+eles = [];
 st = {};
 maxEl = 0;
 paels = 0;
@@ -93,6 +94,7 @@ function tim() {
     if (resiz) {
         resiz = false;
         overpan();
+        setActivedMy(".pan" + jourInfo.group);
     }
 }
 
@@ -118,41 +120,40 @@ function getMore(el) {
 }
 
 function overpan() {
-    let pan, wid, pa, els, morel, upd;
-    els = [];
-    upd = false;
+    let pan, wid, pa, morel, lin;
+    eles = [];
+    lin = document.querySelector("#lin");
     morel = document.querySelector("#mor");
     pan = document.querySelector("."+journalCSS.panel);
-    pa = pan.querySelectorAll(".pa");
-    for(let pae of pan.querySelectorAll(".pa")) {
+    pa = document.querySelectorAll("."+journalCSS.panel + " > .pa");
+    for(let pae of pa) {
         if(pae.style.display) pae.style.display = "";
     }
+    if(morel) mor = React.cloneElement( mor, { style: {display: "none"}});
+    lin.style.display = "none";
     wid = pan.scrollWidth - pan.getBoundingClientRect().width;
-    console.log(wid)
+    lin.style.display = "";
+    console.log(wid);
     console.log([pan.scrollWidth]);
     console.log([pan.getBoundingClientRect()]);
     if(wid > 0) {
-        for(let i = -1, el, i1 = 0; wid > 0 || i1 < 2; i--) {
+        let i = -1;
+        for(let el, i1 = 0; wid > 0 || i1 < 2; i--) {
             if(wid < 0) i1++;
             el = pa[pa.length+i];
             wid -= el.getBoundingClientRect().width;
             let elc = gr[el.getAttribute("data-id")];
             let elr = React.cloneElement(elc, {className: elc.props.className+" "+journalCSS.pred});
-            upd = true;
-            els[els.length] = elr;
+            eles[eles.length] = elr;
             el.style.display = "none";
             elems--;
         }
-        wmb = els.length > 2;
-        let gmor = getMore(els);
-        // if(morel) mor = React.createElement( "div", { ...mor.props, style: {display: els.length > 0 ? "flex" : "none"}}, gmor.props.children);
-        if(morel) mor = React.cloneElement( mor, { children: gmor.props.children, style: {display: els.length > 0 ? "flex" : "none"}});
-        if(upd) {
-            updf = true;
-            dispatch(changePjournal("group", jourInfo.group));
-        }
+        lel = pa[pa.length+i];
+        wmb = eles.length > 2;
+        updMor();
         pan.style.gridTemplate = "auto/repeat(" + elems + ",1fr)";
     }
+    setActivedMy(".pan" + jourInfo.group);
 }
 
 function ele2(x) {
@@ -161,15 +162,41 @@ function ele2(x) {
     return "";
 }
 
+function updMor() {
+    let gmor = getMore(eles);
+    // if(morel) mor = React.createElement( "div", { ...mor.props, style: {display: els.length > 0 ? "flex" : "none"}}, gmor.props.children);
+    if(eles.length > 0) {
+        mor = React.cloneElement( lmor, { children: gmor.props.children, style: {display: "flex"}});
+        updf = true;
+        dispatch(changePjournal("group", jourInfo.group));
+    }
+}
+
+function replGr(x) {
+    console.log("oh shit");
+    console.log(lel);
+    let elc = gr[lel.getAttribute("data-id")];
+    let elr = React.cloneElement(elc, {className: elc.props.className+" "+journalCSS.pred});
+    // eles[eles.length] = elr;
+    for (let i = 0; i < eles.length; i++){
+        console.log(eles[i].props["data-id"]);
+        if(eles[i].props["data-id"] == x.getAttribute("data-id")) eles[i] = elr;
+    }
+    lel.style.display = "none";
+    x.style.display = "";
+    lel = x;
+    updMor();
+}
+
 function setActivedMy(name) {
     let ao = document.querySelector(act), an = document.querySelector(name), con = 0;
     if(ao) ao.setAttribute('data-act', '0');
     if(an) {
         act = name;
         an.setAttribute('data-act', '1');
+        if(an.style.display == "none") replGr(an);
     }
     if(lin) {
-        //console.log(an.getBoundingClientRect());
         con = Math.floor(an.getBoundingClientRect().width);
         lin.style.left = Math.round(an.getBoundingClientRect().left)+"px";
         lin.style.width = con+"px";
@@ -190,7 +217,8 @@ export function Journal() {
     useEffect(() => {
         if(isFirstUpdate.current) return;
         lin = document.querySelector("#lin");
-        mor = <div className={journalCSS.predBlock} id="mor" style={{display: "none"}}/>;
+        lmor = <div className={journalCSS.predBlock} id="mor" style={{display: "none"}}/>;
+        mor = React.cloneElement( lmor, {});
         console.log("I was triggered during componentDidMount Journal.jsx");
         window.onresize = (e) => {
             if(!resiz) {
@@ -214,10 +242,11 @@ export function Journal() {
             return;
         }
         if(updf){
+            console.log("dfsfsdfdsf2");
             updf = false;
             return;
         }
-        let el = document.querySelector("."+journalCSS.panel).querySelectorAll(".pa");
+        let el = document.querySelectorAll("."+journalCSS.panel + " > .pa");
         if(updlb) {
             console.log("dfsfsdfdsf1");
             updlb = false;
@@ -231,7 +260,8 @@ export function Journal() {
             dispatch(changePjournal("group", jourInfo.group));
         }
         paels = el.length;
-        setActivedMy(".pan" + jourInfo.group);
+        let nam = ".pan" + jourInfo.group;
+        if(act != nam) setActivedMy(nam);
         console.log('componentDidUpdate Journal.jsx');
     });
     return (
