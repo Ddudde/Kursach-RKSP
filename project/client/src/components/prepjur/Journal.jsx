@@ -10,7 +10,7 @@ import mapl from "../../media/Map_symbolL.png";
 import {changePjournal} from "../../store/actions";
 import warn from "../../media/warn_big.png";
 
-let act, act_new, elems, elems1, lin, st, jourInfo, dispatch, theme, maxEl, lMonth, mb, wmb, ev, timid, resiz, mor, lmor, updf, paels, updlb, lel, eles;
+let act, act_new, elems, elems1, lin, st, jourInfo, dispatch, theme, maxEl, lMonth, mb, wmb, ev, timid, resiz, mor, lmor, updf, paels, updlb, lel, eles, gr;
 act = ".panYo";
 act_new = "";
 elems = 0;
@@ -25,7 +25,7 @@ wmb = false;
 resiz = false;
 updf = false;
 updlb = false;
-export let gr = {};
+gr = {};
 
 function getPan(name, namecl, link, dopClass, fun, inc) {
     let cl = "pan" + namecl;
@@ -133,9 +133,6 @@ function overpan() {
     lin.style.display = "none";
     wid = pan.scrollWidth - pan.getBoundingClientRect().width;
     lin.style.display = "";
-    console.log(wid);
-    console.log([pan.scrollWidth]);
-    console.log([pan.getBoundingClientRect()]);
     if(wid > 0) {
         let i = -1;
         for(let el, i1 = 0; wid > 0 || i1 < 2; i--) {
@@ -156,15 +153,8 @@ function overpan() {
     setActivedMy(".pan" + jourInfo.group);
 }
 
-function ele2(x) {
-    console.log(x);
-    elems1 = x;
-    return "";
-}
-
 function updMor() {
     let gmor = getMore(eles);
-    // if(morel) mor = React.createElement( "div", { ...mor.props, style: {display: els.length > 0 ? "flex" : "none"}}, gmor.props.children);
     if(eles.length > 0) {
         mor = React.cloneElement( lmor, { children: gmor.props.children, style: {display: "flex"}});
         updf = true;
@@ -173,13 +163,9 @@ function updMor() {
 }
 
 function replGr(x) {
-    console.log("oh shit");
-    console.log(lel);
     let elc = gr[lel.getAttribute("data-id")];
     let elr = React.cloneElement(elc, {className: elc.props.className+" "+journalCSS.pred});
-    // eles[eles.length] = elr;
     for (let i = 0; i < eles.length; i++){
-        console.log(eles[i].props["data-id"]);
         if(eles[i].props["data-id"] == x.getAttribute("data-id")) eles[i] = elr;
     }
     lel.style.display = "none";
@@ -242,20 +228,15 @@ export function Journal() {
             return;
         }
         if(updf){
-            console.log("dfsfsdfdsf2");
             updf = false;
             return;
         }
         let el = document.querySelectorAll("."+journalCSS.panel + " > .pa");
         if(updlb) {
-            console.log("dfsfsdfdsf1");
             updlb = false;
             overpan();
         }
-        console.log(el.length);
-        console.log(paels);
         if(el.length != paels) {
-            console.log("dsffswq");
             updlb = true;
             dispatch(changePjournal("group", jourInfo.group));
         }
