@@ -3,6 +3,7 @@ import {
     CHANGE_PJOURNAL_DEL_MARKS,
     CHANGE_PJOURNAL_DEL_PER_MARKS,
     CHANGE_PJOURNAL_DEL_TYPE,
+    CHANGE_PJOURNAL_DZ,
     CHANGE_PJOURNAL_MARKS,
     CHANGE_PJOURNAL_NEW_TYPE,
     CHANGE_PJOURNAL_PER_MARKS,
@@ -319,7 +320,12 @@ const initialState = {
                     }
                 }
             }
-        }
+        },
+    dz:{
+        0: "Дз№1",
+        20: "Дз№2",
+        27: "Дз№23"
+    }
 };
 
 export default function pjournalReducer(state = initialState, action) {
@@ -358,6 +364,10 @@ export default function pjournalReducer(state = initialState, action) {
         case CHANGE_PJOURNAL_NEW_TYPE:
             fd = {...state};
             fd.typs[action.payload.t] = action.payload.st;
+            return fd;
+        case CHANGE_PJOURNAL_DZ:
+            fd = {...state};
+            fd.dz[action.payload.dz] = action.payload.st;
             return fd;
         default:
             return state;

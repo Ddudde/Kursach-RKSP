@@ -42,6 +42,7 @@ export function PeopleMain() {
     useEffect(() => {
         lin = document.querySelector("#lin");
         console.log("I was triggered during componentDidMount PeopleMain.jsx");
+        if(lin) lin.style.width = (100/elems)+"%";
         setActivedMy(act_new);
         return function() {
             console.log("I was triggered during componentWillUnmount PeopleMain.jsx");
@@ -59,7 +60,7 @@ export function PeopleMain() {
     return (
         <>
             <div className={peopleCSS.AppHeader}>
-                <nav className={peopleCSS.panel} style={{gridTemplate: "auto/repeat("+elems+",1fr)"}} id="her">
+                <nav className={peopleCSS.panel} id="her">
                     {ele()}
                     {(cState.auth && cState.role < 2) && getPan("Педагоги", "PTea", "teachers", peopleCSS.panPTea)}
                     {(cState.auth && cState.role != 4) && getPan("Завучи", "HT", "hteachers", peopleCSS.panHT)}

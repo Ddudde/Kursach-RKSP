@@ -7,7 +7,7 @@ import {pjournal, states, themes} from "../../store/selector";
 import {setActived} from "../main/Main";
 import mapd from "../../media/Map_symbolD.png";
 import mapl from "../../media/Map_symbolL.png";
-import {changeJType, changePjournal, changePjournalMarks} from "../../store/actions";
+import {changeDZ, changeJType, changePjournal, changePjournalMarks} from "../../store/actions";
 import warn from "../../media/warn_big.png";
 import erad from "../../media/eraserd.png";
 import eral from "../../media/eraserl.png";
@@ -19,7 +19,7 @@ let act, act_new, lin, st, jourInfo, dispatch, theme, ev, timid, mor, lmor, lel,
 act = ".panYo";
 act_new = "";
 pari = {elems: 0, elems1: 0, maxEl: 0, paels: 0, lMonth: 0};
-parb = {mb: false, wmb: false, resiz: false, updf: false, updlb: false, upddel: false, updnew: false};
+parb = {mb: false, wmb: false, resiz: false, updf: false, updlb: false, upddel: false, updnew: false, lscr: false};
 eles = [];
 st = {};
 inps = {};
@@ -48,7 +48,7 @@ function getPredms() {
             <div className={journalCSS.nav_i+' '+journalCSS.nav_iJur+' '+journalCSS.predEl} id={journalCSS.nav_i}>
                 <div className={journalCSS.predInf}>Предмет:</div>
                 <div className={journalCSS.predText}>{jourInfo.predms[jourInfo.predm]}</div>
-                <img className={journalCSS.mapImg} src={theme.theme_ch ? mapd : mapl} title="Перейти в профиль" alt=""/>
+                <img className={journalCSS.mapImg} src={theme.theme_ch ? mapd : mapl} alt=""/>
             </div>
             <div className={journalCSS.predMenu}>
                 {jourInfo.predms && Object.getOwnPropertyNames(jourInfo.predms).map(param1 =>
@@ -97,6 +97,7 @@ function elex(days) {
 
 function onEdit(e) {
     let par = e.target.parentElement;
+    if(e.target.classList.contains(journalCSS.dbut)) par = document.querySelector("." + journalCSS.AppHeader);
     par.setAttribute('data-st', '1');
 }
 
@@ -117,6 +118,16 @@ function onFin(e) {
     }
 }
 
+function onFinM(e) {
+    let par, inp;
+    par = e.target.parentElement;
+    inp = par.querySelector("." + journalCSS.inp);
+    if (inp.value.length != 0) {
+        dispatch(changeDZ(inp.id.split("_")[1], inp.value));
+        par.setAttribute('data-st', '0');
+    }
+}
+
 function onDel(e) {
     let par, inp, idi;
     par = e.target.parentElement;
@@ -129,6 +140,7 @@ function onDel(e) {
 function onClose(e) {
     let par = e.target.parentElement;
     if(par.classList.contains(journalCSS.blNew)) par = par.parentElement;
+    if(e.target.classList.contains(journalCSS.dbut)) par = document.querySelector("." + journalCSS.AppHeader);
     par.setAttribute('data-st', '0');
 }
 
@@ -148,6 +160,22 @@ function chStatB(e) {
         el.style.outline = "solid red";
     }
     el.parentElement.querySelector(".yes").setAttribute("data-enable", +(inps[el.id] && inps[idp]));
+}
+
+function chStatM(e) {
+    let el, ids;
+    el = e.target;
+    ids = el.value.length != 0;
+    if (ids) {
+        el.style.outline = "none black";
+    } else {
+        el.style.animation = "but 1s ease infinite";
+        setTimeout(function () {
+            el.style.animation = "none"
+        }, 1000);
+        el.style.outline = "solid red";
+    }
+    el.parentElement.querySelector(".yes").setAttribute("data-enable", +ids);
 }
 
 function chM(kid, day, per) {
@@ -313,6 +341,9 @@ export function Journal() {
         for(let e of document.querySelectorAll("." + journalCSS.nav_i + " > [id^='inpv_']")){
             chStatB({target: e});
         }
+        for(let e of document.querySelectorAll("." + journalCSS.nav_i + " > [id^='inpd_']")){
+            chStatM({target: e});
+        }
         chStatB({target: document.querySelector("." + journalCSS.nav_i + " > [id^='inpnt_']")});
         chStatB({target: document.querySelector("." + journalCSS.nav_i + " > [id^='inpnv_']")});
         return function() {
@@ -357,7 +388,11 @@ export function Journal() {
         }
         pari.paels = el.length;
         let nam = ".pan" + jourInfo.group;
-        if(act != nam) setActivedMy(nam);
+        if(act != nam || parb.lscr != (document.body.scrollHeight !== window.innerHeight)){
+            console.log("dsfsdf");
+            setActivedMy(nam);
+            parb.lscr = (document.body.scrollHeight !== window.innerHeight);
+        }
         console.log('componentDidUpdate Journal.jsx');
     });
     let p3 = "";
@@ -366,7 +401,7 @@ export function Journal() {
             <Helmet>
                 <title>Журнал</title>
             </Helmet>
-            <div className={journalCSS.AppHeader}>
+            <div className={journalCSS.AppHeader} data-st='0'>
                 {Object.getOwnPropertyNames(jourInfo.jur.kids).length == 0 ?
                     <div className={journalCSS.block}>
                         <img alt="banner" src={warn}/>
@@ -385,7 +420,7 @@ export function Journal() {
                             {getPredms()}
                             <div className={journalCSS.lin} style={{width: (100 / pari.elems) + "%"}} id={"lin"}/>
                         </nav>
-                        <div className={journalCSS.blockPredm}>
+                        <div className={journalCSS.blockPredm+" "+journalCSS.ju}>
                             <div className={journalCSS.predm}>
                                 <div className={journalCSS.days}>
                                     <div className={journalCSS.daysGrid} style={{gridTemplate: "15vh /20vw repeat(" + (pari.maxEl + jourInfo.pers.length + 1) + ", 2vw)"}}>
@@ -458,7 +493,7 @@ export function Journal() {
                                 </div>
                             </div>
                         </div>
-                        <div className={journalCSS.blockInstrum}>
+                        <div className={journalCSS.blockInstrum+" "+journalCSS.ju}>
                             <div className={journalCSS.blockMarks}>
                                 <div className={journalCSS.marks} data-tr>
                                     <div className={journalCSS.nav_i} id={journalCSS.nav_i} data-ac="0" onClick={() => dispatch(changePjournal("mar", 1))}>
@@ -487,7 +522,7 @@ export function Journal() {
                                     </div>
                                 </div>
                                 <div className={journalCSS.nav_i} id={journalCSS.nav_i}>
-                                    Выставить оценку
+                                    Выбрать оценку
                                 </div>
                             </div>
                             <div className={journalCSS.blockTypes}>
@@ -549,11 +584,42 @@ export function Journal() {
                                     </div>
                                 </div>
                                 <div className={journalCSS.nav_i} id={journalCSS.nav_i}>
-                                    Выставить тип оценки
+                                    Выбрать тип оценки
                                 </div>
                             </div>
-                            <div className={journalCSS.nav_i} id={journalCSS.nav_i}>
+                            <div className={journalCSS.nav_i+" "+journalCSS.dbut} id={journalCSS.nav_i} onClick={onEdit}>
                                 Задать домашнее задание
+                            </div>
+                        </div>
+                        <div className={journalCSS.blockDom+" "+journalCSS.dom}>
+                            <div className={journalCSS.day}>
+                                <div className={journalCSS.nav_i+" "+journalCSS.nav_iJur} id={journalCSS.nav_i}>
+                                    Дата
+                                </div>
+                                <div className={journalCSS.nav_i+" "+journalCSS.nav_iJur} id={journalCSS.nav_i}>
+                                    Домашнее задание
+                                </div>
+                                {Object.getOwnPropertyNames(jourInfo.jur.day).reverse().map(param =>
+                                    <>
+                                        <div className={journalCSS.nav_i+" "+journalCSS.nav_iJur} id={journalCSS.nav_i}>
+                                            {jourInfo.jur.day[param]}
+                                        </div>
+                                        <div className={journalCSS.nav_i+" "+journalCSS.nav_iJur} id={journalCSS.nav_i} data-st="0">
+                                            <pre className={journalCSS.field+" "+journalCSS.fi}>
+                                                {jourInfo.dz[param] ? jourInfo.dz[param] : <br/>}
+                                            </pre>
+                                            <textarea className={journalCSS.inp+" "+journalCSS.in+" "+journalCSS.inparea} id={"inpd_" + param} defaultValue={jourInfo.dz[param]} onChange={chStatM}/>
+                                            <img className={journalCSS.imginp+" yes "+journalCSS.in} src={yes} onClick={onFinM} title="Подтвердить изменения" alt=""/>
+                                            <img className={journalCSS.imginp+" "+journalCSS.in} src={no} onClick={onClose} title="Отменить изменения и выйти из режима редактирования" alt=""/>
+                                            <img className={journalCSS.imgfield+" "+journalCSS.fi} src={ed} onClick={onEdit} title="Редактировать" alt=""/>
+                                        </div>
+                                    </>
+                                )}
+                            </div>
+                        </div>
+                        <div className={journalCSS.blockInstrum+" "+journalCSS.dom}>
+                            <div className={journalCSS.nav_i+" "+journalCSS.dbut} id={journalCSS.nav_i} onClick={onClose}>
+                                Вернуться к журналу
                             </div>
                         </div>
                     </>

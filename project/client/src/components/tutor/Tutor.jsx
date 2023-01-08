@@ -23,6 +23,15 @@ import kizo17 from "../../media/tutor/kids/izo17.png";
 import kizo18 from "../../media/tutor/kids/izo18.png";
 import kizo19 from "../../media/tutor/kids/izo19.png";
 import pizo1 from "../../media/tutor/parents/izo1.png";
+import tizo1 from "../../media/tutor/teachers/tizo1.png";
+import tizo2 from "../../media/tutor/teachers/tizo2.png";
+import tizo3 from "../../media/tutor/teachers/tizo3.png";
+import tizo4 from "../../media/tutor/teachers/tizo4.png";
+import tizo5 from "../../media/tutor/teachers/tizo5.png";
+import tizo6 from "../../media/tutor/teachers/tizo6.png";
+import tizo7 from "../../media/tutor/teachers/tizo7.png";
+import tizo8 from "../../media/tutor/teachers/tizo8.png";
+import tizo9 from "../../media/tutor/teachers/tizo9.png";
 import {setActived} from "../main/Main";
 import knopka from "../../media/dnevnik/knopka.png";
 
@@ -103,12 +112,18 @@ export function Tutor() {
                             <div className={tutorCSS.nav_i+" "+tutorCSS.zag1} id={tutorCSS.nav_i} onClick={() => (goTo("pep"))}>
                                 Люди
                             </div>
-                            <div className={tutorCSS.nav_i+" "+tutorCSS.zag1} id={tutorCSS.nav_i} onClick={() => (goTo("dnev"))}>
-                                Дневник
-                            </div>
-                            <div className={tutorCSS.nav_i+" "+tutorCSS.zag1} id={tutorCSS.nav_i} onClick={() => (goTo("ana"))}>
-                                Аналитика
-                            </div>
+                            {cState.role < 2 && <div className={tutorCSS.nav_i+" "+tutorCSS.zag1} id={tutorCSS.nav_i} onClick={() => (goTo("dnev"))}>
+                                    Дневник
+                                </div>
+                            }
+                            {cState.role < 2 && <div className={tutorCSS.nav_i+" "+tutorCSS.zag1} id={tutorCSS.nav_i} onClick={() => (goTo("ana"))}>
+                                    Аналитика
+                                </div>
+                            }
+                            {cState.role == 2 && <div className={tutorCSS.nav_i+" "+tutorCSS.zag1} id={tutorCSS.nav_i} onClick={() => (goTo("jur"))}>
+                                    Журнал
+                                </div>
+                            }
                             <div className={tutorCSS.nav_i+" "+tutorCSS.zag1} id={tutorCSS.nav_i} onClick={() => (goTo("prof"))}>
                                 Профиль
                             </div>
@@ -388,65 +403,219 @@ export function Tutor() {
                                 </div>
                             </div>
                         </div>
-                        <div className={tutorCSS.nav_iZag} id="dnev">
-                            <div className={tutorCSS.nav_i} id={tutorCSS.nav_i}>
-                                Дневник
-                            </div>
-                            <div>
-                                <div className={tutorCSS.nav_i+" "+tutorCSS.zag1} id={tutorCSS.nav_i} onClick={visB}>
-                                    Пользование
+                        {cState.role < 2 && <div className={tutorCSS.nav_iZag} id="dnev">
+                                <div className={tutorCSS.nav_i} id={tutorCSS.nav_i}>
+                                    Дневник
                                 </div>
-                                <div className={tutorCSS.blockOtv}>
-                                    <div className={tutorCSS.zag}>
-                                        <div className={tutorCSS.nav_i+" "+tutorCSS.zag2}>
-                                            Для того чтобы перейти к прошедшей неделе, необходимо проскроллить вверх, а
-                                            для перехода к следующей, сделать наоборот.<br/>
-                                            При наличии типа оценки, к примеру "Тест", можно навести мышь на оценку и
-                                            тип проявится.<br/>
-                                            При весе оценки больше одного, вес показывается.<br/>
-                                            Границы недель обозначены.<br/>
-                                            При достаточном отдалении от текущей недели появляется кнопка для мгновенного
-                                            перехода к текущей неделе.
-                                        </div>
-                                        <div className={tutorCSS.blockImg}>
-                                            <img src={kizo16} alt=""/>
-                                            <div className={tutorCSS.nav_i+" "+tutorCSS.zag2}>
-                                                Страница "Дневник"
+                                <div>
+                                    <div className={tutorCSS.nav_i + " " + tutorCSS.zag1} id={tutorCSS.nav_i}
+                                         onClick={visB}>
+                                        Пользование
+                                    </div>
+                                    <div className={tutorCSS.blockOtv}>
+                                        <div className={tutorCSS.zag}>
+                                            <div className={tutorCSS.nav_i + " " + tutorCSS.zag2}>
+                                                Для того чтобы перейти к прошедшей неделе, необходимо проскроллить вверх, а
+                                                для перехода к следующей, сделать наоборот.<br/>
+                                                При наличии типа оценки, к примеру "Тест", можно навести мышь на оценку и
+                                                тип проявится.<br/>
+                                                При весе оценки больше одного, вес показывается.<br/>
+                                                Границы недель обозначены.<br/>
+                                                При достаточном отдалении от текущей недели появляется кнопка для
+                                                мгновенного
+                                                перехода к текущей неделе.
+                                            </div>
+                                            <div className={tutorCSS.blockImg}>
+                                                <img src={kizo16} alt=""/>
+                                                <div className={tutorCSS.nav_i + " " + tutorCSS.zag2}>
+                                                    Страница "Дневник"
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div className={tutorCSS.nav_iZag} id="ana">
+                        }
+                        {cState.role < 2 && <div className={tutorCSS.nav_iZag} id="ana">
+                                <div className={tutorCSS.nav_i} id={tutorCSS.nav_i}>
+                                    Аналитика
+                                </div>
+                                <div>
+                                    <div className={tutorCSS.nav_i + " " + tutorCSS.zag1} id={tutorCSS.nav_i}
+                                         onClick={visB}>
+                                        Журнал
+                                    </div>
+                                    <div className={tutorCSS.blockOtv}>
+                                        <div className={tutorCSS.zag}>
+                                            <div className={tutorCSS.nav_i + " " + tutorCSS.zag2}>
+                                                Над оценками показываются даты. Изначально показываются даты первой
+                                                дисциплины по списку. Чтобы показать числа выставления оценок других
+                                                дисциплин, необходимо навести мышь на линию интересующего вас предмета.<br/>
+                                                Если оценка имеет вес более 1, то показывается рядом с оценкой.<br/>
+                                                Если педагог уточнил тип оценки, то ниже журнала, появится соответствующая
+                                                запись, с датой и типом оценки.<br/>
+                                                Также если оценок много, то для удобства появляется возможность скроллить.
+                                            </div>
+                                            <div className={tutorCSS.blockImg}>
+                                                <img src={kizo17} alt=""/>
+                                                <div className={tutorCSS.nav_i + " " + tutorCSS.zag2}>
+                                                    Страница "Журнал"
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        {cState.role == 2 && <div className={tutorCSS.nav_iZag} id="jur">
                             <div className={tutorCSS.nav_i} id={tutorCSS.nav_i}>
-                                Аналитика
+                                Журнал
                             </div>
                             <div>
-                                <div className={tutorCSS.nav_i+" "+tutorCSS.zag1} id={tutorCSS.nav_i} onClick={visB}>
-                                    Журнал
+                                <div className={tutorCSS.nav_i + " " + tutorCSS.zag1} id={tutorCSS.nav_i} onClick={visB}>
+                                    Пользование
                                 </div>
                                 <div className={tutorCSS.blockOtv}>
                                     <div className={tutorCSS.zag}>
-                                        <div className={tutorCSS.nav_i+" "+tutorCSS.zag2}>
-                                            Над оценками показываются даты. Изначально показываются даты первой
-                                            дисциплины по списку. Чтобы показать числа выставления оценок других
-                                            дисциплин, необходимо навести мышь на линию интересующего вас предмета.<br/>
+                                        <div className={tutorCSS.nav_i + " " + tutorCSS.zag2}>
+                                            Над оценками показываются даты.<br/>
                                             Если оценка имеет вес более 1, то показывается рядом с оценкой.<br/>
-                                            Если педагог уточнил тип оценки, то ниже журнала, появится соответствующая
-                                            запись, с датой и типом оценки.<br/>
-                                            Также если оценок много, то для удобства появляется возможность скроллить.
+                                            Также если оценок много, то для удобства появляется возможность скроллить.<br/>
+                                            Для работы с журналом необходимо выбрать нужную оценку и тип. После чего,
+                                            нажать на интересующую клетку.
                                         </div>
                                         <div className={tutorCSS.blockImg}>
-                                            <img src={kizo17} alt=""/>
-                                            <div className={tutorCSS.nav_i+" "+tutorCSS.zag2}>
+                                            <img src={tizo1} alt=""/>
+                                            <div className={tutorCSS.nav_i + " " + tutorCSS.zag2}>
                                                 Страница "Журнал"
                                             </div>
                                         </div>
                                     </div>
                                 </div>
+                                <div className={tutorCSS.nav_i + " " + tutorCSS.zag1} id={tutorCSS.nav_i} onClick={visB}>
+                                    Смена групп
+                                </div>
+                                <div className={tutorCSS.blockOtv}>
+                                    <div className={tutorCSS.zag}>
+                                        <div className={tutorCSS.nav_i + " " + tutorCSS.zag2}>
+                                            При необходимости, можно переключаться между группами.<br/>
+                                            Не уместившиеся группы можно найти в меню-троеточии, наведя на него мышь.
+                                        </div>
+                                        <div className={tutorCSS.blockImg}>
+                                            <img src={tizo2} alt=""/>
+                                            <div className={tutorCSS.nav_i + " " + tutorCSS.zag2}>
+                                                Не уместившиеся группы
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className={tutorCSS.nav_i + " " + tutorCSS.zag1} id={tutorCSS.nav_i} onClick={visB}>
+                                    Смена предмета
+                                </div>
+                                <div className={tutorCSS.blockOtv}>
+                                    <div className={tutorCSS.zag}>
+                                        <div className={tutorCSS.nav_i + " " + tutorCSS.zag2}>
+                                            Можно переключаться между дисциплинами.<br/>
+                                            Наведя мышь, на текущую дисциплину, откроется меню переключения.
+                                        </div>
+                                        <div className={tutorCSS.blockImg}>
+                                            <img src={tizo3} alt=""/>
+                                            <div className={tutorCSS.nav_i + " " + tutorCSS.zag2}>
+                                                Иллюстрация меню переключения
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className={tutorCSS.nav_i + " " + tutorCSS.zag1} id={tutorCSS.nav_i} onClick={visB}>
+                                    Выбор оценки
+                                </div>
+                                <div className={tutorCSS.blockOtv}>
+                                    <div className={tutorCSS.zag}>
+                                        <div className={tutorCSS.nav_i + " " + tutorCSS.zag2}>
+                                            По умолчанию, включён режим "без оценки", чтобы обойтись без случайностей.<br/>
+                                            Переключение режимов происходит путём нажатия на интересующие кнопки.<br/>
+                                            Ограничение: "Н" нельзя ставить в итоговые оценки.
+                                        </div>
+                                        <div className={tutorCSS.blockImg}>
+                                            <img src={tizo4} alt=""/>
+                                            <div className={tutorCSS.nav_i + " " + tutorCSS.zag2}>
+                                                Выбор оценки
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className={tutorCSS.nav_i + " " + tutorCSS.zag1} id={tutorCSS.nav_i} onClick={visB}>
+                                    Выбор типа оценки
+                                </div>
+                                <div className={tutorCSS.blockOtv}>
+                                    <div className={tutorCSS.zag}>
+                                        <div className={tutorCSS.nav_i + " " + tutorCSS.zag2}>
+                                            По умолчанию, включён режим "ластик", он позволяет стереть описание оценки
+                                            и установить обычный вес оценки(1).<br/>
+                                            Переключение режимов происходит путём нажатия на интересующие кнопки.<br/>
+                                            Возможно удалить существущий тип оценки, при помощи нажатия на красный крест.<br/>
+                                            Ограничение: на "Н" нельзя устанавливать тип оценки, нельзя установить тип на итоговую оценку.
+                                        </div>
+                                        <div className={tutorCSS.blockImg}>
+                                            <img src={tizo5} alt=""/>
+                                            <div className={tutorCSS.nav_i + " " + tutorCSS.zag2}>
+                                                Выбор типа оценки
+                                            </div>
+                                        </div>
+                                        <div className={tutorCSS.nav_i + " " + tutorCSS.zag2}>
+                                            Также возможно изменить существующий тип оценки или добавить новый.<br/>
+                                            Нажатием на зелёную галочку, произойдёт подтверждение изменений. Если она
+                                            не активна, значит не соблюдается какое-то из ограничений.<br/>
+                                            Красный крест, отменит изменения и выключит режим редактирования.<br/>
+                                            Ограничение: в поле "тип" можно вписать только символы латиницы, кириллицы,
+                                            пробел и цифры, в поле "вес" можно вписать только цифры, поля должны быть
+                                            не пустыми.
+                                        </div>
+                                        <div className={tutorCSS.blockImg}>
+                                            <img src={tizo6} alt=""/>
+                                            <div className={tutorCSS.nav_i + " " + tutorCSS.zag2}>
+                                                Изменение типа оценки
+                                            </div>
+                                        </div>
+                                        <div className={tutorCSS.blockImg}>
+                                            <img src={tizo7} alt=""/>
+                                            <div className={tutorCSS.nav_i + " " + tutorCSS.zag2}>
+                                                Иллюстрация добавления типа оценки
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className={tutorCSS.nav_i + " " + tutorCSS.zag1} id={tutorCSS.nav_i} onClick={visB}>
+                                    Домашние задания
+                                </div>
+                                <div className={tutorCSS.blockOtv}>
+                                    <div className={tutorCSS.zag}>
+                                        <div className={tutorCSS.nav_i + " " + tutorCSS.zag2}>
+                                            Возможно изменять или добавлять новые домашние задания.<br/>
+                                            Для этого необходимо нажать на синий карандаш в соответствующем поле.
+                                        </div>
+                                        <div className={tutorCSS.blockImg}>
+                                            <img src={tizo8} alt=""/>
+                                            <div className={tutorCSS.nav_i + " " + tutorCSS.zag2}>
+                                                Домашние задания
+                                            </div>
+                                        </div>
+                                        <div className={tutorCSS.nav_i + " " + tutorCSS.zag2}>
+                                            Функционал редактирования домашних заданий аналогичен редактированиию типов
+                                            оценок. В дополнение к нему, имеется поддержка многострочности.<br/>
+                                            Ограничение: поле должно быть не пустым.
+                                        </div>
+                                        <div className={tutorCSS.blockImg}>
+                                            <img src={tizo9} alt=""/>
+                                            <div className={tutorCSS.nav_i + " " + tutorCSS.zag2}>
+                                                Редактирование домашних заданий
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
+                        }
                         <div className={tutorCSS.nav_iZag} id="prof">
                             <div className={tutorCSS.nav_i} id={tutorCSS.nav_i}>
                                 Профиль

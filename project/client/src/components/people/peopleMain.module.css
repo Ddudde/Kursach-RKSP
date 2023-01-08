@@ -16,7 +16,7 @@
 	height: 7vh;
 	display: grid;
 	place-items: center;
-	grid-template: auto/repeat(5,1fr);
+	grid-template: auto/repeat(auto-fit,minmax(10px, 1fr));
 	justify-items: stretch;
 	z-index: 1;
 }

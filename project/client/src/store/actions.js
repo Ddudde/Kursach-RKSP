@@ -17,6 +17,7 @@ export const CHANGE_PJOURNAL_DEL_PER_MARKS = "CHANGE_PJOURNAL_DEL_PER_MARKS";
 export const CHANGE_PJOURNAL_TYPE = "CHANGE_PJOURNAL_TYPE";
 export const CHANGE_PJOURNAL_DEL_TYPE = "CHANGE_PJOURNAL_DEL_TYPE";
 export const CHANGE_PJOURNAL_NEW_TYPE = "CHANGE_PJOURNAL_NEW_TYPE";
+export const CHANGE_PJOURNAL_DZ = "CHANGE_PJOURNAL_DZ";
 export const CHANGE_TEACHERS = "CHANGE_TEACHERS";
 export const CHANGE_HTEACHERS = "CHANGE_HTEACHERS";
 export const CHANGE_CLASSMATES = "CHANGE_CLASSMATES";
@@ -82,6 +83,15 @@ export function changeJType(pret, t, st) {
     };
 }
 
+export function changeDZ(dz, st) {
+    return { type: CHANGE_PJOURNAL_DZ,
+        payload: {
+            dz: dz,
+            st: st
+        }
+    };
+}
+
 export function changePjournalMarks(kid, day, mark, st, per, typ, wei) {
     if(per != undefined){
         if(mark == "Л") {
@@ -113,7 +123,7 @@ export function changePjournalMarks(kid, day, mark, st, per, typ, wei) {
         st = {
             ...st,
             mark : mark,
-            weight : mark == "Н" ? 1 : st.weight
+            weight : mark == "Н" || typ == "" ? 1 : st.weight
         }
         if(typ != "") st["type"] = typ;
         if(wei) st["weight"] = mark == "Н" ? 1 : wei;
