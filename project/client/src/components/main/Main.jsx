@@ -11,10 +11,40 @@ import profl from "../../media/profl.png";
 import mapd from "../../media/Map_symbolD.png";
 import mapl from "../../media/Map_symbolL.png";
 
-let act = ".panGL", elems = 0, cState, dispatch, theme;
+let act, cState, dispatch, theme;
+act = ".panGL";
+export let thP = {
+    true: {
+        c: "theme_light",
+        p: "theme_dark",
+        params: {
+            "--bgcV1": "#DBDBDBe6",
+            "--bgcV2": "#242424e6",
+            "--bgcV3": "#000000b3",
+            "--cV1": "#006600",
+            "--cV2": "#009900",
+            "--cV3": "#090a0b",
+            "--bcV1": "#4d4d4d",
+            "--bcV2": "#090a0b",
+        }
+    },
+    false: {
+        c: "theme_dark",
+        p: "theme_light",
+        params: {
+            "--bgcV1": "#242424e6",
+            "--bgcV2": "#DBDBDBe6",
+            "--bgcV3": "#0000004d",
+            "--cV1": "#009900",
+            "--cV2": "#00bb00",
+            "--cV3": "#f5f6f7",
+            "--bcV1": "#b3b3b3",
+            "--bcV2": "#f5f6f7",
+        }
+    }
+}
 
-function getPan(name, namecl, link, inc, dopClass, fun) {
-    if(!inc) elems++;
+function getPan(name, namecl, link, dopClass, fun) {
     let cl = "pan" + namecl;
     return fun ? (
         <div className={main.nav_i+" "+cl+" "+(dopClass ? dopClass : "")} id={main.nav_i} onClick={fun}>
@@ -28,7 +58,6 @@ function getPan(name, namecl, link, inc, dopClass, fun) {
 }
 
 function getLogin() {
-    elems++;
     return (
         <div className={main.logBlock}>
             <div className={main.nav_i+' '+main.log} id={main.nav_i}>
@@ -37,17 +66,16 @@ function getLogin() {
                 <div className={main.logText}>Я - {cState.roleDesc}</div>
             </div>
             <div className={main.logMenu}>
-                {getPan("Профиль", "Pro", "profiles", true, main.logMenuBlock)}
-                {cState.roles && getPan("Сменить роль", "Rol", "", true, main.logMenuBlock,() => {chRoles()})}
-                {getPan("Настройки", "Set", "settings", true, main.logMenuBlock)}
-                {getPan("Выход", "Exi", "", true, main.logMenuBlock,() => {onExit()})}
+                {getPan("Профиль", "Pro", "profiles", main.logMenuBlock)}
+                {cState.roles && getPan("Сменить роль", "Rol", "", main.logMenuBlock,() => {chRoles()})}
+                {getPan("Настройки", "Set", "settings", main.logMenuBlock)}
+                {getPan("Выход", "Exi", "", main.logMenuBlock,() => {onExit()})}
             </div>
         </div>
     )
 }
 
 function getKids() {
-    elems++;
     return (
         <div className={main.logBlock}>
             <div className={main.nav_i+' '+main.kidEl} id={main.nav_i}>
@@ -88,17 +116,23 @@ export function setActived(name) {
     }
 }
 
+function ini(stat) {
+    document.body.setAttribute(thP[stat].c, '');
+    if(document.body.hasAttribute(thP[stat].p)) document.body.removeAttribute(thP[stat].p)
+    Object.getOwnPropertyNames(thP[stat].params).map((param) =>{
+        document.documentElement.style.setProperty(param, thP[stat].params[param]);
+    });
+}
+
 export function Main() {
     theme = useSelector(themes);
     cState = useSelector(states);
     const isFirstUpdate = useRef(true);
     dispatch = useDispatch();
     useEffect(() => {
-        if(isFirstUpdate.current) return;
         console.log("I was triggered during componentDidMount Main.jsx");
         def.ini();
-        const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
-        dispatch(changeTheme(prefersDarkScheme));
+        ini(theme.theme_ch);
         return function() {
             console.log("I was triggered during componentWillUnmount Main.jsx")
         }
@@ -108,7 +142,6 @@ export function Main() {
             isFirstUpdate.current = false;
             return;
         }
-        elems = 0;
         console.log('componentDidUpdate Main.jsx');
     });
     return (
@@ -117,7 +150,7 @@ export function Main() {
                 <div/>
                 <div/>
             </div>
-            <nav className={main.panel} style={{gridTemplate: "auto/repeat("+elems+",1fr)"}} id="her">
+            <nav className={main.panel} id="her">
                 {!cState.auth && getPan("Главная", "GL", "/")}
                 {getPan("Объявления", "New", "news")}
                 {getPan("Контакты", "Con", "contacts")}

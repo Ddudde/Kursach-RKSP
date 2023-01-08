@@ -93,7 +93,6 @@ export function Dnevnik() {
     dispatch = useDispatch();
     const isFirstUpdate = useRef(true);
     useEffect(() => {
-        if(isFirstUpdate.current) return;
         console.log("I was triggered during componentDidMount Dnevnik.jsx");
         window.onwheel = (e) => {
             if(!scrolling) {

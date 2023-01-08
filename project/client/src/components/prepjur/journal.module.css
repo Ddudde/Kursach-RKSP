@@ -283,3 +283,191 @@
 	position: relative;
 	margin-block: 0.75vw;
 }
+
+.blockInstrum{
+	position: absolute;
+	right: 0;
+	top: 7vh;
+	margin: 1vmax;
+    display: grid;
+}
+
+.blockInstrum > .nav_i{
+	margin-bottom: 1vmax;
+	height: 3vmax;
+    width: fit-content;
+    justify-self: end;
+}
+
+.marks, .types{
+    display: flex;
+	border: 1px solid var(--bcV1);
+	cursor: pointer;
+	align-items: center;
+	justify-content: center;
+	align-self: stretch;
+	-webkit-transition: color 1s 5s ease;
+	-o-transition: color 1s 5s ease;
+	transition: color 1s 5s ease;
+	transition-property: border-color, background-color, opacity;
+	background-color: var(--bgcV1);
+	border-radius: 5px;
+    padding: 1vw;
+    gap: 1vw;
+    opacity: 0;
+}
+
+.marks > .nav_i{
+    padding-inline: 1vw;
+}
+
+.types > .nav_i{
+    padding: 0.2vw 1vw;
+	height: 100%;
+}
+
+.blockTypes > .nav_i{
+    padding: 0.2vw 1vw;
+}
+
+.types{
+	display: grid;
+	overflow-y: scroll;
+	align-self: center;
+	height: 300%;
+	position: absolute;
+	left: 0;
+}
+
+.types1{
+	height: unset;
+	position: unset;
+	pointer-events: none;
+	visibility: hidden;
+}
+
+.marks > .nav_i[data-ac="1"], .types > .nav_i[data-ac="1"]{
+	background-color: var(--bgcV2);
+}
+
+.blockTypes{
+	position: relative;
+}
+
+.blockMarks, .blockTypes{
+    display: flex;
+    margin-bottom: 1vmax;
+    justify-content: end;
+}
+
+.blockMarks > .nav_i, .blockTypes > .nav_i{
+    height: 3vmax;
+    margin-left: 1vw;
+    align-self: center;
+}
+
+.blockMarks:hover .marks, .blockTypes:hover .types{
+    transition-delay: unset;
+    opacity: 1;
+}
+
+.blockMarks:not(:hover) .marks[data-tr], .blockTypes:not(:hover) .types[data-tr]{
+    pointer-events: none;
+    position: absolute;
+}
+
+.nav_iTextPer{
+    color: #990000;
+	font-family: "Times New Roman";
+}
+
+.nav_iTextPer[data-s="1"]{
+    transform: rotateZ(270deg);
+	font-family: unset;
+}
+
+.imger{
+	width: 2vw;
+	pointer-events: none;
+}
+
+.nav_iZag{
+	border: 1px solid var(--bcV1);
+	border-radius: 5px;
+	padding-left: 0.5vw;
+	padding-block: 0.5vw;
+}
+
+.chPass{
+	text-decoration: underline;
+	cursor: pointer;
+	margin-block: 1vw;
+	transition-delay: unset;
+	border: none;
+	background-color: unset;
+	display: none;
+}
+
+.field, .preinf{
+	display: none;
+	vertical-align: middle;
+	margin-left: 0.2vw;
+}
+
+.field{
+	margin-left: 5px;
+}
+
+.blNew{
+	display: none;
+	transition-delay: unset;
+	border: none;
+	background-color: unset;
+	display: none;
+}
+
+.nav_i[data-st='0'] > .fi, .nav_i[data-st='1'] > .in, .nav_iZag .in{
+	display: inline-block;
+}
+
+.nav_iZag[data-st='0'] > .chPass, .nav_iZag[data-st='1'] > .blNew{
+	display: flex;
+}
+
+.imginp, .imgfield{
+	width: 1vw;
+	vertical-align: middle;
+	cursor: pointer;
+	margin-left: 1vw;
+	display: none;
+}
+
+.inp {
+	-webkit-border-radius: 0.5vmax;
+	border-radius: 0.5vmax;
+	background-color: #4d4d4d;
+	user-select: none;
+	-webkit-box-shadow: 0 1px white, inset 0 2px 2px rgba(0, 0, 0, 0.1);
+	box-shadow: 0 1px white, inset 0 2px 2px rgba(0, 0, 0, 0.1);
+	border: 1px solid var(--bcV2);
+	height: 7vh;
+	position:relative;
+	transition: background-color 1s ease;
+	transition-property: background-color, border-color;
+	vertical-align: middle;
+	display: none;
+	width: 10vw;
+	font-size: 1.25vw;
+	padding: 0;
+	padding-left: 1vw;
+	margin-left: 1vw;
+}
+
+img.in[data-enable="0"] {
+	pointer-events: none;
+	opacity: 0.4;
+}
+
+.mass{
+	width: 2vw;
+}

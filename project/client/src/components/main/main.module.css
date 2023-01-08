@@ -70,6 +70,7 @@
 	place-items: center;
 	justify-items: stretch;
 	gap: 1vmin;
+	grid-template: auto/repeat(auto-fit,minmax(10px, 1fr));
 	z-index: 2;
 }
 

@@ -89,7 +89,6 @@ export function Settings() {
     const cState = useSelector(states);
     const isFirstUpdate = useRef(true);
     useEffect(() => {
-        if(isFirstUpdate.current) return;
         setActived(".panSet");
         console.log("I was triggered during componentDidMount Settings.jsx");
         warner = document.getElementsByClassName("warner")[0];

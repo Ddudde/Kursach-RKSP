@@ -17,7 +17,6 @@ export function Admins() {
     dispatch = useDispatch();
     const isFirstUpdate = useRef(true);
     useEffect(() => {
-        if(isFirstUpdate.current) return;
         console.log("I was triggered during componentDidMount Admins.jsx");
         // dispatch(changeContacts("Por", "imageUrl", '/media/tuman.jpg'));
         // dispatch(changeContacts("Por", "imageUrl"));

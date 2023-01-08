@@ -1,8 +1,10 @@
 import {CHANGE_THEME} from '../../actions';
 
+let x = !window.matchMedia('(prefers-color-scheme: dark)');
+
 const initialState = {
-    theme_ch: false,
-    theme: "тёмная"
+    theme_ch: x,
+    theme: x ? "светлая" : "тёмная"
 };
 
 export default function themeReducer(state = initialState, action) {

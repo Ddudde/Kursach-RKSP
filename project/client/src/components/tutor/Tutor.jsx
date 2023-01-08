@@ -62,7 +62,6 @@ export function Tutor() {
     dispatch = useDispatch();
     const isFirstUpdate = useRef(true);
     useEffect(() => {
-        if(isFirstUpdate.current) return;
         console.log("I was triggered during componentDidMount Tutor.jsx");
         setActived(".panKid");
         window.onwheel = (e) => {

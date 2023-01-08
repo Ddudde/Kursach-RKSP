@@ -18,7 +18,6 @@ export function ContactYo() {
     dispatch = useDispatch();
     const isFirstUpdate = useRef(true);
     useEffect(() => {
-        if(isFirstUpdate.current) return;
         console.log("I was triggered during componentDidMount ContactYo.jsx");
         // dispatch(changeContacts("Yo", "imageUrl", '/media/tuman.jpg'));
         // dispatch(changeContacts("Yo", "imageUrl"));

@@ -9,15 +9,13 @@ import {BrowserRouter} from "react-router-dom";
 import App from "./App";
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-    <React.StrictMode>
-        <BrowserRouter>
-            <HelmetProvider>
-                    <Provider store={store}>
-                        <App/>
-                    </Provider>
-            </HelmetProvider>
-        </BrowserRouter>
-    </React.StrictMode>
+    <BrowserRouter>
+        <HelmetProvider>
+                <Provider store={store}>
+                    <App/>
+                </Provider>
+        </HelmetProvider>
+    </BrowserRouter>
 );
 
 // If you want to start measuring performance in your app, pass a function

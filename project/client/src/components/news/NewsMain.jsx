@@ -22,7 +22,6 @@ export function NewsMain() {
     const cState = useSelector(states);
     const isFirstUpdate = useRef(true);
     useEffect(() => {
-        if(isFirstUpdate.current) return;
         console.log("I was triggered during componentDidMount NewsMain.jsx");
         setActivedMy(act_new);
         return function() {

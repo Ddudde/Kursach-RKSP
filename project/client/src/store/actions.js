@@ -1,3 +1,5 @@
+import {thP} from "../components/main/Main";
+
 export const CHANGE_CHECKBOX = "CHANGE_CHECKBOX";
 export const CHANGE_THEME = "CHANGE_THEME";
 export const CHANGE_STATE = "CHANGE_STATE";
@@ -8,6 +10,13 @@ export const CHANGE_PROFILE_ROLES = "CHANGE_PROFILE_ROLES";
 export const CHANGE_SCHEDULE = "CHANGE_SCHEDULE";
 export const CHANGE_JOURNAL = "CHANGE_JOURNAL";
 export const CHANGE_PJOURNAL = "CHANGE_PJOURNAL";
+export const CHANGE_PJOURNAL_MARKS = "CHANGE_PJOURNAL_MARKS";
+export const CHANGE_PJOURNAL_DEL_MARKS = "CHANGE_PJOURNAL_DEL_MARKS";
+export const CHANGE_PJOURNAL_PER_MARKS = "CHANGE_PJOURNAL_PER_MARKS";
+export const CHANGE_PJOURNAL_DEL_PER_MARKS = "CHANGE_PJOURNAL_DEL_PER_MARKS";
+export const CHANGE_PJOURNAL_TYPE = "CHANGE_PJOURNAL_TYPE";
+export const CHANGE_PJOURNAL_DEL_TYPE = "CHANGE_PJOURNAL_DEL_TYPE";
+export const CHANGE_PJOURNAL_NEW_TYPE = "CHANGE_PJOURNAL_NEW_TYPE";
 export const CHANGE_TEACHERS = "CHANGE_TEACHERS";
 export const CHANGE_HTEACHERS = "CHANGE_HTEACHERS";
 export const CHANGE_CLASSMATES = "CHANGE_CLASSMATES";
@@ -44,6 +53,86 @@ export function changeState(id, state, dispatch, roleDescrs) {
         payload: {
             stateId: id,
             cState: state
+        }
+    };
+}
+
+export function changeJType(pret, t, st) {
+    if(!pret) {
+        if(!st)
+            return { type: CHANGE_PJOURNAL_DEL_TYPE,
+                payload: {
+                    t: t
+                }
+            };
+        return {
+            type: CHANGE_PJOURNAL_NEW_TYPE,
+            payload: {
+                t: t,
+                st: st
+            }
+        };
+    }
+    return { type: CHANGE_PJOURNAL_TYPE,
+        payload: {
+            pret: pret,
+            t: t,
+            st: st
+        }
+    };
+}
+
+export function changePjournalMarks(kid, day, mark, st, per, typ, wei) {
+    if(per != undefined){
+        if(mark == "Л") {
+            return {
+                type: CHANGE_PJOURNAL_DEL_PER_MARKS,
+                payload: {
+                    kid: kid,
+                    per: per
+                }
+            };
+        }
+        return mark == 0 || mark == "Н" ? {type: "default", payload: undefined} : {
+            type: CHANGE_PJOURNAL_PER_MARKS,
+            payload: {
+                kid: kid,
+                per: per,
+                State: mark
+            }
+        };
+    }
+    if(st == undefined){
+        st = {
+            mark: mark
+        }
+        if(typ != "") st["type"] = typ;
+        if(wei) st["weight"] = mark == "Н" ? 1 : wei;
+        if(mark == "Л") mark = 0;
+    } else {
+        st = {
+            ...st,
+            mark : mark,
+            weight : mark == "Н" ? 1 : st.weight
+        }
+        if(typ != "") st["type"] = typ;
+        if(wei) st["weight"] = mark == "Н" ? 1 : wei;
+        if(mark == "Л") {
+            return {
+                type: CHANGE_PJOURNAL_DEL_MARKS,
+                payload: {
+                    kid: kid,
+                    day: day
+                }
+            };
+        }
+    }
+    return mark == 0 ? {type: "default", payload: undefined} : {
+        type: CHANGE_PJOURNAL_MARKS,
+        payload: {
+            kid: kid,
+            day: day,
+            State: st
         }
     };
 }
@@ -204,30 +293,12 @@ export function changeContacts(type, id, title, number) {
 
 export function changeTheme(themeState) {
     let stat = !themeState;
-    if (stat) {
-        document.body.setAttribute('theme_light', '');
-        if(document.body.hasAttribute("theme_dark")) document.body.removeAttribute("theme_dark")
-        document.documentElement.style.setProperty('--bgcV1', '#DBDBDBe6');
-        document.documentElement.style.setProperty('--bgcV2', '#242424e6');
-        document.documentElement.style.setProperty('--bgcV3', '#000000b3');
-        document.documentElement.style.setProperty('--cV1', '#006600');
-        document.documentElement.style.setProperty('--cV2', '#009900');
-        document.documentElement.style.setProperty('--cV3', '#090a0b');
-        document.documentElement.style.setProperty('--bcV1', '#4d4d4d');
-        document.documentElement.style.setProperty('--bcV2', '#090a0b');
-    } else {
-        document.body.setAttribute('theme_dark', '');
-        if(document.body.hasAttribute("theme_light")) document.body.removeAttribute("theme_light")
-        document.documentElement.style.setProperty('--bgcV1', '#242424e6');
-        document.documentElement.style.setProperty('--bgcV2', '#DBDBDBe6');
-        document.documentElement.style.setProperty('--bgcV3', '#0000004d');
-        document.documentElement.style.setProperty('--cV1', '#009900');
-        document.documentElement.style.setProperty('--cV2', '#00bb00');
-        document.documentElement.style.setProperty('--cV3', '#f5f6f7');
-        document.documentElement.style.setProperty('--bcV1', '#b3b3b3');
-        document.documentElement.style.setProperty('--bcV2', '#f5f6f7');
-    }
-    return { type: CHANGE_THEME, payload: stat};
+    document.body.setAttribute(thP[stat].c, '');
+    if(document.body.hasAttribute(thP[stat].p)) document.body.removeAttribute(thP[stat].p)
+    Object.getOwnPropertyNames(thP[stat].params).map((param) =>{
+        document.documentElement.style.setProperty(param, thP[stat].params[param]);
+    });
+    return {type: CHANGE_THEME, payload: stat};
 }
 
 export function changeIndNext(indState, res) {

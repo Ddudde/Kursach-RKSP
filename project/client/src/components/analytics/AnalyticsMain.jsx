@@ -19,7 +19,6 @@ export function setActNew(name) {
 export function AnalyticsMain() {
     const isFirstUpdate = useRef(true);
     useEffect(() => {
-        if(isFirstUpdate.current) return;
         console.log("I was triggered during componentDidMount AnalyticsMain.jsx");
         setActivedMy(act_new);
         return function() {

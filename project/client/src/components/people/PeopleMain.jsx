@@ -40,7 +40,6 @@ export function PeopleMain() {
     const cState = useSelector(states);
     const isFirstUpdate = useRef(true);
     useEffect(() => {
-        if(isFirstUpdate.current) return;
         lin = document.querySelector("#lin");
         console.log("I was triggered during componentDidMount PeopleMain.jsx");
         setActivedMy(act_new);

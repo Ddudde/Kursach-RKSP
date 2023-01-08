@@ -72,7 +72,6 @@ export function Start() {
     const isFirstUpdate = useRef(true);
     dispatch = useDispatch();
     useEffect(() => {
-        if(isFirstUpdate.current) return;
         console.log("I was triggered during componentDidMount Start.jsx")
         //get(dispatch);
         //del(9);

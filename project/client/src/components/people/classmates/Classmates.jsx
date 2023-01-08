@@ -17,7 +17,6 @@ export function Classmates() {
     dispatch = useDispatch();
     const isFirstUpdate = useRef(true);
     useEffect(() => {
-        if(isFirstUpdate.current) return;
         console.log("I was triggered during componentDidMount Classmates.jsx");
         // dispatch(changeContacts("Por", "imageUrl", '/media/tuman.jpg'));
         // dispatch(changeContacts("Por", "imageUrl"));

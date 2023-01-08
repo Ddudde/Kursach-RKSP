@@ -9,7 +9,6 @@ export function ErrNotFound() {
     const cState = useSelector(states);
     const isFirstUpdate = useRef(true);
     useEffect(() => {
-        if(isFirstUpdate.current) return;
         console.log("I was triggered during componentDidMount ErrNotFound.jsx");
         for(let el of document.querySelectorAll("." + errCSS.AppHeader + " *"))
             el.style.cssText += "background-color:" + window.getComputedStyle(el).backgroundColor + "; color:" + window.getComputedStyle(el).color + "; border-color:" + window.getComputedStyle(el).borderColor;

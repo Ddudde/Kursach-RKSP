@@ -93,7 +93,6 @@ export function Profile() {
     dispatch = useDispatch();
     const isFirstUpdate = useRef(true);
     useEffect(() => {
-        if(isFirstUpdate.current) return;
         setActived(".panPro");
         console.log("I was triggered during componentDidMount Profile.jsx");
         warner = document.getElementsByClassName("warner")[0];

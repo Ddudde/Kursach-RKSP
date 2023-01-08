@@ -1,4 +1,13 @@
-import {CHANGE_PJOURNAL} from '../actions';
+import {
+    CHANGE_PJOURNAL,
+    CHANGE_PJOURNAL_DEL_MARKS,
+    CHANGE_PJOURNAL_DEL_PER_MARKS,
+    CHANGE_PJOURNAL_DEL_TYPE,
+    CHANGE_PJOURNAL_MARKS,
+    CHANGE_PJOURNAL_NEW_TYPE,
+    CHANGE_PJOURNAL_PER_MARKS,
+    CHANGE_PJOURNAL_TYPE
+} from '../actions';
 
 const initialState = {
         predm: 1,
@@ -54,8 +63,14 @@ const initialState = {
             43: "1Г"
         },
         group: 1,
-        per: "",
-        posPer: true,
+        mar: 0,
+        pers: ["I", "Годовая", "Итоговая"],
+        typs: {
+            "Ответ на уроке": 1,
+            "Самостоятельная работа": 4,
+            "Контрольная работа": 5
+        },
+        typ: "",
         jur: {
             day: {
                 0 : "10.02.22",
@@ -90,7 +105,7 @@ const initialState = {
                 29 : "18.05.22"
             },
             kids: {
-                "Петров А.А.": {
+                'Петров А.А.': {
                     days: {
                         0: {
                             mark: 5,
@@ -238,11 +253,17 @@ const initialState = {
                         }
                     },
                     avg: {
-                        mark: "3.0"
+                        mark: "3.04",
+                        I: 2
                     }
                 },
-                "Петрова А.Б.": {
+                'Петрова А.Б.': {
                     days: {
+                        15: {
+                            mark: 5,
+                            weight: 1,
+                            type: "Ответ на уроке"
+                        },
                         27: {
                             mark: "Н",
                             weight: 1
@@ -251,13 +272,13 @@ const initialState = {
                             mark: 3,
                             weight: 4,
                             type: "Самостоятельная работа"
-                        },
+                        }
                     },
                     avg: {
                         mark: "3.0"
                     }
                 },
-                "Петрова А.В.": {
+                'Петрова А.В.': {
                     days: {
                         25: {
                             mark: 5,
@@ -271,13 +292,13 @@ const initialState = {
                         28: {
                             mark: "Н",
                             weight: 1
-                        },
+                        }
                     },
                     avg: {
                         mark: "3.0"
                     }
                 },
-                "Петрова А.Г.": {
+                'Петрова А.Г.': {
                     days: {
                         25: {
                             mark: "Н",
@@ -291,7 +312,7 @@ const initialState = {
                             mark: 3,
                             weight: 4,
                             type: "Самостоятельная работа"
-                        },
+                        }
                     },
                     avg: {
                         mark: "3.0"
@@ -302,12 +323,42 @@ const initialState = {
 };
 
 export default function pjournalReducer(state = initialState, action) {
+    let fd;
     switch(action.type) {
         case CHANGE_PJOURNAL:
             return {
                     ...state,
                     [action.payload.Id]: action.payload.State
                 };
+        case CHANGE_PJOURNAL_MARKS:
+            fd = {...state};
+            fd.jur.kids[action.payload.kid].days[action.payload.day] = action.payload.State;
+            return fd;
+        case CHANGE_PJOURNAL_DEL_MARKS:
+            fd = {...state};
+            delete fd.jur.kids[action.payload.kid].days[action.payload.day];
+            return fd;
+        case CHANGE_PJOURNAL_PER_MARKS:
+            fd = {...state};
+            fd.jur.kids[action.payload.kid].avg[action.payload.per] = action.payload.State;
+            return fd;
+        case CHANGE_PJOURNAL_DEL_PER_MARKS:
+            fd = {...state};
+            delete fd.jur.kids[action.payload.kid].avg[action.payload.per];
+            return fd;
+        case CHANGE_PJOURNAL_TYPE:
+            fd = {...state};
+            fd.typs = JSON.parse(JSON.stringify(fd.typs).replaceAll(action.payload.pret, action.payload.t));
+            fd.typs[action.payload.t] = action.payload.st;
+            return fd;
+        case CHANGE_PJOURNAL_DEL_TYPE:
+            fd = {...state};
+            delete fd.typs[action.payload.t];
+            return fd;
+        case CHANGE_PJOURNAL_NEW_TYPE:
+            fd = {...state};
+            fd.typs[action.payload.t] = action.payload.st;
+            return fd;
         default:
             return state;
     }

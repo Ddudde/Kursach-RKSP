@@ -22,7 +22,6 @@ export function ContactMain() {
     const cState = useSelector(states);
     const isFirstUpdate = useRef(true);
     useEffect(() => {
-        if(isFirstUpdate.current) return;
         console.log("I was triggered during componentDidMount ContactMain.jsx");
         setActivedMy(act_new);
         return function() {
