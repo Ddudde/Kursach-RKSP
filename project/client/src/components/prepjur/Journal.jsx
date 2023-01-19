@@ -1,7 +1,6 @@
 import React, {useEffect, useRef} from "react";
 import journalCSS from './journal.module.css';
 import {Helmet} from "react-helmet-async";
-import {Link} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 import {pjournal, states, themes} from "../../store/selector";
 import {setActived} from "../main/Main";
@@ -14,32 +13,110 @@ import eral from "../../media/eraserl.png";
 import no from "../../media/no.png";
 import ed from "../../media/edit.png";
 import yes from "../../media/yes.png";
+import AdminYO from "../adminYO/AdminYO";
 
-let act, act_new, lin, st, jourInfo, dispatch, theme, ev, timid, mor, lmor, lel, eles, gr, lma, lmal, pari, parb, inps, lty, ltyl;
-act = ".panYo";
-act_new = "";
-pari = {elems: 0, elems1: 0, maxEl: 0, paels: 0, lMonth: 0};
-parb = {mb: false, wmb: false, resiz: false, updf: false, updlb: false, upddel: false, updnew: false, lscr: false};
-eles = [];
-st = {};
+let jourInfo, dispatch, theme, lma, lmal, pari, parb, inps, lty, ltyl, gr, gr1;
+pari = {elems1: 0, maxEl: 0, lMonth: 0};
+parb = {upddel: false, updnew: false, lscr: false};
 inps = {};
-gr = {};
-
-function getPan(name, namecl, link, dopClass, fun, inc) {
-    let cl = "pan" + namecl;
-    st["."+cl] = pari.elems;
-    if (!inc) pari.elems++;
-    let cla = [journalCSS.nav_i, journalCSS.nav_iJur, "pa", cl, dopClass ? dopClass : ""].join(" ");
-    return fun ? (
-        <div className={cla} id={journalCSS.nav_i} onClick={fun} data-id={namecl}>
-            {name}
-        </div>
-    ) : (
-        <Link className={cla} id={journalCSS.nav_i} to={link} onClick={() => {setActivedMy("."+cl)}} data-id={namecl}>
-            {name}
-        </Link>
-    )
-}
+gr = {
+    groups: {
+        0: "11A",
+        1: "11Б",
+        2: "11В",
+        3: "11Г",
+        4: "10А",
+        5: "10Б",
+        6: "10В",
+        7: "10Г",
+        8: "9А",
+        9: "9Б",
+        10: "9В",
+        11: "9Г",
+        12: "8А",
+        13: "8Б",
+        14: "8В",
+        15: "8Г",
+        16: "7А",
+        17: "7Б",
+        18: "7В",
+        19: "7Г",
+        20: "6А",
+        21: "6Б",
+        22: "6В",
+        23: "6Г",
+        24: "5А",
+        25: "5Б",
+        26: "5В",
+        27: "5Г",
+        28: "4А",
+        29: "4Б",
+        30: "4В",
+        31: "4Г",
+        32: "3А",
+        33: "3Б",
+        34: "3В",
+        35: "3Г",
+        36: "2А",
+        37: "2Б",
+        38: "2В",
+        39: "2Г",
+        40: "1А",
+        41: "1Б",
+        42: "1В",
+        43: "1Г"
+    },
+    group: 1
+};
+gr1 = {
+    groups: {
+        0: "11A",
+        1: "11Б",
+        2: "11В",
+        3: "11Г",
+        4: "10А",
+        5: "10Б",
+        6: "10В",
+        7: "10Г",
+        8: "9А",
+        9: "9Б",
+        10: "9В",
+        11: "9Г",
+        12: "8А",
+        13: "8Б",
+        14: "8В",
+        15: "8Г",
+        16: "7А",
+        17: "7Б",
+        18: "7В",
+        19: "7Г",
+        20: "6А",
+        21: "6Б",
+        22: "6В",
+        23: "6Г",
+        24: "5А",
+        25: "5Б",
+        26: "5В",
+        27: "5Г",
+        28: "4А",
+        29: "4Б",
+        30: "4В",
+        31: "4Г",
+        32: "3А",
+        33: "3Б",
+        34: "3В",
+        35: "3Г",
+        36: "2А",
+        37: "2Б",
+        38: "2В",
+        39: "2Г",
+        40: "1А",
+        41: "1Б",
+        42: "1В",
+        43: "1Г"
+    },
+    group: 1
+};
 
 function getPredms() {
     pari.elems++;
@@ -182,78 +259,6 @@ function chM(kid, day, per) {
     dispatch(changePjournalMarks(kid, day, jourInfo.mar, jourInfo.jur.kids[kid].days[day], per, jourInfo.typ, jourInfo.typs[jourInfo.typ]));
 }
 
-function tim() {
-    if (parb.resiz) {
-        parb.resiz = false;
-        overpan();
-        setActivedMy(".pan" + jourInfo.group);
-    }
-}
-
-function getMore(el) {
-    if(!parb.mb) {
-        pari.elems++;
-        parb.mb = true;
-    }
-    return (
-        <>
-            <div className={journalCSS.nav_i+' '+journalCSS.nav_iJur+' '+journalCSS.predEl} id={journalCSS.nav_i}>
-                <div className={journalCSS.predInf}>...</div>
-            </div>
-            <div className={journalCSS.predMenu+" pre "+journalCSS.predMM} style={{width:parb.wmb?"200%":"100%"}}>
-                <div>
-                    {el.map(par =>
-                        par
-                    )}
-                </div>
-            </div>
-        </>
-    )
-}
-
-function overpan() {
-    let pan, wid, pa, morel, lin;
-    eles = [];
-    lin = document.querySelector("#lin");
-    morel = document.querySelector("#mor");
-    pan = document.querySelector("."+journalCSS.panel);
-    pa = document.querySelectorAll("."+journalCSS.panel + " > .pa");
-    for(let pae of pa) {
-        if(pae.style.display) pae.style.display = "";
-    }
-    if(morel) mor = React.cloneElement( mor, { style: {display: "none"}});
-    lin.style.display = "none";
-    wid = pan.scrollWidth - pan.getBoundingClientRect().width;
-    lin.style.display = "";
-    if(wid > 0) {
-        let i = -1;
-        for(let el, i1 = 0; wid > 0 || i1 < 2; i--) {
-            if(wid < 0) i1++;
-            el = pa[pa.length+i];
-            wid -= el.getBoundingClientRect().width;
-            let elc = gr[el.getAttribute("data-id")];
-            let elr = React.cloneElement(elc, {className: elc.props.className+" "+journalCSS.pred});
-            eles[eles.length] = elr;
-            el.style.display = "none";
-            pari.elems--;
-        }
-        lel = pa[pa.length+i];
-        parb.wmb = eles.length > 2;
-        updMor();
-        pan.style.gridTemplate = "auto/repeat(" + pari.elems + ",1fr)";
-    }
-    setActivedMy(".pan" + jourInfo.group);
-}
-
-function updMor() {
-    let gmor = getMore(eles);
-    if(eles.length > 0) {
-        mor = React.cloneElement( lmor, { children: gmor.props.children, style: {display: "flex"}});
-        parb.updf = true;
-        dispatch(changePjournal("group", jourInfo.group));
-    }
-}
-
 function cli() {
     lma.setAttribute("data-ac", 0);
     this.setAttribute("data-ac", 1);
@@ -266,37 +271,6 @@ function cli1() {
     lty = this;
 }
 
-function replGr(x) {
-    let elc = gr[lel.getAttribute("data-id")];
-    let elr = React.cloneElement(elc, {className: elc.props.className+" "+journalCSS.pred});
-    for (let i = 0; i < eles.length; i++){
-        if(eles[i].props["data-id"] == x.getAttribute("data-id")) eles[i] = elr;
-    }
-    lel.style.display = "none";
-    x.style.display = "";
-    lel = x;
-    updMor();
-}
-
-function setActivedMy(name) {
-    let ao = document.querySelector(act), an = document.querySelector(name), con = 0;
-    if(ao) ao.setAttribute('data-act', '0');
-    if(an) {
-        act = name;
-        an.setAttribute('data-act', '1');
-        if(an.style.display == "none") replGr(an);
-    }
-    if(lin) {
-        con = Math.floor(an.getBoundingClientRect().width);
-        lin.style.left = Math.round(an.getBoundingClientRect().left)+"px";
-        lin.style.width = con+"px";
-    }
-}
-
-export function setActNew(name) {
-    act_new = name;
-}
-
 export function Journal() {
     const cState = useSelector(states);
     theme = useSelector(themes);
@@ -305,30 +279,13 @@ export function Journal() {
     dispatch = useDispatch();
     const isFirstUpdate = useRef(true);
     useEffect(() => {
-        lin = document.querySelector("#lin");
-        lmor = <div className={journalCSS.predBlock} id="mor" style={{display: "none"}}/>;
-        mor = React.cloneElement( lmor, {});
         console.log("I was triggered during componentDidMount Journal.jsx");
-        window.onresize = (e) => {
-            if(!parb.resiz) {
-                parb.resiz = true;
-                ev = e;
-                timid = setTimeout(tim,1000);
-            }
-        };
         lty = ltyl;
         setActived(".panJur");
         let scr = document.querySelector("." + journalCSS.days);
         scr.scrollTo(scr.scrollWidth, 0);
         document.querySelector("." + journalCSS.marks).addEventListener("transitionend", trEnd);
         document.querySelector("." + journalCSS.types + "[data-real]").addEventListener("transitionend", trEnd);
-        let el = document.querySelectorAll("."+journalCSS.panel + " > .pa");
-        if(el.length != pari.paels) {
-            parb.updlb = true;
-            dispatch(changePjournal("group", jourInfo.group));
-        }
-        pari.paels = el.length;
-        overpan();
         for(let e of document.querySelectorAll("." + journalCSS.marks + " > ." + journalCSS.nav_i)){
             e.addEventListener("click", cli);
         }
@@ -347,8 +304,6 @@ export function Journal() {
         chStatB({target: document.querySelector("." + journalCSS.nav_i + " > [id^='inpnt_']")});
         chStatB({target: document.querySelector("." + journalCSS.nav_i + " > [id^='inpnv_']")});
         return function() {
-            window.onresize = undefined;
-            clearTimeout(timid);
             console.log("I was triggered during componentWillUnmount Journal.jsx");
         }
     }, []);
@@ -362,11 +317,6 @@ export function Journal() {
             console.log('componentDidUpdate onlyRender Journal.jsx');
             return;
         }
-        let el = document.querySelectorAll("."+journalCSS.panel + " > .pa");
-        if(parb.updlb) {
-            parb.updlb = false;
-            overpan();
-        }
         if(parb.upddel) {
             parb.upddel = false;
             let idi;
@@ -379,19 +329,7 @@ export function Journal() {
             parb.updnew = false;
             let ty = Object.getOwnPropertyNames(jourInfo.typs);
             ty = ty[ty.length-1];
-            console.log(ty);
             document.querySelector("#inpt_" + ty).parentElement.addEventListener("click", cli1);
-        }
-        if(el.length != pari.paels) {
-            parb.updlb = true;
-            dispatch(changePjournal("group", jourInfo.group));
-        }
-        pari.paels = el.length;
-        let nam = ".pan" + jourInfo.group;
-        if(act != nam || parb.lscr != (document.body.scrollHeight !== window.innerHeight)){
-            console.log("dsfsdf");
-            setActivedMy(nam);
-            parb.lscr = (document.body.scrollHeight !== window.innerHeight);
         }
         console.log('componentDidUpdate Journal.jsx');
     });
@@ -413,12 +351,17 @@ export function Journal() {
                     <>
                         <nav className={journalCSS.panel} id="her">
                             {ele(0, "elems")}
-                            {Object.getOwnPropertyNames(jourInfo.groups).map(param =>
-                                gr[param] = getPan(jourInfo.groups[param], param, "", undefined, () => (dispatch(changePjournal("group", param))))
-                            )}
-                            {mor}
+                            <div style={{width:"100%", height: "100%"}}>
+                                <AdminYO gro={gr}/>
+                            </div>
                             {getPredms()}
-                            <div className={journalCSS.lin} style={{width: (100 / pari.elems) + "%"}} id={"lin"}/>
+                        </nav>
+                        <nav className={journalCSS.panel} id="her" style={{top:"14vh"}}>
+                            {ele(0, "elems")}
+                            <div style={{width:"100%", height: "100%"}}>
+                                <AdminYO gro={gr1}/>
+                            </div>
+                            {getPredms()}
                         </nav>
                         <div className={journalCSS.blockPredm+" "+journalCSS.ju}>
                             <div className={journalCSS.predm}>
@@ -540,7 +483,7 @@ export function Journal() {
                                 </div>
                                 <div className={journalCSS.types} data-tr data-real>
                                     <div className={journalCSS.nav_i} id={journalCSS.nav_i} data-ac="1" onClick={() => dispatch(changePjournal("typ", ""))} ref={(ref)=>( !ltyl && (ltyl = ref))}>
-                                        <img className={journalCSS.imger} src={(ltyl?.getAttribute("data-ac") == "1" ? !theme.theme_ch : theme.theme_ch) ? erad : eral} alt=""/>
+                                        <img className={journalCSS.imger} src={((ltyl ? ltyl.getAttribute("data-ac") == "1" : true) ? !theme.theme_ch : theme.theme_ch) ? erad : eral} alt=""/>
                                     </div>
                                     {Object.getOwnPropertyNames(jourInfo.typs).map(param =>
                                         <div className={journalCSS.nav_i} id={journalCSS.nav_i} data-st="0" data-ac="0" onClick={() => dispatch(changePjournal("typ", param))}>

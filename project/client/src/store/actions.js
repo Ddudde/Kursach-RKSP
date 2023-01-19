@@ -10,6 +10,8 @@ export const CHANGE_PROFILE_ROLES = "CHANGE_PROFILE_ROLES";
 export const CHANGE_SCHEDULE = "CHANGE_SCHEDULE";
 export const CHANGE_JOURNAL = "CHANGE_JOURNAL";
 export const CHANGE_PJOURNAL = "CHANGE_PJOURNAL";
+export const CHANGE_ADMINYO = "CHANGE_ADMINYO";
+export const CHANGE_ADMINYO_GR = "CHANGE_ADMINYO_GR";
 export const CHANGE_PJOURNAL_MARKS = "CHANGE_PJOURNAL_MARKS";
 export const CHANGE_PJOURNAL_DEL_MARKS = "CHANGE_PJOURNAL_DEL_MARKS";
 export const CHANGE_PJOURNAL_PER_MARKS = "CHANGE_PJOURNAL_PER_MARKS";
@@ -168,6 +170,24 @@ export function changeProfileRoles(roleid, id, state) {
 
 export function changeProfile(id, state) {
     return { type: CHANGE_PROFILE,
+        payload: {
+            Id: id,
+            State: state
+        }
+    };
+}
+
+export function changeAdminYOGR(id, state) {
+    return { type: CHANGE_ADMINYO_GR,
+        payload: {
+            Id: id,
+            State: state
+        }
+    };
+}
+
+export function changeAdminYO(id, state) {
+    return { type: CHANGE_ADMINYO,
         payload: {
             Id: id,
             State: state

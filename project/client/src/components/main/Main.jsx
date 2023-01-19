@@ -161,6 +161,7 @@ export function Main() {
                 {(!cState.auth || (cState.auth && cState.role == 0)) && getPan("Обучающимся", "Kid", "tutor")}
                 {(cState.auth && cState.role == 2) && getPan("Расписание", "Ras", "/")}
                 {(cState.auth && cState.role == 2) && getPan("Журнал", "Jur", "journal")}
+                {(cState.auth && cState.role == 3) && getPan("Администрирование УО", "Ana", "admYO")}
                 {(cState.auth && cState.role < 2) && getPan("Дневник", "Dnev", "/")}
                 {(cState.auth && cState.role < 2) && getPan("Аналитика", "Ana", "analytics")}
                 {cState.auth && getLogin()}
@@ -171,10 +172,10 @@ export function Main() {
                 <img src={warn} className={main.warnimg} alt=""/>Внимание! <p>Неверный логин или пароль</p>
             </div>
             <div className={main.warne+" warnev"} id={main.warnev}>
-                <img src={warn} className={main.warnimg} alt=""/>Внимание! <p>Допустимы только латинница и цифры</p>
+                <img src={warn} className={main.warnimg} alt=""/>Внимание! <p>Допустимы только латиница и цифры</p>
             </div>
             <div className={main.warne+" warner"} id={main.warner}>
-                <img src={warn} className={main.warnimg} alt=""/>Внимание! <p id="wt">Допустимы только латинница и цифры</p>
+                <img src={warn} className={main.warnimg} alt=""/>Внимание! <p id="wt">Допустимы только латиница и цифры</p>
             </div>
             <div className={main.switcher}>
                 <label className={main.switch}>

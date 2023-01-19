@@ -5,7 +5,7 @@ const initialState = {
         login: "test",
         ico: 2,
         role: 2,
-        roleDesc: "педагог",
+        roleDesc: "завуч",
         roles: true,
         secFr: true,
         rolesDescrs: ["обучающийся", "родитель", "педагог", "завуч", "администратор портала"],

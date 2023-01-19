@@ -15,6 +15,7 @@ export const schedules = state => state.schedules || {};
 export const marks = state => state.marks || {};
 export const journals = state => state.journals || {};
 export const pjournal = state => state.pjournal || {};
+export const admYO = state => state.admYO || {};
 export const zvonki = state => state.zvonki || {};
 export const newsSelec = state => state.news || {};
 export const contactsSelec = state => state.contacts || {};

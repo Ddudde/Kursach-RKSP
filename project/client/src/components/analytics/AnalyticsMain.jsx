@@ -1,6 +1,8 @@
 import React, {useEffect, useRef} from "react";
 import analyticsCSS from './analyticsMain.module.css';
 import {Link, Outlet} from "react-router-dom";
+import {states} from "../../store/selector";
+import {useSelector} from "react-redux";
 
 let act = ".panYo", act_new = "";
 
@@ -17,6 +19,7 @@ export function setActNew(name) {
 }
 
 export function AnalyticsMain() {
+    const cState = useSelector(states);
     const isFirstUpdate = useRef(true);
     useEffect(() => {
         console.log("I was triggered during componentDidMount AnalyticsMain.jsx");
@@ -40,17 +43,17 @@ export function AnalyticsMain() {
                         Расписание звонков
                     </Link>
                     <Link className={analyticsCSS.nav_i+" panPer " + analyticsCSS.panPer} to="periods" id={analyticsCSS.nav_i} onClick={() => {setActivedMy(".panPer")}}>
-                        Расписание периодов
+                        {(cState.auth && cState.role < 2) ? "Расписание периодов" : "Периоды обучения"}
                     </Link>
                     <Link className={analyticsCSS.nav_i+" panRas " + analyticsCSS.panRas} to="schedule" id={analyticsCSS.nav_i} onClick={() => {setActivedMy(".panRas")}}>
-                        Расписание
+                        {(cState.auth && cState.role < 2) ? "Расписание" : "Дисциплины"}
                     </Link>
-                    <Link className={analyticsCSS.nav_i+" panZhu " + analyticsCSS.panZhu} to="journal" id={analyticsCSS.nav_i} onClick={() => {setActivedMy(".panZhu")}}>
+                    {(cState.auth && cState.role < 2) && <Link className={analyticsCSS.nav_i+" panZhu " + analyticsCSS.panZhu} to="journal" id={analyticsCSS.nav_i} onClick={() => {setActivedMy(".panZhu")}}>
                         Журнал
-                    </Link>
-                    <Link className={analyticsCSS.nav_i+" panIto " + analyticsCSS.panIto} to="marks" id={analyticsCSS.nav_i} onClick={() => {setActivedMy(".panIto")}}>
+                    </Link>}
+                    {(cState.auth && cState.role < 2) && <Link className={analyticsCSS.nav_i+" panIto " + analyticsCSS.panIto} to="marks" id={analyticsCSS.nav_i} onClick={() => {setActivedMy(".panIto")}}>
                         Итоговые оценки
-                    </Link>
+                    </Link>}
                     <div className={analyticsCSS.lin}>
                     </div>
                 </nav>
