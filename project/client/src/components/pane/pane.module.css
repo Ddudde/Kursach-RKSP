@@ -18,7 +18,7 @@
 	position: relative;
 }
 
-.panel > div{
+.panel > *{
 	grid-row: 1;
 }
 
@@ -93,7 +93,7 @@
 	margin-right: 0.25vw;
 }
 
-.predEl:hover + .predMenu, .predMenu:hover{
+.predBlock:hover > .predMenu, .predMenu:hover{
 	opacity: 1;
 	top: 100%;
 }
@@ -141,9 +141,4 @@
 	width: 2vw;
 	grid-row: 1/3;
 	margin-right: 0.25vw;
-}
-
-.pred:hover + .predMenu, .predMenu:hover{
-	opacity: 1;
-	top: 100%;
 }

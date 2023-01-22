@@ -1,29 +1,48 @@
 import React, {useEffect, useRef} from "react";
 import analyticsCSS from './analyticsMain.module.css';
-import {Link, Outlet} from "react-router-dom";
-import {states} from "../../store/selector";
+import {Outlet} from "react-router-dom";
+import {pane, states} from "../../store/selector";
 import {useSelector} from "react-redux";
+import Pane from "../pane/Pane";
 
-let act = ".panYo", act_new = "";
+let gr, cState, ke;
 
-function setActivedMy(name) {
-    if(document.querySelector(act)) document.querySelector(act).setAttribute('data-act', '0');
-    if(document.querySelector(name)) {
-        act = name;
-        document.querySelector(name).setAttribute('data-act', '1');
-    }
+gr = {
+    group: 0
 }
 
 export function setActNew(name) {
-    act_new = name;
+    gr.group = name;
 }
 
-export function AnalyticsMain() {
-    const cState = useSelector(states);
+export function AnalyticsMain(props) {
+    cState = useSelector(states);
+    const paneInfo = useSelector(pane);
+    gr.groups = {
+        0: {
+            nam: "Расписание звонков",
+            linke: props.comp ? "admYO/zvonki" : "zvonki"
+        },
+        1: {
+            nam: (cState.auth && cState.role < 2) ? "Расписание периодов" : "Периоды обучения",
+            linke: props.comp ? "admYO/periods" : "periods"
+        },
+        2: {
+            nam: (cState.auth && cState.role < 2) ? "Расписание" : "Дисциплины",
+            linke: props.comp ? "admYO/schedule" : "schedule"
+        },
+        ...((cState.auth && cState.role < 2) && {3: {
+                nam: "Журнал",
+                linke: props.comp ? "admYO/journal" : "journal"
+            }}),
+        ...((cState.auth && cState.role < 2) && {4: {
+                nam: "Итоговые оценки",
+                linke: props.comp ? "admYO/marks" : "marks"
+            }})
+    };
     const isFirstUpdate = useRef(true);
     useEffect(() => {
         console.log("I was triggered during componentDidMount AnalyticsMain.jsx");
-        setActivedMy(act_new);
         return function() {
             console.log("I was triggered during componentWillUnmount AnalyticsMain.jsx");
         }
@@ -36,30 +55,13 @@ export function AnalyticsMain() {
         console.log('componentDidUpdate AnalyticsMain.jsx');
     });
     return (
-        <>
-            <div className={analyticsCSS.AppHeader}>
-                <nav className={analyticsCSS.panel} id="her">
-                    <Link className={analyticsCSS.nav_i+" panZvon " + analyticsCSS.panZvon} to="zvonki" id={analyticsCSS.nav_i} onClick={() => {setActivedMy(".panZvon")}}>
-                        Расписание звонков
-                    </Link>
-                    <Link className={analyticsCSS.nav_i+" panPer " + analyticsCSS.panPer} to="periods" id={analyticsCSS.nav_i} onClick={() => {setActivedMy(".panPer")}}>
-                        {(cState.auth && cState.role < 2) ? "Расписание периодов" : "Периоды обучения"}
-                    </Link>
-                    <Link className={analyticsCSS.nav_i+" panRas " + analyticsCSS.panRas} to="schedule" id={analyticsCSS.nav_i} onClick={() => {setActivedMy(".panRas")}}>
-                        {(cState.auth && cState.role < 2) ? "Расписание" : "Дисциплины"}
-                    </Link>
-                    {(cState.auth && cState.role < 2) && <Link className={analyticsCSS.nav_i+" panZhu " + analyticsCSS.panZhu} to="journal" id={analyticsCSS.nav_i} onClick={() => {setActivedMy(".panZhu")}}>
-                        Журнал
-                    </Link>}
-                    {(cState.auth && cState.role < 2) && <Link className={analyticsCSS.nav_i+" panIto " + analyticsCSS.panIto} to="marks" id={analyticsCSS.nav_i} onClick={() => {setActivedMy(".panIto")}}>
-                        Итоговые оценки
-                    </Link>}
-                    <div className={analyticsCSS.lin}>
-                    </div>
-                </nav>
-                <Outlet />
+        <div className={analyticsCSS.AppHeader}>
+            <div style={{width:"inherit", height: "7vh", position: "fixed", zIndex:"1"}} ref={()=>(ke = !ke ? paneInfo.els.length : ke)}>
+                <Pane gro={gr}/>
             </div>
-        </>
+            <Outlet />
+            {props.comp && props.comp}
+        </div>
     )
 }
 export default AnalyticsMain;

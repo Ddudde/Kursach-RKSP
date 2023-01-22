@@ -4,7 +4,7 @@ const initialState = {
         auth: true,
         login: "test",
         ico: 2,
-        role: 2,
+        role: 3,
         roleDesc: "завуч",
         roles: true,
         secFr: true,

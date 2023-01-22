@@ -1,49 +1,48 @@
 import React, {useEffect, useRef} from "react";
 import peopleCSS from './peopleMain.module.css';
-import {Link, Outlet} from "react-router-dom";
+import {Outlet} from "react-router-dom";
 import {useSelector} from "react-redux";
-import {states} from "../../store/selector";
-import main from "../main/main.module.css";
+import {pane, states} from "../../store/selector";
+import Pane from "../pane/Pane";
 
-let act = ".panYo", act_new = "", elems = 0, lin, st = {};
+let gr, cState, ke;
 
-function getPan(name, namecl, link, dopClass, inc) {
-    let cl = "pan" + namecl;
-    st["."+cl] = elems;
-    if (!inc) elems++;
-    return (
-        <Link className={main.nav_i + " " + cl + " " + (dopClass ? dopClass : "")} id={main.nav_i} to={link} onClick={() => {setActivedMy("."+cl)}}>
-            {name}
-        </Link>
-    )
-}
-
-function ele() {
-    elems = 0;
-    return "";
-}
-
-function setActivedMy(name) {
-    if(document.querySelector(act)) document.querySelector(act).setAttribute('data-act', '0');
-    if(document.querySelector(name)) {
-        act = name;
-        document.querySelector(name).setAttribute('data-act', '1');
-    }
-    if(lin) lin.style.left = ((100/elems)*st[name])+"%";
+gr = {
+    group: 0
 }
 
 export function setActNew(name) {
-    act_new = name;
+    gr.group = name;
 }
 
 export function PeopleMain() {
-    const cState = useSelector(states);
+    cState = useSelector(states);
+    const paneInfo = useSelector(pane);
+    gr.groups = {
+        ...((cState.auth && (cState.role < 2 || cState.role == 3)) && {0: {
+            nam: "Педагоги",
+            linke: "teachers"
+        }}),
+        ...((cState.auth && cState.role != 4) && {1: {
+            nam: "Завучи",
+            linke: "hteachers"
+        }}),
+        ...((cState.auth && (cState.role == 0 || cState.role == 3)) && {2: {
+            nam: cState.role == 3 ? "Обучающиеся" : "Одноклассники",
+            linke: "class"
+        }}),
+        ...((cState.auth && (cState.role == 0 || cState.role == 3)) && {3: {
+            nam: "Родители",
+            linke: "parents"
+        }}),
+        4: {
+            nam: "Администраторы портала",
+            linke: "admins"
+        }
+    };
     const isFirstUpdate = useRef(true);
     useEffect(() => {
-        lin = document.querySelector("#lin");
         console.log("I was triggered during componentDidMount PeopleMain.jsx");
-        if(lin) lin.style.width = (100/elems)+"%";
-        setActivedMy(act_new);
         return function() {
             console.log("I was triggered during componentWillUnmount PeopleMain.jsx");
         }
@@ -53,25 +52,15 @@ export function PeopleMain() {
             isFirstUpdate.current = false;
             return;
         }
-        if(lin) lin.style.width = (100/elems)+"%";
-        setActivedMy(act);
         console.log('componentDidUpdate PeopleMain.jsx');
     });
     return (
-        <>
-            <div className={peopleCSS.AppHeader}>
-                <nav className={peopleCSS.panel} id="her">
-                    {ele()}
-                    {(cState.auth && cState.role < 2) && getPan("Педагоги", "PTea", "teachers", peopleCSS.panPTea)}
-                    {(cState.auth && cState.role != 4) && getPan("Завучи", "HT", "hteachers", peopleCSS.panHT)}
-                    {(cState.auth && cState.role == 0) && getPan("Одноклассники", "CM", "classmates", peopleCSS.panCM)}
-                    {(cState.auth && cState.role == 0) && getPan("Родители", "Par", "parents", peopleCSS.panPar)}
-                    {getPan("Администраторы портала", "Adm", "admins", peopleCSS.panAdm)}
-                    <div className={peopleCSS.lin} style={{width: (100/elems)+"%"}} id={"lin"}/>
-                </nav>
-                <Outlet />
+        <div className={peopleCSS.AppHeader}>
+            <div style={{width:"inherit", height: "7vh", position: "fixed", zIndex:"1"}} ref={()=>(ke = !ke ? paneInfo.els.length : ke)}>
+                <Pane gro={gr}/>
             </div>
-        </>
+            <Outlet />
+        </div>
     )
 }
 export default PeopleMain;

@@ -15,6 +15,7 @@ function errorLoad(e) {
 
 export function ContactPor() {
     contactsInfo = useSelector(contactsSelec);
+    if(!dispatch) setActNew(0);
     dispatch = useDispatch();
     const isFirstUpdate = useRef(true);
     useEffect(() => {
@@ -27,7 +28,6 @@ export function ContactPor() {
         //     dispatch(changeContacts("Por", "id_" + Object.getOwnPropertyNames(contactsInfo.contactsPor.numbers).length, '8 (800) 555 35 37', '+78005553537'));
         // }, 5000);
         setActived(".panCon");
-        setActNew(".panPor");
         return function() {
             console.log("I was triggered during componentWillUnmount ContactPor.jsx");
         }

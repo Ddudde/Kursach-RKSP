@@ -1,7 +1,7 @@
 import React, {useEffect, useRef} from "react";
 import {Helmet} from "react-helmet-async";
 import classmatesCSS from './classmates.module.css';
-import {classmates, themes} from "../../../store/selector";
+import {classmates, states, themes} from "../../../store/selector";
 import {useDispatch, useSelector} from "react-redux";
 import {setActived} from "../../main/Main";
 import {setActNew} from "../PeopleMain";
@@ -13,7 +13,9 @@ let dispatch, classmatesInfo;
 
 export function Classmates() {
     classmatesInfo = useSelector(classmates);
+    const cState = useSelector(states);
     const themeState = useSelector(themes);
+    if(!dispatch) setActNew(2);
     dispatch = useDispatch();
     const isFirstUpdate = useRef(true);
     useEffect(() => {
@@ -26,7 +28,6 @@ export function Classmates() {
         //     dispatch(changeContacts("Por", "id_" + Object.getOwnPropertyNames(classmatesInfo.contactsPor.numbers).length, '8 (800) 555 35 37', '+78005553537'));
         // }, 5000);
         setActived(".panPep");
-        setActNew(".panCM");
         return function() {
             console.log("I was triggered during componentWillUnmount Classmates.jsx");
         }
@@ -41,7 +42,7 @@ export function Classmates() {
     return (
         <>
             <Helmet>
-                <title>Одноклассники</title>
+                <title>{cState.role == 3 ? "Обучающиеся" : "Одноклассники"}</title>
             </Helmet>
             <div className={classmatesCSS.AppHeader}>
                 {(Object.getOwnPropertyNames(classmatesInfo).length == 0 && Object.getOwnPropertyNames(classmatesInfo).length == 0) ?

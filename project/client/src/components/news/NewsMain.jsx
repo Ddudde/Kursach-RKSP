@@ -1,29 +1,36 @@
 import React, {useEffect, useRef} from "react";
 import newsCSS from './newsMain.module.css';
-import {Link, Outlet} from "react-router-dom";
+import {Outlet} from "react-router-dom";
 import {useSelector} from "react-redux";
-import {states} from "../../store/selector";
+import {pane, states} from "../../store/selector";
+import Pane from "../pane/Pane";
 
-let act = ".panYo", act_new = "";
+let gr, cState, ke;
 
-function setActivedMy(name) {
-    if(document.querySelector(act)) document.querySelector(act).setAttribute('data-act', '0');
-    if(document.querySelector(name)) {
-        act = name;
-        document.querySelector(name).setAttribute('data-act', '1');
-    }
+gr = {
+    group: 0
 }
 
 export function setActNew(name) {
-    act_new = name;
+    gr.group = name;
 }
 
 export function NewsMain() {
-    const cState = useSelector(states);
+    cState = useSelector(states);
+    const paneInfo = useSelector(pane);
+    gr.groups = {
+        0: {
+            nam: "Объявления портала",
+            linke: "por"
+        },
+        1: {
+            nam: "Объявления учебного центра",
+            linke: "yo"
+        }
+    };
     const isFirstUpdate = useRef(true);
     useEffect(() => {
         console.log("I was triggered during componentDidMount NewsMain.jsx");
-        setActivedMy(act_new);
         return function() {
             console.log("I was triggered during componentWillUnmount NewsMain.jsx");
         }
@@ -36,21 +43,12 @@ export function NewsMain() {
         console.log('componentDidUpdate NewsMain.jsx');
     });
     return (
-        <>
-            <div className={newsCSS.AppHeader}>
-                {(cState.auth && cState.role != 4) && <nav className={newsCSS.panel} id="her">
-                    <Link className={newsCSS.nav_i+" panPor " + newsCSS.panPor} to="por" id={newsCSS.nav_i} onClick={() => {setActivedMy(".panPor")}}>
-                        Объявления портала
-                    </Link>
-                    <Link className={newsCSS.nav_i+" panYo " + newsCSS.panYo} to="yo" id={newsCSS.nav_i} onClick={() => {setActivedMy(".panYo")}}>
-                        Объявления учебного центра
-                    </Link>
-                    <div className={newsCSS.lin}>
-                    </div>
-                </nav>}
-                <Outlet />
-            </div>
-        </>
+        <div className={newsCSS.AppHeader}>
+            {(cState.auth && cState.role != 4) && <div style={{width:"inherit", height: "7vh", position: "fixed", zIndex:"1"}} ref={()=>(ke = !ke ? paneInfo.els.length : ke)}>
+                <Pane gro={gr}/>
+            </div>}
+            <Outlet />
+        </div>
     )
 }
 export default NewsMain;

@@ -28,7 +28,6 @@ import Profile from "./components/profile/Profile";
 import Settings from "./components/settings/Settings";
 import Tutor from "./components/tutor/Tutor";
 import Journal from "./components/prepjur/Journal";
-import AdminYO from "./components/adminYO/AdminYO";
 
 function App() {
     const cState = useSelector(states);
@@ -39,11 +38,10 @@ function App() {
     } else {
         if(cState.role < 2) indexComp = <Dnevnik/>;
         if(cState.role == 2) indexComp = <Schedule/>;
-        // if(cState.role == 3) indexComp = <AdminYO comp={<ErrNotFound/>}/>;
+        if(cState.role == 3) indexComp = <AnalyticsMain comp={<Zvonki/>}/>;
     }
     return (
       <Routes>
-          {/*<Route path="/" element={<HelloWorld url='/comp'/>} />*/}
           <Route path="/" element={<Main/>}>
               <Route index element={indexComp}/>
               <Route path="news" element={<NewsMain/>}>
@@ -61,21 +59,17 @@ function App() {
                   <Route path="zvonki" element={<Zvonki/>} />
                   <Route path="periods" element={<Periods/>} />
                   <Route path="schedule" element={<Schedule/>} />
-                  <Route path="journal" element={<AnalyticsJournal/>} />
-                  <Route path="marks" element={<Marks/>} />
+                  {(cState.auth && cState.role < 2) && <Route path="journal" element={<AnalyticsJournal/>} />}
+                  {(cState.auth && cState.role < 2) && <Route path="marks" element={<Marks/>} />}
               </Route>}
               <Route path="people" element={<PeopleMain/>}>
                   <Route index element={<Admins/>} />
-                  {(cState.auth && cState.role != 4) && <Route path="teachers" element={<Teachers/>} />}
+                  {(cState.auth && (cState.role < 2 || cState.role == 3)) && <Route path="teachers" element={<Teachers/>} />}
                   {(cState.auth && cState.role != 4) && <Route path="hteachers" element={<HTeachers/>} />}
-                  {(cState.auth && cState.role == 0) && <Route path="classmates" element={<Classmates/>} />}
-                  {(cState.auth && cState.role == 0) && <Route path="parents" element={<Parents/>} />}
+                  {(cState.auth && (cState.role == 0 || cState.role == 3)) && <Route path="class" element={<Classmates/>} />}
+                  {(cState.auth && (cState.role == 0 || cState.role == 3)) && <Route path="parents" element={<Parents/>} />}
                   <Route path="admins" element={<Admins/>} />
               </Route>
-              {(cState.auth && cState.role == 3) && <Route path="admYO" element={<AdminYO/>}>
-                  <Route index element={<ErrNotFound/>} />
-                  <Route path="prep" element={<ErrNotFound/>} />
-              </Route>}
               {cState.role < 4 && <Route path="tutor" element={<Tutor/>} />}
               {cState.auth && <Route path="profiles" element={<Profile/>} />}
               {(cState.auth && cState.role == 2) && <Route path="journal" element={<Journal/>} />}

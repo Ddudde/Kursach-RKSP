@@ -15,6 +15,7 @@ function errorLoad(e) {
 
 export function ContactYo() {
     contactsInfo = useSelector(contactsSelec);
+    if(!dispatch) setActNew(1);
     dispatch = useDispatch();
     const isFirstUpdate = useRef(true);
     useEffect(() => {
@@ -27,7 +28,6 @@ export function ContactYo() {
         //     dispatch(changeContacts("Yo", "id_" + Object.getOwnPropertyNames(contactsInfo.contactsYo.numbers).length, '8 (800) 555 35 37', '+78005553537'));
         // }, 5000);
         setActived(".panCon");
-        setActNew(".panYo");
         return function() {
             console.log("I was triggered during componentWillUnmount ContactYo.jsx");
         }

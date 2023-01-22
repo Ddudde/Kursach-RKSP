@@ -46,6 +46,7 @@ export function AnalyticsJournal() {
         let len = Object.getOwnPropertyNames(journalsInfo[el].days).length;
         if(len > maxEl )maxEl = len;
     }
+    if(!dispatch) setActNew(3);
     dispatch = useDispatch();
     const isFirstUpdate = useRef(true);
     useEffect(() => {
@@ -58,7 +59,6 @@ export function AnalyticsJournal() {
         //     dispatch(changeContacts("Por", "id_" + Object.getOwnPropertyNames(journalsInfo.contactsPor.numbers).length, '8 (800) 555 35 37', '+78005553537'));
         // }, 5000);
         setActived(".panAna");
-        setActNew(".panZhu");
         // dispatch(changeJournal("Англ. яз.", {
         //         days : {
         //             "14.05.22": {

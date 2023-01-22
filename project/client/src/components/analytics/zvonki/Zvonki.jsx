@@ -23,6 +23,7 @@ function setSmen(inte) {
 
 export function Zvonki() {
     zvonkiInfo = useSelector(zvonki);
+    if(!dispatch) setActNew(0);
     dispatch = useDispatch();
     const isFirstUpdate = useRef(true);
     useEffect(() => {
@@ -35,7 +36,6 @@ export function Zvonki() {
         //     dispatch(changeContacts("Por", "id_" + Object.getOwnPropertyNames(zvonkiInfo.contactsPor.numbers).length, '8 (800) 555 35 37', '+78005553537'));
         // }, 5000);
         setActived(".panAna");
-        setActNew(".panZvon");
         return function() {
             console.log("I was triggered during componentWillUnmount Zvonki.jsx");
         }

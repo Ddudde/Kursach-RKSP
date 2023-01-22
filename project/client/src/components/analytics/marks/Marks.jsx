@@ -15,6 +15,7 @@ export function Marks() {
         let len = Object.getOwnPropertyNames(marksInfo.pers[el].per).length;
         if(len > maxEl )maxEl = len;
     }
+    if(!dispatch) setActNew(4);
     dispatch = useDispatch();
     const isFirstUpdate = useRef(true);
     useEffect(() => {
@@ -27,7 +28,6 @@ export function Marks() {
         //     dispatch(changeContacts("Por", "id_" + Object.getOwnPropertyNames(marksInfo.contactsPor.numbers).length, '8 (800) 555 35 37', '+78005553537'));
         // }, 5000);
         setActived(".panAna");
-        setActNew(".panIto");
         let scr = document.querySelector("." + marksCSS.predm);
         scr.scrollTo(scr.scrollWidth, 0);
         return function() {

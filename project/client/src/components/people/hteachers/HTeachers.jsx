@@ -14,6 +14,7 @@ let dispatch, hteachersInfo;
 export function HTeachers() {
     hteachersInfo = useSelector(hteachers);
     const themeState = useSelector(themes);
+    if(!dispatch) setActNew(1);
     dispatch = useDispatch();
     const isFirstUpdate = useRef(true);
     useEffect(() => {
@@ -26,7 +27,6 @@ export function HTeachers() {
         //     dispatch(changeContacts("Por", "id_" + Object.getOwnPropertyNames(hteachersInfo.contactsPor.numbers).length, '8 (800) 555 35 37', '+78005553537'));
         // }, 5000);
         setActived(".panPep");
-        setActNew(".panHT");
         return function() {
             console.log("I was triggered during componentWillUnmount HTeachers.jsx");
         }

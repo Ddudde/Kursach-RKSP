@@ -11,6 +11,7 @@ let dispatch, periodsInfo;
 
 export function Periods() {
     periodsInfo = useSelector(periods);
+    if(!dispatch) setActNew(1);
     dispatch = useDispatch();
     const isFirstUpdate = useRef(true);
     useEffect(() => {
@@ -23,7 +24,6 @@ export function Periods() {
         //     dispatch(changeContacts("Por", "id_" + Object.getOwnPropertyNames(periodsInfo.contactsPor.numbers).length, '8 (800) 555 35 37', '+78005553537'));
         // }, 5000);
         setActived(".panAna");
-        setActNew(".panPer");
         return function() {
             console.log("I was triggered during componentWillUnmount Periods.jsx");
         }

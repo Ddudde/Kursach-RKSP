@@ -15,6 +15,7 @@ function errorLoad(e) {
 
 export function NewsPor() {
     newsInfo = useSelector(newsSelec);
+    if(!dispatch) setActNew(0);
     dispatch = useDispatch();
     const isFirstUpdate = useRef(true);
     useEffect(() => {
@@ -25,7 +26,6 @@ export function NewsPor() {
         //     dispatch(changeNews("Por", "id_" + Object.getOwnPropertyNames(newsInfo.newsPor).length, 'ПОШЛА ВОДА В ХАТУ', '02.12.2020', '', 'Да'));
         // }, 5000);
         setActived(".panNew");
-        setActNew(".panPor");
         return function() {
             console.log("I was triggered during componentWillUnmount NewsPor.jsx");
         }

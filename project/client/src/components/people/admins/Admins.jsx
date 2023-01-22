@@ -14,6 +14,7 @@ let dispatch, adminsInfo;
 export function Admins() {
     adminsInfo = useSelector(admins);
     const themeState = useSelector(themes);
+    if(!dispatch) setActNew(4);
     dispatch = useDispatch();
     const isFirstUpdate = useRef(true);
     useEffect(() => {
@@ -26,7 +27,6 @@ export function Admins() {
         //     dispatch(changeContacts("Por", "id_" + Object.getOwnPropertyNames(adminsInfo.contactsPor.numbers).length, '8 (800) 555 35 37', '+78005553537'));
         // }, 5000);
         setActived(".panPep");
-        setActNew(".panAdm");
         return function() {
             console.log("I was triggered during componentWillUnmount Admins.jsx");
         }

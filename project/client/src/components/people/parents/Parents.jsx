@@ -14,6 +14,7 @@ let dispatch, parentsInfo;
 export function Parents() {
     parentsInfo = useSelector(parents);
     const themeState = useSelector(themes);
+    if(!dispatch) setActNew(3);
     dispatch = useDispatch();
     const isFirstUpdate = useRef(true);
     useEffect(() => {
@@ -26,7 +27,6 @@ export function Parents() {
         //     dispatch(changeContacts("Por", "id_" + Object.getOwnPropertyNames(parentsInfo.contactsPor.numbers).length, '8 (800) 555 35 37', '+78005553537'));
         // }, 5000);
         setActived(".panPep");
-        setActNew(".panPar");
         return function() {
             console.log("I was triggered during componentWillUnmount Parents.jsx");
         }

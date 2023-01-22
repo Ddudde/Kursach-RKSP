@@ -14,6 +14,7 @@ let dispatch, teachersInfo;
 export function Teachers() {
     teachersInfo = useSelector(teachers);
     const themeState = useSelector(themes);
+    if(!dispatch) setActNew(0);
     dispatch = useDispatch();
     const isFirstUpdate = useRef(true);
     useEffect(() => {
@@ -26,7 +27,6 @@ export function Teachers() {
         //     dispatch(changeContacts("Por", "id_" + Object.getOwnPropertyNames(teachersInfo.contactsPor.numbers).length, '8 (800) 555 35 37', '+78005553537'));
         // }, 5000);
         setActived(".panPep");
-        setActNew(".panPTea");
         return function() {
             console.log("I was triggered during componentWillUnmount Teachers.jsx");
         }
