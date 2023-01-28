@@ -3,17 +3,24 @@ import paneCSS from './pane.module.css';
 import {Link} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 import {pane, states} from "../../store/selector";
-import {changePane, changePaneGR} from "../../store/actions";
-import journalCSS from "../prepjur/journal.module.css";
+import {changePane, changePaneDelGRS, changePaneGR, changePaneGRS} from "../../store/actions";
 import PanJs from "./PanJs";
+import yes from "../../media/yes.png";
+import no from "../../media/no.png";
+import ed from "../../media/edit.png";
+
+let kek = 0;
 
 export function Pane(props) {
-    const ele = (x, par) => {
-        panJs.pari[par] = x;
+    const ele = (x, par, b) => {
+        if(b){
+            if(!panJs.inps[par]) panJs.inps[par] = x;
+        } else {
+            panJs.pari[par] = x;
+        }
     };
     const getPan = (name, namecl, link, dopClass, fun, inc) => {
         let cl = "pan" + namecl;
-        panJs.st["."+cl] = panJs.pari.elems;
         if (!inc) panJs.pari.elems++;
         let cla = [paneCSS.nav_i, paneCSS.nav_iJur, "pa", cl, dopClass ? dopClass : ""].join(" ");
         return link ? (
@@ -21,28 +28,36 @@ export function Pane(props) {
                 {name.nam}
             </Link>
         ) : (
-            <div className={cla} id={paneCSS.nav_i} onClick={fun} data-id={namecl} key={namecl}>
-                {name}
+            <div className={cla} id={paneCSS.nav_i} onClick={fun} data-id={namecl} key={namecl} data-st="0">
+                {props.cla && cState.role == 3 ?
+                    <>
+                        <div className={paneCSS.field+" "+paneCSS.fi}>
+                            {name}
+                        </div>
+                        <img className={paneCSS.imgfield+" "+paneCSS.fi} src={ed} onClick={onEdGr} title="Редактировать" alt=""/>
+                        <img className={paneCSS.imginp+" "+paneCSS.fi} src={no} onClick={onDel} title="Удалить группу" alt=""/>
+                    </> : name
+                }
             </div>
         )
     };
     const overpan = () => {
-        let pan, wid, pa;
+        let wid, pa, add;
+        add = (props.cla && cState.role == 3) ? "15% ": "";
         panJs.eles = [];
-        pan = document.querySelector("."+paneCSS.panel + "[data-ke='" + panJs.ke + "']");
         pa = document.querySelectorAll("."+paneCSS.panel + "[data-ke='" + panJs.ke + "'] > .pa");
         for(let pae of pa) {
             if(pae.style.display) pae.style.display = "";
         }
         if(panJs.mor) document.querySelector("."+paneCSS.panel + "[data-ke='" + panJs.ke + "'] #mor").style.display = "none";
         panJs.refes.lin.style.display = "none";
-        pan.style.gridTemplate = "auto/repeat(" + panJs.pari.elems + ",1fr)";
-        wid = pan.scrollWidth - pan.getBoundingClientRect().width;
+        panJs.nav.style.gridTemplate = "auto/ " + add + "repeat(" + panJs.pari.elems + ",1fr)";
+        wid = panJs.nav.scrollWidth - panJs.nav.getBoundingClientRect().width;
         panJs.refes.lin.style.display = "";
-        if(wid > 3) {
+        if(wid > 1) {
             let i = -1;
-            for(let el, i1 = 0, elc; wid > 3 || i1 < 1; i--) {
-                if(wid < -3) i1++;
+            for(let el, i1 = 0, elc; wid > 1 || i1 < ((props.cla && cState.role == 3) ? 3 : 1); i--) {
+                if(wid < -1) i1++;
                 el = pa[pa.length+i];
                 wid -= el.getBoundingClientRect().width;
                 elc = panJs.gr[el.getAttribute("data-id")];
@@ -51,29 +66,52 @@ export function Pane(props) {
                 panJs.pari.elems--;
             }
             panJs.lel = pa[pa.length+i];
-            if(panJs.refes.MMel) panJs.refes.MMel.style.width = panJs.lel.getBoundingClientRect().width < 50 ? "200%" : "100%";
+            if(panJs.refes.MMel) {
+                let bol = panJs.lel.getBoundingClientRect().width < 50;
+                panJs.refes.MMel.style.minWidth = bol ? "200%" : "100%";
+                panJs.refes.MMel.style.marginRight = bol ? "200%" : "100%";
+            }
             updMor();
-            pan.style.gridTemplate = "auto/repeat(" + panJs.pari.elems + ",1fr)";
+            panJs.nav.style.gridTemplate = "auto/ " + add + "repeat(" + panJs.pari.elems + ",1fr)";
         }
-        setActivedMy(".pan" + paneInfo.els[panJs.ke].group);
+        setGr();
+    };
+    const setGr = (bol) => {
+        let nam = ".pan" + paneInfo.els[panJs.ke].group;
+        if(panJs.blockCl == "DEL"){
+            panJs.blockCl = false;
+            return;
+        }
+        if(paneInfo.els[panJs.ke].groups[paneInfo.els[panJs.ke].group]){
+            if (panJs.act != nam || !bol) setActivedMy(nam);
+        } else {
+            let grps = Object.getOwnPropertyNames(paneInfo.els[panJs.ke].groups);
+            if(grps.length == 0){
+                panJs.refes.lin.style.width = "0";
+                return;
+            }
+            nam = ".pan" + grps[0];
+            setActivedMy(nam);
+        }
     };
     const updMor = () => {
         let gmor = getMore(panJs.eles);
         if(panJs.eles.length > 0) {
             panJs.mor = React.cloneElement( panJs.lmor, { children: gmor.props.children});
             panJs.parb.updf = true;
-            document.querySelector("."+paneCSS.panel + "[data-ke='" + panJs.ke + "'] #mor").style.display = "flex";
+            panJs.nav.querySelector("#mor").style.display = "flex";
             forceUpdate();
         }
     };
     const getMore = (el) => {
         panJs.pari.elems++;
+        let bol = panJs.lel.getBoundingClientRect().width < 50;
         return (
             <>
                 <div className={paneCSS.nav_i+' '+paneCSS.nav_iJur+' '+paneCSS.predEl} id={paneCSS.nav_i}>
                     <div className={paneCSS.predInf}>...</div>
                 </div>
-                <div className={paneCSS.predMenu+" pre "+paneCSS.predMM} style={{width:panJs.lel.getBoundingClientRect().width < 50 ? "200%" : "100%"}} id="MM" ref={(re)=>(panJs.refes.MMel = re)}>
+                <div className={paneCSS.predMenu+" pre "+paneCSS.predMM} style={{minWidth:bol ? "200%" : "100%", marginRight: bol ? "200%" : "100%"}} id="MM" ref={(re)=>(panJs.refes.MMel = re)}>
                     <div>
                         {el.map(par =>
                             par
@@ -85,7 +123,7 @@ export function Pane(props) {
     };
     const replGr = (x) => {
         let elc = panJs.gr[panJs.lel.getAttribute("data-id")];
-        let elr = React.cloneElement(elc, {className: elc.props.className+" "+journalCSS.pred});
+        let elr = React.cloneElement(elc, {className: elc.props.className+" "+paneCSS.pred});
         for (let i = 0; i < panJs.eles.length; i++){
             if(panJs.eles[i].props["data-id"] == x.getAttribute("data-id")) panJs.eles[i] = elr;
         }
@@ -98,11 +136,11 @@ export function Pane(props) {
         if (panJs.parb.resiz) {
             panJs.parb.resiz = false;
             overpan();
-            setActivedMy(".pan" + paneInfo.els[panJs.ke].group);
+            setGr();
         }
     };
     const setActivedMy = (name) => {
-        let ao = document.querySelector("."+paneCSS.panel + "[data-ke='" + panJs.ke + "'] " + panJs.act), an = document.querySelector("."+paneCSS.panel + "[data-ke='" + panJs.ke + "'] " + name), con = 0;
+        let ao = panJs.nav.querySelector(panJs.act), an = panJs.nav.querySelector(name), con = 0;
         if(ao) ao.setAttribute('data-act', '0');
         if(an) {
             panJs.act = name;
@@ -120,19 +158,102 @@ export function Pane(props) {
             panJs.parb.resiz = true;
             panJs.timid = setTimeout(tim,1000);
         }
-    }
+    };
+    const onEdit = (e) => {
+        let par = e.target.parentElement;
+        par.setAttribute('data-st', '1');
+    };
+    const onFin = (e) => {
+        let par, inp;
+        par = e.target.parentElement;
+        inp = par.querySelector("input");
+        par = par.parentElement;
+        if (panJs.inps[inp.id]) {
+            if(panJs.edGr){
+                dispatch(changePaneGRS(panJs.ke, panJs.edGr, inp.value));
+                panJs.edGr = undefined;
+                panJs.blockCl = false;
+            } else {
+                let grop = Object.getOwnPropertyNames(paneInfo.els[panJs.ke].groups);
+                dispatch(changePaneGRS(panJs.ke, grop.length == 0 ? 0 : parseInt(grop[grop.length-1]) + 1, inp.value));
+            }
+            par.setAttribute('data-st', '0');
+        }
+    };
+    const onClose = (e) => {
+        let par = e.target.parentElement.parentElement;
+        par.setAttribute('data-st', '0');
+        panJs.edGr = undefined;
+        panJs.blockCl = false;
+    };
+    const onEdGr = (e) => {
+        let par, inp;
+        par = e.target.parentElement;
+        panJs.blockCl = "ED";
+        panJs.panAdd.setAttribute('data-st', 1);
+        inp = panJs.panAdd.querySelector("input");
+        inp.value = paneInfo.els[panJs.ke].groups[par.getAttribute('data-id')];
+        chStatB({target: inp});
+        panJs.edGr = par.getAttribute('data-id');
+    };
+    const onDel = (e) => {
+        let par = e.target.parentElement;
+        panJs.blockCl = "DEL";
+        dispatch(changePaneDelGRS(panJs.ke, par.getAttribute('data-id')));
+    };
+    const chStatB = (e) => {
+        let el;
+        el = e.target;
+        panJs.inps[el.id] = !el.validity.patternMismatch && el.value.length != 0;
+        if (panJs.inps[el.id]) {
+            el.style.outline = "none black";
+        } else {
+            el.style.animation = "but 1s ease infinite";
+            setTimeout(function () {
+                el.style.animation = "none"
+            }, 1000);
+            el.style.outline = "solid red";
+        }
+        el.parentElement.querySelector(".yes").setAttribute("data-enable", +panJs.inps[el.id]);
+    };
+    const getAdd = (name, namecl) => {
+        if(!props.cla || cState.role != 3) return;
+        let cl = "pan" + namecl;
+        let cla = [paneCSS.nav_i, paneCSS.nav_iZag, paneCSS.nav_iJur, cl].join(" ");
+        return (
+            <div className={cla} data-st="0" ref={(el)=>(panJs.panAdd = el)}>
+                <div className={paneCSS.nav_i+" "+paneCSS.chPass} id={paneCSS.nav_i} data-ac='1' onClick={onEdit}>
+                    {name}
+                </div>
+                <div className={paneCSS.nav_i+" "+paneCSS.blNew} id={paneCSS.nav_i} data-ac="0">
+                    <input className={paneCSS.inp+" "+paneCSS.in} id={"inpt_"} onChange={chStatB} type="text" pattern="^[A-Za-zА-Яа-яЁё\s0-9.-]+$"/>
+                    {ele(false, "inpt_", true)}
+                    <img className={paneCSS.imginp+" yes "+paneCSS.in} src={yes} onClick={onFin} title="Подтвердить" alt=""/>
+                    <img className={paneCSS.imginp+" "+paneCSS.in} style={{marginRight: "1vw"}} src={no} onClick={onClose} title="Отменить изменения и выйти из режима редактирования" alt=""/>
+                </div>
+            </div>
+        )
+    };
     const cState = useSelector(states);
     const paneInfo = useSelector(pane);
     const panJs = useRef(new PanJs()).current;
+    const dispatch = useDispatch();
+    let bol;
+    if(panJs.ke == undefined) {
+        panJs.ke = kek++;
+        bol = true;
+    }
     const isFirstUpdate = useRef(true);
     const [_, forceUpdate] = useReducer((x) => x + 1, 0);
-    const dispatch = useDispatch();
     useEffect(() => {
         panJs.lmor = <div className={paneCSS.predBlock} id="mor" style={{display: "none"}}/>;
         panJs.mor = React.cloneElement( panJs.lmor, {});
-        if(!panJs.ke) {
-            panJs.ke = paneInfo.els.length;
-            dispatch(changePane(paneInfo.els.length, props.gro));
+        if((props.cla && cState.role == 3)) {
+            panJs.nav.style.gridTemplate = "auto/ 15% repeat(5,1fr)";
+            chStatB({target: panJs.nav.querySelector("." + paneCSS.nav_i + " > input")});
+        }
+        if(bol) {
+            dispatch(changePane(panJs.ke, props.gro));
         }
         console.log("I was triggered during componentDidMount Pane.jsx");
         window.addEventListener('resize', preTim);
@@ -169,16 +290,16 @@ export function Pane(props) {
         }
         panJs.pari.paels = el.length;
         if(paneInfo.els[panJs.ke]) {
-            let nam = ".pan" + paneInfo.els[panJs.ke].group;
-            if (panJs.act != nam) setActivedMy(nam);
+            setGr(true);
         }
         console.log('componentDidUpdate Pane.jsx');
     });
     return (
-        <nav className={paneCSS.panel} id="her" data-ke={panJs.ke}>
+        <nav className={paneCSS.panel} id="her" data-ke={panJs.ke} ref={(el)=>(panJs.nav = el)}>
             {ele(0, "elems")}
+            {getAdd("Добавить группу", "Add")}
             {paneInfo.els[panJs.ke] && Object.getOwnPropertyNames(paneInfo.els[panJs.ke].groups).map(param =>
-                panJs.gr[param] = getPan(paneInfo.els[panJs.ke].groups[param], param, paneInfo.els[panJs.ke].groups[param].linke, undefined, () => (dispatch(changePaneGR(panJs.ke, param))))
+                panJs.gr[param] = getPan(paneInfo.els[panJs.ke].groups[param], param, paneInfo.els[panJs.ke].groups[param].linke, undefined, () => (dispatch(changePaneGR(panJs.ke, param, panJs.blockCl))))
             )}
             {panJs.mor}
             <div className={paneCSS.lin} style={{width: (100 / panJs.pari.elems) + "%"}} id={"lin"} ref={(ele)=>(panJs.refes.lin = ele)}/>

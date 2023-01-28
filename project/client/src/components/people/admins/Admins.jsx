@@ -58,7 +58,7 @@ export function Admins() {
                                     Администраторы портала
                                 </div>
                                 {Object.getOwnPropertyNames(adminsInfo).map(param =>
-                                    <div>
+                                    <div key={param}>
                                         <div className={adminsCSS.nav_i+" "+adminsCSS.nav_iZag1} id={adminsCSS.nav_i}>
                                             {adminsInfo[param]}
                                         </div>

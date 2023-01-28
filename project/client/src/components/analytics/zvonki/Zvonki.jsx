@@ -63,20 +63,20 @@ export function Zvonki() {
                     {setSmen(1)}
                     <div className={zvonkiCSS.smena}>
                         {Object.getOwnPropertyNames(zvonkiInfo).map(param =>
-                            <div className={zvonkiCSS.smenaGrid}>
+                            <div className={zvonkiCSS.smenaGrid} key={param}>
                                 <div className={zvonkiCSS.nav_i} id={zvonkiCSS.nav_i}>
                                     №
                                 </div>
                                 <div className={zvonkiCSS.nav_i} id={zvonkiCSS.nav_i}>
                                     {getSmen()} смена
                                 </div>
-                                {zvonkiInfo[param].map(param =>
+                                {zvonkiInfo[param].map(param1 =>
                                     <>
                                         <div className={zvonkiCSS.nav_i} id={zvonkiCSS.nav_i}>
                                             {les++ + 1}
                                         </div>
                                         <div className={zvonkiCSS.nav_i} id={zvonkiCSS.nav_i}>
-                                            {param}
+                                            {param1}
                                         </div>
                                     </>
                                 )}

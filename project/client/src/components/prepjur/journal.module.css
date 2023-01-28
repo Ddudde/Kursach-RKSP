@@ -358,7 +358,6 @@
 	transition-delay: unset;
 	border: none;
 	background-color: unset;
-	display: none;
 }
 
 .nav_i[data-st='0'] > .fi, .nav_i[data-st='1'] > .in, .nav_iZag .in{

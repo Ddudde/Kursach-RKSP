@@ -3,10 +3,13 @@ export default class PanJs {
     pari = {elems: 0, paels: 0}
     parb = {resiz: false, updf: false, updlb: false}
     refes = {}
-    st = {}
+    inps = {}
     gr = {}
+    nav
+    panAdd
+    edGr
+    blockCl = false;
     act = ".panYo"
-    act_new
     mor
     lmor
     timid
