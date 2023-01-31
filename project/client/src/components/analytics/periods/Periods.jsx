@@ -25,6 +25,7 @@ export function Periods() {
         // }, 5000);
         setActived(".panAna");
         return function() {
+            dispatch = undefined;
             console.log("I was triggered during componentWillUnmount Periods.jsx");
         }
     }, []);

@@ -45,16 +45,6 @@ export function ContactMain() {
     return (
         <>
             <div className={contactCSS.AppHeader}>
-                {/*{(cState.auth && cState.role != 4) && <nav className={contactCSS.panel} id="her">*/}
-                {/*    <Link className={contactCSS.nav_i+" panPor " + contactCSS.panPor} to="por" id={contactCSS.nav_i} onClick={() => {setActivedMy(".panPor")}}>*/}
-                {/*        Контакты портала*/}
-                {/*    </Link>*/}
-                {/*    <Link className={contactCSS.nav_i+" panYo " + contactCSS.panYo} to="yo" id={contactCSS.nav_i} onClick={() => {setActivedMy(".panYo")}}>*/}
-                {/*        Контакты учебного центра*/}
-                {/*    </Link>*/}
-                {/*    <div className={contactCSS.lin}>*/}
-                {/*    </div>*/}
-                {/*</nav>}*/}
                 {(cState.auth && cState.role != 4) && <div style={{width:"inherit", height: "7vh", position: "fixed", zIndex:"1"}} ref={()=>(ke = !ke ? paneInfo.els.length : ke)}>
                     <Pane gro={gr}/>
                 </div>}

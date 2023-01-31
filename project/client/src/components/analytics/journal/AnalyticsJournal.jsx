@@ -94,6 +94,7 @@ export function AnalyticsJournal() {
         let scr = document.querySelector("." + journalCSS.days);
         scr.scrollTo(scr.scrollWidth, 0);
         return function() {
+            dispatch = undefined;
             console.log("I was triggered during componentWillUnmount AnalyticsJournal.jsx");
         }
     }, []);

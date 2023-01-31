@@ -14,7 +14,9 @@ let dispatch, adminsInfo;
 export function Admins() {
     adminsInfo = useSelector(admins);
     const themeState = useSelector(themes);
-    if(!dispatch) setActNew(4);
+    if(!dispatch) {
+        setActNew(4);
+    }
     dispatch = useDispatch();
     const isFirstUpdate = useRef(true);
     useEffect(() => {
@@ -28,6 +30,7 @@ export function Admins() {
         // }, 5000);
         setActived(".panPep");
         return function() {
+            dispatch = undefined;
             console.log("I was triggered during componentWillUnmount Admins.jsx");
         }
     }, []);

@@ -29,6 +29,7 @@ export function ContactYo() {
         // }, 5000);
         setActived(".panCon");
         return function() {
+            dispatch = undefined;
             console.log("I was triggered during componentWillUnmount ContactYo.jsx");
         }
     }, []);

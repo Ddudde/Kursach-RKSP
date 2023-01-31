@@ -33,8 +33,9 @@ export const CHANGE_DNEVNIK_DAY_UP = "CHANGE_DNEVNIK_DAY_UP";
 export const CHANGE_DNEVNIK_DAY_DOWN = "CHANGE_DNEVNIK_DAY_DOWN";
 export const CHANGE_CLIENT = "CHANGE_CLIENT";
 export const CHANGE_INDICATOR = "CHANGE_INDICATOR";
-export const CHANGE_NEWS_YO = "CHANGE_NEWS_YO";
-export const CHANGE_NEWS_POR = "CHANGE_NEWS_POR";
+export const CHANGE_NEWS = "CHANGE_NEWS";
+export const CHANGE_NEWS_PARAM = "CHANGE_NEWS_PARAM";
+export const CHANGE_NEWS_DEL = "CHANGE_NEWS_DEL";
 export const CHANGE_CONTACT_YO = "CHANGE_CONTACT_YO";
 export const CHANGE_CONTACT_YO_IMAGEURL = "CHANGE_CONTACT_YO_IMAGEURL";
 export const CHANGE_CONTACT_POR = "CHANGE_CONTACT_POR";
@@ -316,8 +317,31 @@ export function changeDnevnik(id, state, type) {
     };
 }
 
+export function changeNewsDel(type, id) {
+    return {
+        type: CHANGE_NEWS_DEL,
+        payload: {
+            type: type,
+            id: id
+        }
+    };
+}
+
+export function changeNewsParam(type, id, param, state) {
+    return {
+        type: CHANGE_NEWS_PARAM,
+        payload: {
+            type: type,
+            id: id,
+            param: param,
+            state: state
+        }
+    };
+}
+
 export function changeNews(type, id, title, date, img_url, text) {
-    return { type: type === "Yo" ? CHANGE_NEWS_YO : CHANGE_NEWS_POR,
+    return {
+        type: CHANGE_NEWS,
         payload: {
             newsType: type,
             newsId: id,

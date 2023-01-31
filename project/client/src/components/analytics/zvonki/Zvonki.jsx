@@ -37,6 +37,7 @@ export function Zvonki() {
         // }, 5000);
         setActived(".panAna");
         return function() {
+            dispatch = undefined;
             console.log("I was triggered during componentWillUnmount Zvonki.jsx");
         }
     }, []);

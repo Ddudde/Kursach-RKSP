@@ -83,6 +83,7 @@ export function Schedule() {
         // }, 5000);
         setActived(cState.role == 2 ? ".panRas" : ".panAna");
         return function() {
+            dispatch = undefined;
             console.log("I was triggered during componentWillUnmount Schedule.jsx");
         }
     }, []);
@@ -108,7 +109,7 @@ export function Schedule() {
                     </div> :
                     <>
                         {(cState.auth && cState.role == 3) && <div style={{width:"inherit", height: "7vh", position: "fixed", zIndex:"1"}}>
-                            <Pane gro={gr}/>
+                            <Pane gro={gr} cla={true}/>
                         </div>}
                         <div className={scheduleCSS.blockDay}>
                             {Object.getOwnPropertyNames(schedulesInfo.days).map(param =>

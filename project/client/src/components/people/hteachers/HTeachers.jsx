@@ -28,6 +28,7 @@ export function HTeachers() {
         // }, 5000);
         setActived(".panPep");
         return function() {
+            dispatch = undefined;
             console.log("I was triggered during componentWillUnmount HTeachers.jsx");
         }
     }, []);
@@ -58,7 +59,7 @@ export function HTeachers() {
                                     Завучи
                                 </div>
                                 {Object.getOwnPropertyNames(hteachersInfo).map(param =>
-                                    <div>
+                                    <div key={param}>
                                         <div className={hteachersCSS.nav_i+" "+hteachersCSS.nav_iZag1} id={hteachersCSS.nav_i}>
                                             {hteachersInfo[param]}
                                         </div>

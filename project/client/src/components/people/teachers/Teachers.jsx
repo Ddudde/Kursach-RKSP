@@ -28,6 +28,7 @@ export function Teachers() {
         // }, 5000);
         setActived(".panPep");
         return function() {
+            dispatch = undefined;
             console.log("I was triggered during componentWillUnmount Teachers.jsx");
         }
     }, []);
@@ -58,12 +59,12 @@ export function Teachers() {
                                     Мои педагоги
                                 </div>
                                 {Object.getOwnPropertyNames(teachersInfo.my).map(param =>
-                                    <div className={teachersCSS.nav_iZag+" "+teachersCSS.nav_iZag1}>
+                                    <div className={teachersCSS.nav_iZag+" "+teachersCSS.nav_iZag1} key={param}>
                                         <div className={teachersCSS.nav_i} id={teachersCSS.nav_i}>
                                             {param}
                                         </div>
                                         {Object.getOwnPropertyNames(teachersInfo.my[param]).map(param1 =>
-                                            <div>
+                                            <div key={param1}>
                                                 <div className={teachersCSS.nav_i+" "+teachersCSS.nav_iZag2} id={teachersCSS.nav_i}>
                                                     {teachersInfo.my[param][param1]}
                                                 </div>

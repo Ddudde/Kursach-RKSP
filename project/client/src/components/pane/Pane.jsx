@@ -9,7 +9,7 @@ import yes from "../../media/yes.png";
 import no from "../../media/no.png";
 import ed from "../../media/edit.png";
 
-let kek = 0;
+let kel = 0;
 
 export function Pane(props) {
     const ele = (x, par, b) => {
@@ -202,8 +202,7 @@ export function Pane(props) {
         dispatch(changePaneDelGRS(panJs.ke, par.getAttribute('data-id')));
     };
     const chStatB = (e) => {
-        let el;
-        el = e.target;
+        let el = e.target;
         panJs.inps[el.id] = !el.validity.patternMismatch && el.value.length != 0;
         if (panJs.inps[el.id]) {
             el.style.outline = "none black";
@@ -218,14 +217,15 @@ export function Pane(props) {
     };
     const getAdd = (name, namecl) => {
         if(!props.cla || cState.role != 3) return;
-        let cl = "pan" + namecl;
-        let cla = [paneCSS.nav_i, paneCSS.nav_iZag, paneCSS.nav_iJur, cl].join(" ");
+        let cl, cla;
+        cl = "pan" + namecl;
+        cla = [paneCSS.nav_i, paneCSS.nav_iZag, paneCSS.nav_iJur, cl].join(" ");
         return (
             <div className={cla} data-st="0" ref={(el)=>(panJs.panAdd = el)}>
-                <div className={paneCSS.nav_i+" "+paneCSS.chPass} id={paneCSS.nav_i} data-ac='1' onClick={onEdit}>
+                <div className={paneCSS.nav_i+" "+paneCSS.chPass} id={paneCSS.nav_i} onClick={onEdit}>
                     {name}
                 </div>
-                <div className={paneCSS.nav_i+" "+paneCSS.blNew} id={paneCSS.nav_i} data-ac="0">
+                <div className={paneCSS.nav_i+" "+paneCSS.blNew} id={paneCSS.nav_i}>
                     <input className={paneCSS.inp+" "+paneCSS.in} id={"inpt_"} onChange={chStatB} type="text" pattern="^[A-Za-zА-Яа-яЁё\s0-9.-]+$"/>
                     {ele(false, "inpt_", true)}
                     <img className={paneCSS.imginp+" yes "+paneCSS.in} src={yes} onClick={onFin} title="Подтвердить" alt=""/>
@@ -240,7 +240,7 @@ export function Pane(props) {
     const dispatch = useDispatch();
     let bol;
     if(panJs.ke == undefined) {
-        panJs.ke = kek++;
+        panJs.ke = kel++;
         bol = true;
     }
     const isFirstUpdate = useRef(true);

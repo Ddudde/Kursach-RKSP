@@ -80,6 +80,7 @@ export function Classmates() {
         // }, 5000);
         setActived(".panPep");
         return function() {
+            dispatch = undefined;
             console.log("I was triggered during componentWillUnmount Classmates.jsx");
         }
     }, []);

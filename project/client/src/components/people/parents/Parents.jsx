@@ -80,6 +80,7 @@ export function Parents() {
         // }, 5000);
         setActived(".panPep");
         return function() {
+            dispatch = undefined;
             console.log("I was triggered during componentWillUnmount Parents.jsx");
         }
     }, []);
@@ -105,7 +106,7 @@ export function Parents() {
                     </div> :
                     <>
                         {(cState.auth && cState.role == 3) && <div style={{width:"inherit", height: "7vh", position: "fixed", zIndex:"1"}}>
-                            <Pane gro={gr}/>
+                            <Pane gro={gr} cla={true}/>
                         </div>}
                         <div className={parentsCSS.blockPar}>
                             <div className={parentsCSS.par}>
