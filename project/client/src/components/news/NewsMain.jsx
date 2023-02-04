@@ -4,6 +4,7 @@ import {Outlet} from "react-router-dom";
 import {useSelector} from "react-redux";
 import {pane, states} from "../../store/selector";
 import Pane from "../pane/Pane";
+import {setActived} from "../main/Main";
 
 let gr, cState, ke;
 
@@ -31,6 +32,7 @@ export function NewsMain() {
     const isFirstUpdate = useRef(true);
     useEffect(() => {
         console.log("I was triggered during componentDidMount NewsMain.jsx");
+        setActived(".panNew");
         return function() {
             console.log("I was triggered during componentWillUnmount NewsMain.jsx");
         }

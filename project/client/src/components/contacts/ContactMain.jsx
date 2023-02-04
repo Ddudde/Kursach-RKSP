@@ -4,6 +4,7 @@ import {Outlet} from "react-router-dom";
 import {useSelector} from "react-redux";
 import {pane, states} from "../../store/selector";
 import Pane from "../pane/Pane";
+import {setActived} from "../main/Main";
 
 let gr, cState, ke;
 
@@ -31,6 +32,7 @@ export function ContactMain() {
     const isFirstUpdate = useRef(true);
     useEffect(() => {
         console.log("I was triggered during componentDidMount ContactMain.jsx");
+        setActived(".panCon");
         return function() {
             console.log("I was triggered during componentWillUnmount ContactMain.jsx");
         }
@@ -43,14 +45,12 @@ export function ContactMain() {
         console.log('componentDidUpdate ContactMain.jsx');
     });
     return (
-        <>
-            <div className={contactCSS.AppHeader}>
-                {(cState.auth && cState.role != 4) && <div style={{width:"inherit", height: "7vh", position: "fixed", zIndex:"1"}} ref={()=>(ke = !ke ? paneInfo.els.length : ke)}>
-                    <Pane gro={gr}/>
-                </div>}
-                <Outlet />
-            </div>
-        </>
+        <div className={contactCSS.AppHeader}>
+            {(cState.auth && cState.role != 4) && <div style={{width:"inherit", height: "7vh", position: "fixed", zIndex:"1"}} ref={()=>(ke = !ke ? paneInfo.els.length : ke)}>
+                <Pane gro={gr}/>
+            </div>}
+            <Outlet />
+        </div>
     )
 }
 export default ContactMain;

@@ -302,7 +302,7 @@ export function Pane(props) {
                 panJs.gr[param] = getPan(paneInfo.els[panJs.ke].groups[param], param, paneInfo.els[panJs.ke].groups[param].linke, undefined, () => (dispatch(changePaneGR(panJs.ke, param, panJs.blockCl))))
             )}
             {panJs.mor}
-            <div className={paneCSS.lin} style={{width: (100 / panJs.pari.elems) + "%"}} id={"lin"} ref={(ele)=>(panJs.refes.lin = ele)}/>
+            <div className={paneCSS.lin} data-id={"1"} style={{width: (100 / panJs.pari.elems) + "%"}} id={"lin"} ref={(ele)=>(panJs.refes.lin = ele)}/>
         </nav>
     )
 }

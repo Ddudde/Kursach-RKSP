@@ -36,10 +36,9 @@ export const CHANGE_INDICATOR = "CHANGE_INDICATOR";
 export const CHANGE_NEWS = "CHANGE_NEWS";
 export const CHANGE_NEWS_PARAM = "CHANGE_NEWS_PARAM";
 export const CHANGE_NEWS_DEL = "CHANGE_NEWS_DEL";
-export const CHANGE_CONTACT_YO = "CHANGE_CONTACT_YO";
-export const CHANGE_CONTACT_YO_IMAGEURL = "CHANGE_CONTACT_YO_IMAGEURL";
-export const CHANGE_CONTACT_POR = "CHANGE_CONTACT_POR";
-export const CHANGE_CONTACT_POR_IMAGEURL = "CHANGE_CONTACT_POR_IMAGEURL";
+export const CHANGE_CONTACT = "CHANGE_CONTACT";
+export const CHANGE_CONTACT_MAPIMG = "CHANGE_CONTACT_MAPIMG";
+export const CHANGE_CONTACT_MAP = "CHANGE_CONTACT_MAP";
 
 export function changeCB(checkboxId, checkBoxState) {
     return { type: CHANGE_CHECKBOX,
@@ -343,26 +342,44 @@ export function changeNews(type, id, title, date, img_url, text) {
     return {
         type: CHANGE_NEWS,
         payload: {
-            newsType: type,
-            newsId: id,
-            newsState: {title: title, date: date, img_url: img_url, text: text}
+            type: type,
+            id: id,
+            state: {
+                title: title,
+                date: date,
+                img_url: img_url,
+                text: text
+            }
         }
     };
 }
 
-export function changeContacts(type, id, title, number) {
-    let stype;
-    if(type === "Yo")
-    {
-        stype = id === "imageUrl" ? CHANGE_CONTACT_YO_IMAGEURL : CHANGE_CONTACT_YO;
-    } else {
-        stype = id === "imageUrl" ? CHANGE_CONTACT_POR_IMAGEURL : CHANGE_CONTACT_POR;
-    }
-    return { type: stype,
+export function changeContactsMapImage(type, url) {
+    return {
+        type: CHANGE_CONTACT_MAPIMG,
         payload: {
-            contactType: type,
-            contactId: id,
-            contactState: {title: title, number: number}
+            type: type,
+            state: url
+        }
+    };
+}
+
+export function changeContactsMap(type, text) {
+    return {
+        type: CHANGE_CONTACT_MAP,
+        payload: {
+            type: type,
+            state: text
+        }
+    };
+}
+
+export function changeContacts(type, text) {
+    return {
+        type: CHANGE_CONTACT,
+        payload: {
+            type: type,
+            state: text
         }
     };
 }

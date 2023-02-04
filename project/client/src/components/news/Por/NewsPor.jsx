@@ -3,7 +3,6 @@ import {Helmet} from "react-helmet-async";
 import newsCSS from '../Por/newsPor.module.css';
 import {newsSelec} from "../../../store/selector";
 import {useDispatch, useSelector} from "react-redux";
-import {setActived} from "../../main/Main";
 import {setActNew} from "../NewsMain";
 import warn from "../../../media/warn_big.png";
 
@@ -25,7 +24,6 @@ export function NewsPor() {
         // setInterval(function() {
         //     dispatch(changeNews("Por", "id_" + Object.getOwnPropertyNames(newsInfo.newsPor).length, 'ПОШЛА ВОДА В ХАТУ', '02.12.2020', '', 'Да'));
         // }, 5000);
-        setActived(".panNew");
         return function() {
             dispatch = undefined;
             console.log("I was triggered during componentWillUnmount NewsPor.jsx");
@@ -44,7 +42,7 @@ export function NewsPor() {
                 <title>Объявления портала</title>
             </Helmet>
             <div className={newsCSS.AppHeader}>
-                {Object.getOwnPropertyNames(newsInfo.news[type]).length == 0 ?
+                {Object.getOwnPropertyNames(newsInfo[type]).length == 0 ?
                     <div className={newsCSS.block}>
                         <img alt="banner" src={warn}/>
                         <div className={newsCSS.block_text}>
@@ -52,11 +50,11 @@ export function NewsPor() {
                         </div>
                     </div> :
                     <section className={newsCSS.center_colum}>
-                        {Object.getOwnPropertyNames(newsInfo.news[type]).map(param =>
+                        {Object.getOwnPropertyNames(newsInfo[type]).map(param =>
                             <div className={newsCSS.news_line} key={param}>
-                                <h2>{newsInfo.news[type][param].title}</h2>
-                                <span className="date">{newsInfo.news[type][param].date}</span>
-                                <p><img alt="banner" src={newsInfo.news[type][param].img_url+''} onError={errorLoad}/>{newsInfo.news[type][param].text}</p>
+                                <h2>{newsInfo[type][param].title}</h2>
+                                <span className="date">{newsInfo[type][param].date}</span>
+                                <p><img alt="banner" src={newsInfo[type][param].img_url+''} onError={errorLoad}/>{newsInfo[type][param].text}</p>
                             </div>
                         )}
                     </section>

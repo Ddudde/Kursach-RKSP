@@ -3,11 +3,11 @@ import {Helmet} from "react-helmet-async";
 import contactCSS from './contactPor.module.css';
 import {contactsSelec} from "../../../store/selector";
 import {useDispatch, useSelector} from "react-redux";
-import {setActived} from "../../main/Main";
 import {setActNew} from "../ContactMain";
 import warn from "../../../media/warn_big.png";
 
-let dispatch, contactsInfo;
+let dispatch, contactsInfo, type;
+type = "Por";
 
 function errorLoad(e) {
     e.target.style.display = 'none';
@@ -27,7 +27,6 @@ export function ContactPor() {
         // setInterval(function() {
         //     dispatch(changeContacts("Por", "id_" + Object.getOwnPropertyNames(contactsInfo.contactsPor.numbers).length, '8 (800) 555 35 37', '+78005553537'));
         // }, 5000);
-        setActived(".panCon");
         return function() {
             dispatch = undefined;
             console.log("I was triggered during componentWillUnmount ContactPor.jsx");
@@ -46,7 +45,7 @@ export function ContactPor() {
                 <title>Контакты портала</title>
             </Helmet>
             <div className={contactCSS.AppHeader}>
-                {(Object.getOwnPropertyNames(contactsInfo.contactsPor.numbers).length == 0 && !contactsInfo.contactsPor.imageUrl) ?
+                {(Object.getOwnPropertyNames(contactsInfo[type].numbers).length == 0 && !contactsInfo[type].imageUrl) ?
                     <div className={contactCSS.block}>
                         <img alt="banner" src={warn}/>
                         <div className={contactCSS.block_text}>
@@ -56,13 +55,13 @@ export function ContactPor() {
                     <section className={contactCSS.center_colum}>
                         <div className={contactCSS.blockTel}>
                             <h1>ТЕЛЕФОНЫ ДЛЯ СВЯЗИ</h1>
-                            {Object.getOwnPropertyNames(contactsInfo.contactsPor.numbers).map(param =>
-                                <p key={param}><a href={"tel:" + contactsInfo.contactsPor.numbers[param].number}>{contactsInfo.contactsPor.numbers[param].title}</a></p>
+                            {Object.getOwnPropertyNames(contactsInfo[type].numbers).map(param =>
+                                <p key={param}><a href={"tel:" + contactsInfo[type].numbers[param].number}>{contactsInfo[type].numbers[param].title}</a></p>
                             )}
                         </div>
                         <div className={contactCSS.map+" "+contactCSS.blockTel}>
                             <h1>КАРТА ПРОЕЗДА</h1>
-                            <p><img className={contactCSS.imk} alt="banner" src={contactsInfo.contactsPor.imageUrl+''} onError={errorLoad}/></p>
+                            <p><img className={contactCSS.imk} alt="banner" src={contactsInfo[type].imageUrl+''} onError={errorLoad}/></p>
                         </div>
                     </section>
                 }
