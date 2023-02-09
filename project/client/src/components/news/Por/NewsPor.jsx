@@ -1,7 +1,7 @@
 import React, {useEffect, useRef} from "react";
 import {Helmet} from "react-helmet-async";
 import newsCSS from '../Por/newsPor.module.css';
-import {newsSelec} from "../../../store/selector";
+import {news} from "../../../store/selector";
 import {useDispatch, useSelector} from "react-redux";
 import {setActNew} from "../NewsMain";
 import warn from "../../../media/warn_big.png";
@@ -13,7 +13,7 @@ function errorLoad(e) {
 }
 
 export function NewsPor() {
-    newsInfo = useSelector(newsSelec);
+    newsInfo = useSelector(news);
     if(!dispatch) setActNew(0);
     dispatch = useDispatch();
     const isFirstUpdate = useRef(true);

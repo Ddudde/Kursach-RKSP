@@ -22,7 +22,9 @@ export const CHANGE_PJOURNAL_TYPE = "CHANGE_PJOURNAL_TYPE";
 export const CHANGE_PJOURNAL_DEL_TYPE = "CHANGE_PJOURNAL_DEL_TYPE";
 export const CHANGE_PJOURNAL_NEW_TYPE = "CHANGE_PJOURNAL_NEW_TYPE";
 export const CHANGE_PJOURNAL_DZ = "CHANGE_PJOURNAL_DZ";
+export const CHANGE_TEACHERS_GL = "CHANGE_TEACHERS_GL";
 export const CHANGE_TEACHERS = "CHANGE_TEACHERS";
+export const CHANGE_TEACHERS_DEL = "CHANGE_TEACHERS_DEL";
 export const CHANGE_HTEACHERS = "CHANGE_HTEACHERS";
 export const CHANGE_CLASSMATES = "CHANGE_CLASSMATES";
 export const CHANGE_PARENTS = "CHANGE_PARENTS";
@@ -39,6 +41,14 @@ export const CHANGE_NEWS_DEL = "CHANGE_NEWS_DEL";
 export const CHANGE_CONTACT = "CHANGE_CONTACT";
 export const CHANGE_CONTACT_MAPIMG = "CHANGE_CONTACT_MAPIMG";
 export const CHANGE_CONTACT_MAP = "CHANGE_CONTACT_MAP";
+export const CHANGE_EVENTS = "CHANGE_EVENTS";
+export const CHANGE_EVENTS_CLEAR = "CHANGE_EVENTS_CLEAR";
+export const CHANGE_EVENT_DEL = "CHANGE_EVENT_DEL";
+export const CHANGE_EVENT = "CHANGE_EVENT";
+export const CHANGE_EVENT_TIMER = "CHANGE_EVENT_TIMER";
+export const CHANGE_EVENT_TIMER_DEL = "CHANGE_EVENT_TIMER_DEL";
+export const CHANGE_EVENTS_STEP = "CHANGE_EVENTS_STEP";
+export const CHANGE_EVENTS_RL = "CHANGE_EVENTS_RL";
 
 export function changeCB(checkboxId, checkBoxState) {
     return { type: CHANGE_CHECKBOX,
@@ -208,6 +218,41 @@ export function changePaneGR(id, state, block) {
     };
 }
 
+export function changeEvents(type, state, id, title, text, time) {
+    if(title){
+        state = {
+            title: title,
+            dtime: new Date().toLocaleString("ru", {
+                hour: 'numeric',
+                minute: 'numeric',
+                second: 'numeric'
+            }),
+            text: text
+        }
+    }
+    let payload = state;
+    if(type == CHANGE_EVENT){
+        payload = {
+            id: id,
+            state: state,
+            time: {
+                long: time,
+                init: false
+            }
+        };
+    }
+    if(type == CHANGE_EVENT_DEL || type == CHANGE_EVENT_TIMER){
+        payload = {
+            id: id,
+            state: state
+        };
+    }
+    return {
+        type: type,
+        payload: payload
+    };
+}
+
 export function changePane(id, state) {
     return { type: CHANGE_PANE,
         payload: {
@@ -253,11 +298,33 @@ export function changeHTeachers(id, state) {
     };
 }
 
-export function changeTeachers(id, state) {
+export function changeTeachersGL(type, state) {
+    return { type: CHANGE_TEACHERS_GL,
+        payload: {
+            type: type,
+            state: state
+        }
+    };
+}
+
+export function changeTeachersDel(type, l1, l2) {
+    return { type: CHANGE_TEACHERS_DEL,
+        payload: {
+            type: type,
+            l1: l1,
+            l2: l2
+        }
+    };
+}
+
+export function changeTeachers(type, l1, l2, state, param = "name") {
     return { type: CHANGE_TEACHERS,
         payload: {
-            teaId: id,
-            teaState: state
+            type: type,
+            l1: l1,
+            l2: l2,
+            param: param,
+            state: state
         }
     };
 }

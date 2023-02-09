@@ -61,6 +61,11 @@
 	vertical-align: middle;
 }
 
+.uch > .nam{
+	display: inline-block;
+	vertical-align: middle;
+}
+
 .nav_iZag1 img{
 	width: 2vw;
 	vertical-align: middle;

@@ -3,14 +3,13 @@ import {Helmet} from "react-helmet-async";
 import parentsCSS from './parents.module.css';
 import {parents, states, themes} from "../../../store/selector";
 import {useDispatch, useSelector} from "react-redux";
-import {setActived} from "../../main/Main";
 import {setActNew} from "../PeopleMain";
 import warn from "../../../media/warn_big.png";
 import profl from "../../../media/profl.png";
 import profd from "../../../media/profd.png";
 import Pane from "../../pane/Pane";
 
-let dispatch, parentsInfo, gr;
+let dispatch, parentsInfo, gr, ppI;
 
 gr = {
     groups: {
@@ -62,6 +61,10 @@ gr = {
     group: 1
 };
 
+function ele (x) {
+    ppI = x;
+}
+
 export function Parents() {
     parentsInfo = useSelector(parents);
     const themeState = useSelector(themes);
@@ -78,12 +81,12 @@ export function Parents() {
         // setInterval(function() {
         //     dispatch(changeContacts("Por", "id_" + Object.getOwnPropertyNames(parentsInfo.contactsPor.numbers).length, '8 (800) 555 35 37', '+78005553537'));
         // }, 5000);
-        setActived(".panPep");
         return function() {
             dispatch = undefined;
             console.log("I was triggered during componentWillUnmount Parents.jsx");
         }
     }, []);
+    let pI = Object.getOwnPropertyNames(parentsInfo);
     useEffect(() => {
         if (isFirstUpdate.current) {
             isFirstUpdate.current = false;
@@ -97,7 +100,7 @@ export function Parents() {
                 <title>Родители</title>
             </Helmet>
             <div className={parentsCSS.AppHeader}>
-                {(Object.getOwnPropertyNames(parentsInfo).length == 0) ?
+                {(pI.length == 0) ?
                     <div className={parentsCSS.block}>
                         <img alt="banner" src={warn}/>
                         <div className={parentsCSS.block_text}>
@@ -114,12 +117,19 @@ export function Parents() {
                                     <div className={parentsCSS.nav_i} id={parentsCSS.nav_i}>
                                         Родители
                                     </div>
-                                    {Object.getOwnPropertyNames(parentsInfo).map(param =>
+                                    {pI.map(param =>
                                         <div className={parentsCSS.nav_iZag+" "+parentsCSS.nav_iZag1} key={param}>
-                                            <div className={parentsCSS.nav_i} id={parentsCSS.nav_i}>
-                                                {parentsInfo[param].name}
+                                            {ele(Object.getOwnPropertyNames(parentsInfo[param].par))}
+                                            <div className={parentsCSS.uch}>
+                                                <div className={parentsCSS.nav_i+" "+parentsCSS.nam} id={parentsCSS.nav_i}>
+                                                    Обучающийся: {parentsInfo[param].name}
+                                                </div>
+                                                <img src={themeState.theme_ch ? profd : profl} title="Перейти в профиль" alt=""/>
+                                                <div className={parentsCSS.nav_i} id={parentsCSS.nav_i}>
+                                                    {ppI.length > 1 ? "Представители:" : "Представитель:"}
+                                                </div>
                                             </div>
-                                            {Object.getOwnPropertyNames(parentsInfo[param].par).map(param1 =>
+                                            {ppI.map(param1 =>
                                                 <div key={param1}>
                                                     <div className={parentsCSS.nav_i+" "+parentsCSS.nav_iZag2} id={parentsCSS.nav_i}>
                                                         {parentsInfo[param].par[param1]}

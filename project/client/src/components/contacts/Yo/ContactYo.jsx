@@ -1,7 +1,7 @@
 import React, {useEffect, useReducer, useRef} from "react";
 import {Helmet} from "react-helmet-async";
 import contactCSS from './contactYo.module.css';
-import {contactsSelec, states} from "../../../store/selector";
+import {contacts, states} from "../../../store/selector";
 import {useDispatch, useSelector} from "react-redux";
 import {setActNew} from "../ContactMain";
 import warn from "../../../media/warn_big.png";
@@ -12,7 +12,7 @@ import {changeContacts, changeContactsMap, changeContactsMapImage} from "../../.
 
 let dispatch, contactsInfo, type, cState, inps, pari;
 type = "Yo";
-inps = {inpntt : "Текст", inpnzt : "Заголовок", inpndt: new Date().toLocaleString("ru", {day:"2-digit", month: "2-digit", year:"numeric"})};
+inps = {};
 pari = {elems: 0, paels: 0};
 let [_, forceUpdate] = [];
 
@@ -116,7 +116,7 @@ function ele (x, par, b) {
 }
 
 export function ContactYo() {
-    contactsInfo = useSelector(contactsSelec);
+    contactsInfo = useSelector(contacts);
     cState = useSelector(states);
     if(!dispatch) setActNew(1);
     [_, forceUpdate] = useReducer((x) => x + 1, 0);

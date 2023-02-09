@@ -1,7 +1,7 @@
 import React, {useEffect, useRef} from "react";
 import {Helmet} from "react-helmet-async";
 import contactCSS from './contactPor.module.css';
-import {contactsSelec} from "../../../store/selector";
+import {contacts} from "../../../store/selector";
 import {useDispatch, useSelector} from "react-redux";
 import {setActNew} from "../ContactMain";
 import warn from "../../../media/warn_big.png";
@@ -14,7 +14,7 @@ function errorLoad(e) {
 }
 
 export function ContactPor() {
-    contactsInfo = useSelector(contactsSelec);
+    contactsInfo = useSelector(contacts);
     if(!dispatch) setActNew(0);
     dispatch = useDispatch();
     const isFirstUpdate = useRef(true);

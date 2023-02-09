@@ -3,7 +3,6 @@ import {Helmet} from "react-helmet-async";
 import adminsCSS from './admins.module.css';
 import {admins, themes} from "../../../store/selector";
 import {useDispatch, useSelector} from "react-redux";
-import {setActived} from "../../main/Main";
 import {setActNew} from "../PeopleMain";
 import warn from "../../../media/warn_big.png";
 import profl from "../../../media/profl.png";
@@ -28,7 +27,6 @@ export function Admins() {
         // setInterval(function() {
         //     dispatch(changeContacts("Por", "id_" + Object.getOwnPropertyNames(adminsInfo.contactsPor.numbers).length, '8 (800) 555 35 37', '+78005553537'));
         // }, 5000);
-        setActived(".panPep");
         return function() {
             dispatch = undefined;
             console.log("I was triggered during componentWillUnmount Admins.jsx");

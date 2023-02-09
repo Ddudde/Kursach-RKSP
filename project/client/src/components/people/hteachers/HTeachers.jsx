@@ -3,7 +3,6 @@ import {Helmet} from "react-helmet-async";
 import hteachersCSS from './hteachers.module.css';
 import {hteachers, themes} from "../../../store/selector";
 import {useDispatch, useSelector} from "react-redux";
-import {setActived} from "../../main/Main";
 import {setActNew} from "../PeopleMain";
 import warn from "../../../media/warn_big.png";
 import profl from "../../../media/profl.png";
@@ -26,7 +25,6 @@ export function HTeachers() {
         // setInterval(function() {
         //     dispatch(changeContacts("Por", "id_" + Object.getOwnPropertyNames(hteachersInfo.contactsPor.numbers).length, '8 (800) 555 35 37', '+78005553537'));
         // }, 5000);
-        setActived(".panPep");
         return function() {
             dispatch = undefined;
             console.log("I was triggered during componentWillUnmount HTeachers.jsx");
@@ -42,7 +40,7 @@ export function HTeachers() {
     return (
         <>
             <Helmet>
-                <title>Завучи</title>
+                <title>Администрация учебной организации</title>
             </Helmet>
             <div className={hteachersCSS.AppHeader}>
                 {(Object.getOwnPropertyNames(hteachersInfo).length == 0 && Object.getOwnPropertyNames(hteachersInfo).length == 0) ?
@@ -56,7 +54,7 @@ export function HTeachers() {
                         <div className={hteachersCSS.htea}>
                             <div className={hteachersCSS.nav_iZag}>
                                 <div className={hteachersCSS.nav_i} id={hteachersCSS.nav_i}>
-                                    Завучи
+                                    Администрация учебной организации
                                 </div>
                                 {Object.getOwnPropertyNames(hteachersInfo).map(param =>
                                     <div key={param}>

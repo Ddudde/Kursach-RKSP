@@ -1,43 +1,22 @@
-import {CHANGE_TEACHERS} from '../../actions';
+import {CHANGE_TEACHERS, CHANGE_TEACHERS_DEL, CHANGE_TEACHERS_GL} from '../../actions';
 
 const initialState = {
-        my: {
-            "Англ. яз." : {
-                "id1" : "Петров А.А.",
-                "id2" : "Петров А.Б."
-            },
-            "Русский яз.": {
-                "id1" : "Петров А.А."
-            },
-            "Математика": {
-                "id1" : "Петров А.А."
-            },
-            "Окруж. мир": {
-                "id1" : "Петров А.А."
-            }
-        },
-        nemy: {
-            "Русский яз.": {
-                "id1" : "Петров А.А."
-            },
-            "Математика": {
-                "id1" : "Петров А.А."
-            },
-            "Алгебра": {
-                "id1" : "Петров А.А.",
-                "id2" : "Петров А.С.",
-                "id3" : "Петров А.Г."
-            }
-        }
+        0: {},
+        1: {}
     };
 
 export default function teachersReducer(state = initialState, action) {
+    let fd = {...state};
     switch(action.type) {
+        case CHANGE_TEACHERS_GL:
+            fd[action.payload.type] = action.payload.state;
+            return fd;
         case CHANGE_TEACHERS:
-            return {
-                    ...state,
-                    [action.payload.teaId]: action.payload.teaState
-                };
+            fd[action.payload.type][action.payload.l1][action.payload.l2][action.payload.param] = action.payload.state;
+            return fd;
+        case CHANGE_TEACHERS_DEL:
+            delete fd[action.payload.type][action.payload.l1][action.payload.l2];
+            return fd;
         default:
             return state;
     }

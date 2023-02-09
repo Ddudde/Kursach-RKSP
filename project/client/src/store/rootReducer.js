@@ -19,6 +19,7 @@ import adminsReducer from "./reducers/people/adminsReducer";
 import profileReducer from "./reducers/profileReducer";
 import pjournalReducer from "./reducers/pjournalReducer";
 import paneReducer from "./reducers/paneReducer";
+import eventsReducer from "./reducers/eventsReducer";
 
 export default combineReducers({
     checkbox: checkBoxReducer,
@@ -40,5 +41,6 @@ export default combineReducers({
     admins: adminsReducer,
     profiles: profileReducer,
     pjournal: pjournalReducer,
-    pane: paneReducer
+    pane: paneReducer,
+    events: eventsReducer
 });

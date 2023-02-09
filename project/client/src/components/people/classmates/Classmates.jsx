@@ -3,7 +3,6 @@ import {Helmet} from "react-helmet-async";
 import classmatesCSS from './classmates.module.css';
 import {classmates, states, themes} from "../../../store/selector";
 import {useDispatch, useSelector} from "react-redux";
-import {setActived} from "../../main/Main";
 import {setActNew} from "../PeopleMain";
 import warn from "../../../media/warn_big.png";
 import profl from "../../../media/profl.png";
@@ -78,7 +77,6 @@ export function Classmates() {
         // setInterval(function() {
         //     dispatch(changeContacts("Por", "id_" + Object.getOwnPropertyNames(classmatesInfo.contactsPor.numbers).length, '8 (800) 555 35 37', '+78005553537'));
         // }, 5000);
-        setActived(".panPep");
         return function() {
             dispatch = undefined;
             console.log("I was triggered during componentWillUnmount Classmates.jsx");
@@ -112,7 +110,7 @@ export function Classmates() {
                             <div className={classmatesCSS.cm}>
                                 <div className={classmatesCSS.nav_iZag}>
                                     <div className={classmatesCSS.nav_i} id={classmatesCSS.nav_i}>
-                                        Одноклассники
+                                        {cState.role == 3 ? "Обучающиеся" : "Одноклассники"}
                                     </div>
                                     {Object.getOwnPropertyNames(classmatesInfo).map(param =>
                                         <div key={param}>

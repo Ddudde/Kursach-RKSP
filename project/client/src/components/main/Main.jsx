@@ -1,17 +1,17 @@
 import React, {useEffect, useRef} from "react";
-import warn from '../../media/warning.png';
-import main from './main.module.css';
+import mainCSS from './main.module.css';
 import {Link, Outlet} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 import {states, themes} from "../../store/selector";
-import {changeState, changeTheme} from "../../store/actions";
+import {CHANGE_EVENTS_STEP, changeEvents, changeState, changeTheme} from "../../store/actions";
 import * as def from "./default";
 import profd from "../../media/profd.png";
 import profl from "../../media/profl.png";
 import mapd from "../../media/Map_symbolD.png";
 import mapl from "../../media/Map_symbolL.png";
+import Events from "../events/Events";
 
-let act, cState, dispatch, theme;
+let act, cStateInfo, dispatch, themeInfo;
 act = ".panGL";
 export let thP = {
     true: {
@@ -47,11 +47,11 @@ export let thP = {
 function getPan(name, namecl, link, dopClass, fun) {
     let cl = "pan" + namecl;
     return fun ? (
-        <div className={main.nav_i+" "+cl+" "+(dopClass ? dopClass : "")} id={main.nav_i} onClick={fun}>
+        <div className={mainCSS.nav_i+" "+cl+" "+(dopClass ? dopClass : "")} id={mainCSS.nav_i} onClick={fun}>
             {name}
         </div>
     ):(
-        <Link className={main.nav_i+" "+cl+" "+(dopClass ? dopClass : "")} id={main.nav_i} to={link} onClick={() => {setActived("."+cl)}}>
+        <Link className={mainCSS.nav_i+" "+cl+" "+(dopClass ? dopClass : "")} id={mainCSS.nav_i} to={link} onClick={() => {setActived("."+cl)}}>
             {name}
         </Link>
     )
@@ -59,17 +59,17 @@ function getPan(name, namecl, link, dopClass, fun) {
 
 function getLogin() {
     return (
-        <div className={main.logBlock}>
-            <div className={main.nav_i+' '+main.log} id={main.nav_i}>
-                <img alt="ico" src={'/media/ls-icon'+ cState.ico +'.png'}/>
-                <div className={main.logLog}>{cState.login}</div>
-                <div className={main.logText}>Я - {cState.roleDesc}</div>
+        <div className={mainCSS.logBlock}>
+            <div className={mainCSS.nav_i+' '+mainCSS.log} id={mainCSS.nav_i}>
+                <img alt="ico" src={'/media/ls-icon'+ cStateInfo.ico +'.png'}/>
+                <div className={mainCSS.logLog}>{cStateInfo.login}</div>
+                <div className={mainCSS.logText}>Я - {cStateInfo.roleDesc}</div>
             </div>
-            <div className={main.logMenu}>
-                {getPan("Профиль", "Pro", "profiles", main.logMenuBlock)}
-                {cState.roles && getPan("Сменить роль", "Rol", "", main.logMenuBlock,() => {chRoles()})}
-                {getPan("Настройки", "Set", "settings", main.logMenuBlock)}
-                {getPan("Выход", "Exi", "", main.logMenuBlock,() => {onExit()})}
+            <div className={mainCSS.logMenu}>
+                {getPan("Профиль", "Pro", "profiles", mainCSS.logMenuBlock)}
+                {cStateInfo.roles && getPan("Сменить роль", "Rol", "", mainCSS.logMenuBlock,() => {chRoles()})}
+                {getPan("Настройки", "Set", "settings", mainCSS.logMenuBlock)}
+                {getPan("Выход", "Exi", "", mainCSS.logMenuBlock,() => {onExit()})}
             </div>
         </div>
     )
@@ -77,19 +77,19 @@ function getLogin() {
 
 function getKids() {
     return (
-        <div className={main.logBlock}>
-            <div className={main.nav_i+' '+main.kidEl} id={main.nav_i}>
-                <img className={main.kidImg} src={theme.theme_ch ? profd : profl} title="Перейти в профиль" alt=""/>
-                <div className={main.kidInf}>Информация о:</div>
-                <div className={main.kidText}>{cState.kids[cState.kid]}</div>
-                <img className={main.mapImg} src={theme.theme_ch ? mapd : mapl} title="Перейти в профиль" alt=""/>
+        <div className={mainCSS.logBlock}>
+            <div className={mainCSS.nav_i+' '+mainCSS.kidEl} id={mainCSS.nav_i}>
+                <img className={mainCSS.kidImg} src={themeInfo.theme_ch ? profd : profl} title="Перейти в профиль" alt=""/>
+                <div className={mainCSS.kidInf}>Информация о:</div>
+                <div className={mainCSS.kidText}>{cStateInfo.kids[cStateInfo.kid]}</div>
+                <img className={mainCSS.mapImg} src={themeInfo.theme_ch ? mapd : mapl} title="Перейти в профиль" alt=""/>
             </div>
-            <div className={main.logMenu}>
-                {cState.kids && Object.getOwnPropertyNames(cState.kids).map(param1 =>
-                    <div className={main.nav_i+' '+main.log+' '+main.kidBlock} id={main.nav_i} onClick={() => (dispatch(changeState("kid", param1)))}>
-                        <img className={main.kidImg} src={theme.theme_ch ? profd : profl} title="Перейти в профиль" alt=""/>
-                        <div className={main.kidInf}>Информация о:</div>
-                        <div className={main.kidText}>{cState.kids[param1]}</div>
+            <div className={mainCSS.logMenu}>
+                {cStateInfo.kids && Object.getOwnPropertyNames(cStateInfo.kids).map(param1 =>
+                    <div className={mainCSS.nav_i+' '+mainCSS.log+' '+mainCSS.kidBlock} id={mainCSS.nav_i} onClick={() => (dispatch(changeState("kid", param1)))}>
+                        <img className={mainCSS.kidImg} src={themeInfo.theme_ch ? profd : profl} title="Перейти в профиль" alt=""/>
+                        <div className={mainCSS.kidInf}>Информация о:</div>
+                        <div className={mainCSS.kidText}>{cStateInfo.kids[param1]}</div>
                     </div>
                 )}
             </div>
@@ -98,14 +98,14 @@ function getKids() {
 }
 
 function chRoles() {
-    let r = cState.role;
+    let r = cStateInfo.role;
     r++;
     if(r > 4) r = 0;
-    dispatch(changeState("role", r, dispatch, cState.rolesDescrs));
+    dispatch(changeState("role", r, dispatch, cStateInfo.rolesDescrs));
 }
 
 function onExit() {
-    dispatch(changeState("auth", !cState.auth));
+    dispatch(changeState("auth", !cStateInfo.auth));
 }
 
 export function setActived(name) {
@@ -125,15 +125,17 @@ function ini(stat) {
 }
 
 export function Main() {
-    theme = useSelector(themes);
-    cState = useSelector(states);
+    themeInfo = useSelector(themes);
+    cStateInfo = useSelector(states);
     const isFirstUpdate = useRef(true);
     dispatch = useDispatch();
     useEffect(() => {
         console.log("I was triggered during componentDidMount Main.jsx");
         def.ini();
-        ini(theme.theme_ch);
+        ini(themeInfo.theme_ch);
+        dispatch(changeEvents(CHANGE_EVENTS_STEP, 1));
         return function() {
+            dispatch(changeEvents(CHANGE_EVENTS_STEP, -1));
             console.log("I was triggered during componentWillUnmount Main.jsx")
         }
     }, []);
@@ -146,44 +148,51 @@ export function Main() {
     });
     return (
         <>
-            <div className={main.fon}>
+            <div className={mainCSS.fon}>
                 <div/>
                 <div/>
             </div>
-            <nav className={main.panel} id="her">
-                {!cState.auth && getPan("Главная", "GL", "/")}
+            <nav className={mainCSS.panel} id="her">
+                {!cStateInfo.auth && getPan("Главная", "GL", "/")}
                 {getPan("Объявления", "New", "news")}
                 {getPan("Контакты", "Con", "contacts")}
                 {getPan("Люди", "Pep", "people")}
-                {(!cState.auth || (cState.auth && cState.role == 3)) && getPan("Школам", "Sch", "tutor")}
-                {(!cState.auth || (cState.auth && cState.role == 2)) && getPan("Педагогам", "Tea", "tutor")}
-                {(!cState.auth || (cState.auth && cState.role == 1)) && getPan("Родителям", "Par", "tutor")}
-                {(!cState.auth || (cState.auth && cState.role == 0)) && getPan("Обучающимся", "Kid", "tutor")}
-                {(cState.auth && cState.role == 2) && getPan("Расписание", "Ras", "/")}
-                {(cState.auth && cState.role == 2) && getPan("Журнал", "Jur", "journal")}
-                {(cState.auth && cState.role == 3) && getPan("Администрирование УО", "Ana", "admYO")}
-                {(cState.auth && cState.role < 2) && getPan("Дневник", "Dnev", "/")}
-                {(cState.auth && cState.role < 2) && getPan("Аналитика", "Ana", "analytics")}
-                {cState.auth && getLogin()}
-                {(cState.auth && cState.role == 1) && getKids()}
+                {(!cStateInfo.auth || (cStateInfo.auth && cStateInfo.role == 3)) && getPan("Школам", "Sch", "tutor")}
+                {(!cStateInfo.auth || (cStateInfo.auth && cStateInfo.role == 2)) && getPan("Педагогам", "Tea", "tutor")}
+                {(!cStateInfo.auth || (cStateInfo.auth && cStateInfo.role == 1)) && getPan("Родителям", "Par", "tutor")}
+                {(!cStateInfo.auth || (cStateInfo.auth && cStateInfo.role == 0)) && getPan("Обучающимся", "Kid", "tutor")}
+                {(cStateInfo.auth && cStateInfo.role == 2) && getPan("Расписание", "Ras", "/")}
+                {(cStateInfo.auth && cStateInfo.role == 2) && getPan("Журнал", "Jur", "journal")}
+                {(cStateInfo.auth && cStateInfo.role == 3) && getPan("Администрирование УО", "Ana", "admYO")}
+                {(cStateInfo.auth && cStateInfo.role < 2) && getPan("Дневник", "Dnev", "/")}
+                {(cStateInfo.auth && cStateInfo.role < 2) && getPan("Аналитика", "Ana", "analytics")}
+                {cStateInfo.auth && getLogin()}
+                {(cStateInfo.auth && cStateInfo.role == 1) && getKids()}
             </nav>
             <Outlet />
-            <div className={main.warne+" warnew"} id={main.warnew}>
-                <img src={warn} className={main.warnimg} alt=""/>Внимание! <p>Неверный логин или пароль</p>
-            </div>
-            <div className={main.warne+" warnev"} id={main.warnev}>
-                <img src={warn} className={main.warnimg} alt=""/>Внимание! <p>Допустимы только латиница и цифры</p>
-            </div>
-            <div className={main.warne+" warner"} id={main.warner}>
-                <img src={warn} className={main.warnimg} alt=""/>Внимание! <p id="wt">Допустимы только латиница и цифры</p>
-            </div>
-            <div className={main.switcher}>
-                <label className={main.switch}>
-                    <input className={main.inp_sw} type="checkbox" checked={theme.theme_ch ? "checked" : ""} onChange={() => {dispatch(changeTheme(theme.theme_ch))}}/>
-                    <span className={main.slider}></span>
+            {/*<div className={main.warne+" warnew"} id={main.warnew}>*/}
+            {/*    <img src={warn} className={main.warnimg} alt=""/>*/}
+            {/*    Внимание!*/}
+            {/*    <p>Неверный логин или пароль</p>*/}
+            {/*</div>*/}
+            {/*<div className={main.warne+" warnev"} id={main.warnev}>*/}
+            {/*    <img src={warn} className={main.warnimg} alt=""/>*/}
+            {/*    Внимание!*/}
+            {/*    <p>Допустимы только латиница и цифры</p>*/}
+            {/*</div>*/}
+            {/*<div className={main.warne+" warner"} id={main.warner}>*/}
+            {/*    <img src={warn} className={main.warnimg} alt=""/>*/}
+            {/*    Внимание!*/}
+            {/*    <p id="wt">Допустимы только латиница и цифры</p>*/}
+            {/*</div>*/}
+            <Events/>
+            <div className={mainCSS.switcher}>
+                <label className={mainCSS.switch}>
+                    <input className={mainCSS.inp_sw} type="checkbox" checked={themeInfo.theme_ch ? "checked" : ""} onChange={() => {dispatch(changeTheme(themeInfo.theme_ch))}}/>
+                    <span className={mainCSS.slider}/>
                 </label>
-                <div className={main.lab_sw}>
-                    Тема: {theme.theme}
+                <div className={mainCSS.lab_sw}>
+                    Тема: {themeInfo.theme}
                 </div>
             </div>
         </>

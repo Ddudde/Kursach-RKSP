@@ -1,7 +1,7 @@
 import React, {useEffect, useReducer, useRef} from "react";
 import {Helmet} from "react-helmet-async";
 import newsCSS from './newsYo.module.css';
-import {newsSelec, states} from "../../../store/selector";
+import {news, states} from "../../../store/selector";
 import {useDispatch, useSelector} from "react-redux";
 import {setActNew} from "../NewsMain";
 import warn from "../../../media/warn_big.png";
@@ -175,8 +175,7 @@ function ele (x, par, b) {
 }
 
 function getAdd(x) {
-    if(!cState.auth || cState.role != 3) return;
-    let cla, ns, dati, dat, zagi, zag, imi, im, texi, tex;
+    let ns, dati, dat, zagi, zag, imi, im, texi, tex;
     zag = x ? newsInfo[type][x].title : inps.inpnzt;
     zagi = "inpnzt_" + (x?x:"");
     dat = x ? newsInfo[type][x].date : inps.inpndt;
@@ -185,7 +184,6 @@ function getAdd(x) {
     imi = "inpnit_" + (x?x:"");
     tex = x ? newsInfo[type][x].text : inps.inpntt;
     texi = "inpntt_" + (x?x:"");
-    cla = [newsCSS.news_line].join(" ");
     ns = (<div className={newsCSS.ns}>
             <div className={newsCSS.za} data-st="0">
                 <div className={newsCSS.fi}>
@@ -271,7 +269,7 @@ function getAdd(x) {
             </div>
         </div>);
     return x ? (ns) : (
-        <div className={cla} data-st="0">
+        <div className={newsCSS.news_line} data-st="0">
             <div className={newsCSS.nav_i+" "+newsCSS.link} id={newsCSS.nav_i} onClick={onEdit}>
                 Добавить новость
             </div>
@@ -281,7 +279,7 @@ function getAdd(x) {
 }
 
 export function NewsYo() {
-    newsInfo = useSelector(newsSelec);
+    newsInfo = useSelector(news);
     cState = useSelector(states);
     if(!dispatch) setActNew(1);
     [_, forceUpdate] = useReducer((x) => x + 1, 0);
@@ -315,37 +313,45 @@ export function NewsYo() {
                 <title>Объявления учебного центра</title>
             </Helmet>
             <div className={newsCSS.AppHeader}>
-                {(Object.getOwnPropertyNames(newsInfo[type]).length == 0 && !(cState.auth && cState.role == 3)) ?
-                    <div className={newsCSS.block}>
-                        <img alt="banner" src={warn}/>
-                        <div className={newsCSS.block_text}>
-                            Новостей нет... Кажется, что новостная лента пустует не заслужено? Попробуйте попросить
-                            завуча заполнить информацию.
-                        </div>
-                    </div> :
-                    <section className={newsCSS.center_colum}>
-                        {getAdd()}
-                        {Object.getOwnPropertyNames(newsInfo[type]).reverse().map(param =>
-                            <div className={newsCSS.news_line} data-st="1" key={param}>
-                                {(cState.auth && cState.role == 3) ?
-                                        getAdd(param)
-                                    :
-                                        <>
-                                            <h2 className={newsCSS.zag}>{newsInfo[type][param].title}</h2>
-                                            <span className={newsCSS.date}>{newsInfo[type][param].date}</span>
-                                            <div className={newsCSS.te}>
-                                                <span className={newsCSS.banner}>
-                                                    <img alt="banner" src={newsInfo[type][param].img_url+''} onError={errorLoad}/>
-                                                </span>
-                                                <pre className={newsCSS.field}>
-                                                    {newsInfo[type][param].text}
-                                                </pre>
+                {(cState.auth && cState.role == 3) ?
+                        <section className={newsCSS.center_colum}>
+                            {getAdd()}
+                            {Object.getOwnPropertyNames(newsInfo[type]).reverse().map(param =>
+                                <div className={newsCSS.news_line} data-st="1" key={param}>
+                                    {getAdd(param)}
+                                </div>
+                            )}
+                        </section>
+                    :
+                        <>
+                            {Object.getOwnPropertyNames(newsInfo[type]).length == 0 ?
+                                    <div className={newsCSS.block}>
+                                        <img alt="banner" src={warn}/>
+                                        <div className={newsCSS.block_text}>
+                                            Новостей нет... Кажется, что новостная лента пустует не заслужено? Попробуйте
+                                            попросить
+                                            завуча заполнить информацию.
+                                        </div>
+                                    </div>
+                                :
+                                    <section className={newsCSS.center_colum}>
+                                        {Object.getOwnPropertyNames(newsInfo[type]).reverse().map(param =>
+                                            <div className={newsCSS.news_line} data-st="1" key={param}>
+                                                <h2 className={newsCSS.zag}>{newsInfo[type][param].title}</h2>
+                                                <span className={newsCSS.date}>{newsInfo[type][param].date}</span>
+                                                <div className={newsCSS.te}>
+                                                    <span className={newsCSS.banner}>
+                                                        <img alt="banner" src={newsInfo[type][param].img_url + ''} onError={errorLoad}/>
+                                                    </span>
+                                                    <pre className={newsCSS.field}>
+                                                        {newsInfo[type][param].text}
+                                                    </pre>
+                                                </div>
                                             </div>
-                                        </>
-                                }
-                            </div>
-                        )}
-                    </section>
+                                        )}
+                                    </section>
+                            }
+                        </>
                 }
             </div>
         </>

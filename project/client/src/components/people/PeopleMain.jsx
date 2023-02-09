@@ -1,9 +1,11 @@
 import React, {useEffect, useRef} from "react";
 import peopleCSS from './peopleMain.module.css';
 import {Outlet} from "react-router-dom";
-import {useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {pane, states} from "../../store/selector";
 import Pane from "../pane/Pane";
+import {setActived} from "../main/Main";
+import {CHANGE_EVENTS_STEP, changeEvents} from "../../store/actions";
 
 let gr, cState, ke;
 
@@ -18,6 +20,7 @@ export function setActNew(name) {
 export function PeopleMain() {
     cState = useSelector(states);
     const paneInfo = useSelector(pane);
+    const dispatch = useDispatch();
     gr.groups = {
         ...((cState.auth && (cState.role < 2 || cState.role == 3)) && {0: {
             nam: "Педагоги",
@@ -43,7 +46,10 @@ export function PeopleMain() {
     const isFirstUpdate = useRef(true);
     useEffect(() => {
         console.log("I was triggered during componentDidMount PeopleMain.jsx");
+        setActived(".panPep");
+        dispatch(changeEvents(CHANGE_EVENTS_STEP, 1));
         return function() {
+            dispatch(changeEvents(CHANGE_EVENTS_STEP, -1));
             console.log("I was triggered during componentWillUnmount PeopleMain.jsx");
         }
     }, []);
