@@ -1,10 +1,10 @@
 import React, {useEffect, useRef} from "react";
 import eventsCSS from './events.module.css';
 import {useDispatch, useSelector} from "react-redux";
-import {events} from "../../store/selector";
-import warn from '../../media/warning.png';
-import {CHANGE_EVENT_DEL, CHANGE_EVENT_TIMER, CHANGE_EVENTS_RL, changeEvents} from "../../store/actions";
-import no from "../../media/no.png";
+import {events} from "../../../store/selector";
+import warn from '../../../media/warning.png';
+import {CHANGE_EVENT_DEL, CHANGE_EVENT_TIMER, CHANGE_EVENTS_RL, changeEvents} from "../../../store/actions";
+import no from "../../../media/no.png";
 
 let dispatch, eventsInfo, evHeader;
 

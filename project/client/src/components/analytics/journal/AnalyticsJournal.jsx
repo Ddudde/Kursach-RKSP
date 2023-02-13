@@ -3,11 +3,38 @@ import {Helmet} from "react-helmet-async";
 import journalCSS from './journal.module.css';
 import {journals} from "../../../store/selector";
 import {useDispatch, useSelector} from "react-redux";
-import {setActived} from "../../main/Main";
 import {setActNew} from "../AnalyticsMain";
-import warn from "../../../media/warn_big.png";
+import ErrFound from "../../other/error/ErrFound";
 
-let dispatch, journalsInfo, maxEl = 0;
+let dispatch, journalsInfo, maxEl, obj, errText;
+errText = "К сожалению, информация не найдена... Можете попробовать попросить завуча заполнить информацию.";
+maxEl = 0;
+// obj = {
+//     days : {
+//         "14.05.22": {
+//             mark: 5,
+//             weight: 1,
+//             type: "Ответ на уроке"
+//         },
+//         "15.05.22": {
+//             mark: 5,
+//             weight: 5,
+//             type: "Контрольная работа"
+//         },
+//         "16.05.22": {
+//             mark: "Н",
+//             weight: 1
+//         },
+//         "17.05.22": {
+//             mark: 3,
+//             weight: 4,
+//             type: "Самостоятельная работа"
+//         }
+//     },
+//     avg: {
+//         mark: 4
+//     }
+// };
 
 function getDate(dat) {
     let d = dat.split('.');
@@ -51,40 +78,7 @@ export function AnalyticsJournal() {
     const isFirstUpdate = useRef(true);
     useEffect(() => {
         console.log("I was triggered during componentDidMount AnalyticsJournal.jsx");
-        // dispatch(changeContacts("Por", "imageUrl", '/media/tuman.jpg'));
-        // dispatch(changeContacts("Por", "imageUrl"));
-        // dispatch(changeContacts("Por", "id_0", '8 (800) 555 35 37', '+78005553537'));
-        // dispatch(changeContacts("Por", "id_0"));
-        // setInterval(function() {
-        //     dispatch(changeContacts("Por", "id_" + Object.getOwnPropertyNames(journalsInfo.contactsPor.numbers).length, '8 (800) 555 35 37', '+78005553537'));
-        // }, 5000);
-        setActived(".panAna");
-        // dispatch(changeJournal("Англ. яз.", {
-        //         days : {
-        //             "14.05.22": {
-        //                 mark: 5,
-        //                 weight: 1,
-        //                 type: "Ответ на уроке"
-        //             },
-        //             "15.05.22": {
-        //                 mark: 5,
-        //                 weight: 5,
-        //                 type: "Контрольная работа"
-        //             },
-        //             "16.05.22": {
-        //                 mark: "Н",
-        //                 weight: 1
-        //             },
-        //             "17.05.22": {
-        //                 mark: 3,
-        //                 weight: 4,
-        //                 type: "Самостоятельная работа"
-        //             }
-        //         },
-        //         avg: {
-        //             mark: 4
-        //         }
-        //     }));
+        // dispatch(changeJournal("Англ. яз.", obj));
         // document.querySelector("." + journalCSS.predm).addEventListener('mouseover', updDate, {capture: true});
         for(let el of document.querySelectorAll("div[class='" + journalCSS.predmGrid+"']"))
         {
@@ -106,18 +100,13 @@ export function AnalyticsJournal() {
         console.log('componentDidUpdate AnalyticsJournal.jsx');
     });
     return (
-        <>
+        <div className={journalCSS.AppHeader}>
             <Helmet>
                 <title>Журнал</title>
             </Helmet>
-            <div className={journalCSS.AppHeader}>
-                {Object.getOwnPropertyNames(journalsInfo).length == 0 ?
-                    <div className={journalCSS.block}>
-                        <img alt="banner" src={warn}/>
-                        <div className={journalCSS.block_text}>
-                            К сожалению, информация не найдена... Можете попробовать попросить завуча заполнить информацию.
-                        </div>
-                    </div> :
+            {Object.getOwnPropertyNames(journalsInfo).length == 0 ?
+                    <ErrFound text={errText}/>
+                :
                     <div className={journalCSS.blockPredm}>
                         <div className={journalCSS.predm}>
                             <div className={journalCSS.days}>
@@ -175,9 +164,8 @@ export function AnalyticsJournal() {
                             </div>
                         </div>
                     </div>
-                }
-            </div>
-        </>
+            }
+        </div>
     )
 }
 export default AnalyticsJournal;

@@ -13,7 +13,7 @@ import eral from "../../media/eraserl.png";
 import no from "../../media/no.png";
 import ed from "../../media/edit.png";
 import yes from "../../media/yes.png";
-import Pane from "../pane/Pane";
+import Pane from "../other/pane/Pane";
 
 let jourInfo, dispatch, theme, lma, lmal, pari, parb, inps, lty, ltyl, gr;
 pari = {elems1: 0, maxEl: 0, lMonth: 0};

@@ -2,12 +2,19 @@ import React, {useEffect, useReducer, useRef} from "react";
 import paneCSS from './pane.module.css';
 import {Link} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
-import {pane, states} from "../../store/selector";
-import {changePane, changePaneDelGRS, changePaneGR, changePaneGRS} from "../../store/actions";
+import {pane, states} from "../../../store/selector";
+import {
+    CHANGE_EVENTS_STEP,
+    changeEvents,
+    changePane,
+    changePaneDelGRS,
+    changePaneGR,
+    changePaneGRS
+} from "../../../store/actions";
 import PanJs from "./PanJs";
-import yes from "../../media/yes.png";
-import no from "../../media/no.png";
-import ed from "../../media/edit.png";
+import yes from "../../../media/yes.png";
+import no from "../../../media/no.png";
+import ed from "../../../media/edit.png";
 
 let kel = 0;
 
@@ -23,23 +30,22 @@ export function Pane(props) {
         let cl = "pan" + namecl;
         if (!inc) panJs.pari.elems++;
         let cla = [paneCSS.nav_i, paneCSS.nav_iJur, "pa", cl, dopClass ? dopClass : ""].join(" ");
-        return link ? (
-            <Link className={cla} id={paneCSS.nav_i} to={link} onClick={fun} data-id={namecl} key={namecl}>
-                {name.nam}
-            </Link>
-        ) : (
-            <div className={cla} id={paneCSS.nav_i} onClick={fun} data-id={namecl} key={namecl} data-st="0">
-                {props.cla && cState.role == 3 ?
-                    <>
-                        <div className={paneCSS.field+" "+paneCSS.fi}>
-                            {name}
-                        </div>
-                        <img className={paneCSS.imgfield+" "+paneCSS.fi} src={ed} onClick={onEdGr} title="Редактировать" alt=""/>
-                        <img className={paneCSS.imginp+" "+paneCSS.fi} src={no} onClick={onDel} title="Удалить группу" alt=""/>
-                    </> : name
-                }
-            </div>
-        )
+        return link ?
+                <Link className={cla} id={paneCSS.nav_i} to={link} onClick={fun} data-id={namecl} key={namecl}>
+                    {name.nam}
+                </Link>
+            :
+                <div className={cla} id={paneCSS.nav_i} onClick={fun} data-id={namecl} key={namecl} data-st="0">
+                    {props.cla && cState.role == 3 ?
+                        <>
+                            <div className={paneCSS.field+" "+paneCSS.fi}>
+                                {name}
+                            </div>
+                            <img className={paneCSS.imgfield+" "+paneCSS.fi} src={ed} onClick={onEdGr} title="Редактировать" alt=""/>
+                            <img className={paneCSS.imginp+" "+paneCSS.fi} src={no} onClick={onDel} title="Удалить группу" alt=""/>
+                        </> : name
+                    }
+                </div>
     };
     const overpan = () => {
         let wid, pa, add;
@@ -246,11 +252,12 @@ export function Pane(props) {
     const isFirstUpdate = useRef(true);
     const [_, forceUpdate] = useReducer((x) => x + 1, 0);
     useEffect(() => {
+        dispatch(changeEvents(CHANGE_EVENTS_STEP, 1));
         panJs.lmor = <div className={paneCSS.predBlock} id="mor" style={{display: "none"}}/>;
         panJs.mor = React.cloneElement( panJs.lmor, {});
         if((props.cla && cState.role == 3)) {
             panJs.nav.style.gridTemplate = "auto/ 15% repeat(5,1fr)";
-            chStatB({target: panJs.nav.querySelector("." + paneCSS.nav_i + " > input")});
+            chStatB({target: panJs.nav.querySelector("." + paneCSS.nav_iZag + " input")});
         }
         if(bol) {
             dispatch(changePane(panJs.ke, props.gro));
@@ -264,6 +271,7 @@ export function Pane(props) {
         }
         panJs.pari.paels = el.length;
         return function() {
+            dispatch(changeEvents(CHANGE_EVENTS_STEP, -1));
             window.removeEventListener('resize', preTim);
             clearTimeout(panJs.timid);
             console.log("I was triggered during componentWillUnmount Pane.jsx");

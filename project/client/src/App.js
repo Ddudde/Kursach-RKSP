@@ -7,7 +7,7 @@ import NewsPor from "./components/news/Por/NewsPor";
 import ContactMain from "./components/contacts/ContactMain";
 import ContactYo from "./components/contacts/Yo/ContactYo";
 import ContactPor from "./components/contacts/Por/ContactPor";
-import ErrNotFound from "./components/other/error/ErrNotFound";
+import ErrFound from "./components/other/error/ErrFound";
 import {states} from "./store/selector";
 import {useSelector} from "react-redux";
 import Dnevnik from "./components/dnevnik/Dnevnik";
@@ -76,7 +76,7 @@ function App() {
               <Route path="profiles/:log" element={<Profile/>} />
               {cState.auth && <Route path="settings" element={<Settings/>} />}
               <Route path="invite/:inv" element={<Start/>} />
-              <Route path="*" element={<ErrNotFound/>} />
+              <Route path="*" element={<ErrFound/>} />
           </Route>
       </Routes>
     );

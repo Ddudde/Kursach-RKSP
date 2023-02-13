@@ -3,7 +3,8 @@ import analyticsCSS from './analyticsMain.module.css';
 import {Outlet} from "react-router-dom";
 import {pane, states} from "../../store/selector";
 import {useSelector} from "react-redux";
-import Pane from "../pane/Pane";
+import Pane from "../other/pane/Pane";
+import {setActived} from "../main/Main";
 
 let gr, cState, ke;
 
@@ -43,6 +44,7 @@ export function AnalyticsMain(props) {
     const isFirstUpdate = useRef(true);
     useEffect(() => {
         console.log("I was triggered during componentDidMount AnalyticsMain.jsx");
+        setActived(".panAna");
         return function() {
             console.log("I was triggered during componentWillUnmount AnalyticsMain.jsx");
         }

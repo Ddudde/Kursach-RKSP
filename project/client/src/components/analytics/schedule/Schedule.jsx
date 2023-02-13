@@ -5,10 +5,11 @@ import {schedules, states} from "../../../store/selector";
 import {useDispatch, useSelector} from "react-redux";
 import {setActived} from "../../main/Main";
 import {setActNew} from "../AnalyticsMain";
-import warn from "../../../media/warn_big.png";
-import Pane from "../../pane/Pane";
+import Pane from "../../other/pane/Pane";
+import ErrFound from "../../other/error/ErrFound";
 
-let dispatch, cState, schedulesInfo, shd, DoW, gr;
+let dispatch, cState, schedulesInfo, shd, DoW, gr, errText;
+errText = "К сожалению, информация не найдена... Можете попробовать попросить завуча заполнить информацию.";
 shd = 0;
 DoW = ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье"];
 gr = {
@@ -74,14 +75,7 @@ export function Schedule() {
     const isFirstUpdate = useRef(true);
     useEffect(() => {
         console.log("I was triggered during componentDidMount Schedule.jsx");
-        // dispatch(changeContacts("Por", "imageUrl", '/media/tuman.jpg'));
-        // dispatch(changeContacts("Por", "imageUrl"));
-        // dispatch(changeContacts("Por", "id_0", '8 (800) 555 35 37', '+78005553537'));
-        // dispatch(changeContacts("Por", "id_0"));
-        // setInterval(function() {
-        //     dispatch(changeContacts("Por", "id_" + Object.getOwnPropertyNames(schedulesInfo.contactsPor.numbers).length, '8 (800) 555 35 37', '+78005553537'));
-        // }, 5000);
-        setActived(cState.role == 2 ? ".panRas" : ".panAna");
+        if(cState.role == 2) setActived(".panRas");
         return function() {
             dispatch = undefined;
             console.log("I was triggered during componentWillUnmount Schedule.jsx");
@@ -95,22 +89,19 @@ export function Schedule() {
         console.log('componentDidUpdate Schedule.jsx');
     });
     return (
-        <>
+        <div className={scheduleCSS.AppHeader}>
             <Helmet>
                 <title>Расписание</title>
             </Helmet>
-            <div className={scheduleCSS.AppHeader}>
-                {Object.getOwnPropertyNames(schedulesInfo.days).length == 0 ?
-                    <div className={scheduleCSS.block}>
-                        <img alt="banner" src={warn}/>
-                        <div className={scheduleCSS.block_text}>
-                            К сожалению, информация не найдена... Можете попробовать попросить завуча заполнить информацию.
-                        </div>
-                    </div> :
+            {Object.getOwnPropertyNames(schedulesInfo.days).length == 0 ?
+                    <ErrFound text={errText}/>
+                :
                     <>
-                        {(cState.auth && cState.role == 3) && <div style={{width:"inherit", height: "7vh", position: "fixed", zIndex:"1"}}>
-                            <Pane gro={gr} cla={true}/>
-                        </div>}
+                        {(cState.auth && cState.role == 3) &&
+                            <div style={{width:"inherit", height: "7vh", position: "fixed", zIndex:"1"}}>
+                                <Pane gro={gr} cla={true}/>
+                            </div>
+                        }
                         <div className={scheduleCSS.blockDay}>
                             {Object.getOwnPropertyNames(schedulesInfo.days).map(param =>
                                 <div className={scheduleCSS.day}>
@@ -153,9 +144,8 @@ export function Schedule() {
                                 </div>)}
                         </div>
                     </>
-                }
-            </div>
-        </>
+            }
+        </div>
     )
 }
 export default Schedule;

@@ -1,18 +1,40 @@
-import {CHANGE_CLASSMATES} from '../../actions';
+import {CHANGE_CLASSMATES, CHANGE_CLASSMATES_DEL, CHANGE_CLASSMATES_GL} from '../../actions';
 
 const initialState = {
-        "id1" : "Петров А.А.",
-        "id2" : "Васечкин А.С.",
-        "id3" : "Петров А.Г."
+        "id1" : {
+            name: "Петров А.А."
+        },
+        "id2" : {
+            name: "Васечкин А.С."
+        },
+        "id3" : {
+            name: "Петров А.Г."
+        },
+        "id4" : {
+            name: "Петров А.Г.1"
+        },
+        "id5" : {
+            name: "Петров А.Г.2"
+        },
+        "id6" : {
+            name: "Петров А.Г.3"
+        }
     };
 
 export default function classmatesReducer(state = initialState, action) {
+    let fd = {...state};
     switch(action.type) {
+        case CHANGE_CLASSMATES_GL:
+            return action.payload.state;
         case CHANGE_CLASSMATES:
-            return {
-                    ...state,
-                    [action.payload.classmatesId]: action.payload.classmatesState
-                };
+            if(!fd[action.payload.l2]){
+                fd[action.payload.l2] = {};
+            }
+            fd[action.payload.l2][action.payload.param] = action.payload.state;
+            return fd;
+        case CHANGE_CLASSMATES_DEL:
+            delete fd[action.payload.l2];
+            return fd;
         default:
             return state;
     }

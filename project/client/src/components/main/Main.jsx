@@ -9,7 +9,7 @@ import profd from "../../media/profd.png";
 import profl from "../../media/profl.png";
 import mapd from "../../media/Map_symbolD.png";
 import mapl from "../../media/Map_symbolL.png";
-import Events from "../events/Events";
+import Events from "../other/events/Events";
 
 let act, cStateInfo, dispatch, themeInfo;
 act = ".panGL";
@@ -21,6 +21,7 @@ export let thP = {
             "--bgcV1": "#DBDBDBe6",
             "--bgcV2": "#242424e6",
             "--bgcV3": "#000000b3",
+            "--shdV1": "#fff",
             "--cV1": "#006600",
             "--cV2": "#009900",
             "--cV3": "#090a0b",
@@ -35,6 +36,7 @@ export let thP = {
             "--bgcV1": "#242424e6",
             "--bgcV2": "#DBDBDBe6",
             "--bgcV3": "#0000004d",
+            "--shdV1": "#000",
             "--cV1": "#009900",
             "--cV2": "#00bb00",
             "--cV3": "#f5f6f7",
@@ -46,15 +48,14 @@ export let thP = {
 
 function getPan(name, namecl, link, dopClass, fun) {
     let cl = "pan" + namecl;
-    return fun ? (
+    return fun ?
         <div className={mainCSS.nav_i+" "+cl+" "+(dopClass ? dopClass : "")} id={mainCSS.nav_i} onClick={fun}>
             {name}
         </div>
-    ):(
+    :
         <Link className={mainCSS.nav_i+" "+cl+" "+(dopClass ? dopClass : "")} id={mainCSS.nav_i} to={link} onClick={() => {setActived("."+cl)}}>
             {name}
-        </Link>
-    )
+        </Link>;
 }
 
 function getLogin() {
@@ -169,22 +170,7 @@ export function Main() {
                 {cStateInfo.auth && getLogin()}
                 {(cStateInfo.auth && cStateInfo.role == 1) && getKids()}
             </nav>
-            <Outlet />
-            {/*<div className={main.warne+" warnew"} id={main.warnew}>*/}
-            {/*    <img src={warn} className={main.warnimg} alt=""/>*/}
-            {/*    Внимание!*/}
-            {/*    <p>Неверный логин или пароль</p>*/}
-            {/*</div>*/}
-            {/*<div className={main.warne+" warnev"} id={main.warnev}>*/}
-            {/*    <img src={warn} className={main.warnimg} alt=""/>*/}
-            {/*    Внимание!*/}
-            {/*    <p>Допустимы только латиница и цифры</p>*/}
-            {/*</div>*/}
-            {/*<div className={main.warne+" warner"} id={main.warner}>*/}
-            {/*    <img src={warn} className={main.warnimg} alt=""/>*/}
-            {/*    Внимание!*/}
-            {/*    <p id="wt">Допустимы только латиница и цифры</p>*/}
-            {/*</div>*/}
+            <Outlet/>
             <Events/>
             <div className={mainCSS.switcher}>
                 <label className={mainCSS.switch}>

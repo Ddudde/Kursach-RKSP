@@ -2,12 +2,12 @@ import React, {useEffect, useRef} from "react";
 import {Helmet} from "react-helmet-async";
 import periodsCSS from './periods.module.css';
 import {useDispatch, useSelector} from "react-redux";
-import {setActived} from "../../main/Main";
 import {setActNew} from "../AnalyticsMain";
-import warn from "../../../media/warn_big.png";
 import {periods} from "../../../store/selector";
+import ErrFound from "../../other/error/ErrFound";
 
-let dispatch, periodsInfo;
+let dispatch, periodsInfo, errText;
+errText = "К сожалению, информация не найдена... Можете попробовать попросить завуча заполнить информацию.";
 
 export function Periods() {
     periodsInfo = useSelector(periods);
@@ -16,14 +16,6 @@ export function Periods() {
     const isFirstUpdate = useRef(true);
     useEffect(() => {
         console.log("I was triggered during componentDidMount Periods.jsx");
-        // dispatch(changeContacts("Por", "imageUrl", '/media/tuman.jpg'));
-        // dispatch(changeContacts("Por", "imageUrl"));
-        // dispatch(changeContacts("Por", "id_0", '8 (800) 555 35 37', '+78005553537'));
-        // dispatch(changeContacts("Por", "id_0"));
-        // setInterval(function() {
-        //     dispatch(changeContacts("Por", "id_" + Object.getOwnPropertyNames(periodsInfo.contactsPor.numbers).length, '8 (800) 555 35 37', '+78005553537'));
-        // }, 5000);
-        setActived(".panAna");
         return function() {
             dispatch = undefined;
             console.log("I was triggered during componentWillUnmount Periods.jsx");
@@ -37,18 +29,13 @@ export function Periods() {
         console.log('componentDidUpdate Periods.jsx');
     });
     return (
-        <>
+        <div className={periodsCSS.AppHeader}>
             <Helmet>
                 <title>Расписание периодов</title>
             </Helmet>
-            <div className={periodsCSS.AppHeader}>
-                {Object.getOwnPropertyNames(periodsInfo).length == 0 ?
-                    <div className={periodsCSS.block}>
-                        <img alt="banner" src={warn}/>
-                        <div className={periodsCSS.block_text}>
-                            К сожалению, информация не найдена... Можете попробовать попросить завуча заполнить информацию.
-                        </div>
-                    </div> :
+            {Object.getOwnPropertyNames(periodsInfo).length == 0 ?
+                    <ErrFound text={errText}/>
+                :
                     <div className={periodsCSS.blockPer}>
                         <div className={periodsCSS.per}>
                             <div className={periodsCSS.nav_i} id={periodsCSS.nav_i}>
@@ -69,9 +56,8 @@ export function Periods() {
                             )}
                         </div>
                     </div>
-                }
-            </div>
-        </>
+            }
+        </div>
     )
 }
 export default Periods;

@@ -1,19 +1,29 @@
 import {thP} from "../components/main/Main";
 
 export const CHANGE_CHECKBOX = "CHANGE_CHECKBOX";
+
 export const CHANGE_THEME = "CHANGE_THEME";
+
 export const CHANGE_STATE = "CHANGE_STATE";
+
 export const CHANGE_ZVONKI = "CHANGE_ZVONKI";
+
 export const CHANGE_PERIODS = "CHANGE_PERIODS";
+
 export const CHANGE_PROFILE = "CHANGE_PROFILE";
 export const CHANGE_PROFILE_ROLES = "CHANGE_PROFILE_ROLES";
+
 export const CHANGE_SCHEDULE = "CHANGE_SCHEDULE";
+
 export const CHANGE_JOURNAL = "CHANGE_JOURNAL";
+
 export const CHANGE_PJOURNAL = "CHANGE_PJOURNAL";
+
 export const CHANGE_PANE = "CHANGE_PANE";
 export const CHANGE_PANE_GRS = "CHANGE_PANE_GRS";
 export const CHANGE_PANE_DEL_GRS = "CHANGE_PANE_DEL_GRS";
 export const CHANGE_PANE_GR = "CHANGE_PANE_GR";
+
 export const CHANGE_PJOURNAL_MARKS = "CHANGE_PJOURNAL_MARKS";
 export const CHANGE_PJOURNAL_DEL_MARKS = "CHANGE_PJOURNAL_DEL_MARKS";
 export const CHANGE_PJOURNAL_PER_MARKS = "CHANGE_PJOURNAL_PER_MARKS";
@@ -22,25 +32,47 @@ export const CHANGE_PJOURNAL_TYPE = "CHANGE_PJOURNAL_TYPE";
 export const CHANGE_PJOURNAL_DEL_TYPE = "CHANGE_PJOURNAL_DEL_TYPE";
 export const CHANGE_PJOURNAL_NEW_TYPE = "CHANGE_PJOURNAL_NEW_TYPE";
 export const CHANGE_PJOURNAL_DZ = "CHANGE_PJOURNAL_DZ";
+
 export const CHANGE_TEACHERS_GL = "CHANGE_TEACHERS_GL";
 export const CHANGE_TEACHERS = "CHANGE_TEACHERS";
 export const CHANGE_TEACHERS_DEL = "CHANGE_TEACHERS_DEL";
+
+export const CHANGE_HTEACHERS_GL = "CHANGE_HTEACHERS_GL";
 export const CHANGE_HTEACHERS = "CHANGE_HTEACHERS";
+export const CHANGE_HTEACHERS_DEL = "CHANGE_HTEACHERS_DEL";
+
 export const CHANGE_CLASSMATES = "CHANGE_CLASSMATES";
+export const CHANGE_CLASSMATES_GL = "CHANGE_CLASSMATES_GL";
+export const CHANGE_CLASSMATES_DEL = "CHANGE_CLASSMATES_DEL";
+
+export const CHANGE_PARENTS_L1_PARAM = "CHANGE_PARENTS_L1_PARAM";
+export const CHANGE_PARENTS_L1 = "CHANGE_PARENTS_L1";
 export const CHANGE_PARENTS = "CHANGE_PARENTS";
+export const CHANGE_PARENTS_GL = "CHANGE_PARENTS_GL";
+export const CHANGE_PARENTS_DEL = "CHANGE_PARENTS_DEL";
+export const CHANGE_PARENTS_DEL_L1 = "CHANGE_PARENTS_DEL_L1";
+export const CHANGE_PARENTS_DEL_L0 = "CHANGE_PARENTS_DEL_L0";
+
 export const CHANGE_ADMINS = "CHANGE_ADMINS";
+
 export const CHANGE_MARKS = "CHANGE_MARKS";
+
 export const CHANGE_DNEVNIK = "CHANGE_DNEVNIK";
 export const CHANGE_DNEVNIK_DAY_UP = "CHANGE_DNEVNIK_DAY_UP";
 export const CHANGE_DNEVNIK_DAY_DOWN = "CHANGE_DNEVNIK_DAY_DOWN";
+
 export const CHANGE_CLIENT = "CHANGE_CLIENT";
+
 export const CHANGE_INDICATOR = "CHANGE_INDICATOR";
+
 export const CHANGE_NEWS = "CHANGE_NEWS";
 export const CHANGE_NEWS_PARAM = "CHANGE_NEWS_PARAM";
 export const CHANGE_NEWS_DEL = "CHANGE_NEWS_DEL";
+
 export const CHANGE_CONTACT = "CHANGE_CONTACT";
 export const CHANGE_CONTACT_MAPIMG = "CHANGE_CONTACT_MAPIMG";
 export const CHANGE_CONTACT_MAP = "CHANGE_CONTACT_MAP";
+
 export const CHANGE_EVENTS = "CHANGE_EVENTS";
 export const CHANGE_EVENTS_CLEAR = "CHANGE_EVENTS_CLEAR";
 export const CHANGE_EVENT_DEL = "CHANGE_EVENT_DEL";
@@ -262,65 +294,11 @@ export function changePane(id, state) {
     };
 }
 
-export function changeAdmins(id, state) {
-    return { type: CHANGE_ADMINS,
+export function changePeople(type, l0, l1, l2, state, param = "name") {
+    return {
+        type: type,
         payload: {
-            Id: id,
-            State: state
-        }
-    };
-}
-
-export function changeParents(id, state) {
-    return { type: CHANGE_PARENTS,
-        payload: {
-            Id: id,
-            State: state
-        }
-    };
-}
-
-export function changeClassmates(id, state) {
-    return { type: CHANGE_CLASSMATES,
-        payload: {
-            classmatesId: id,
-            classmatesState: state
-        }
-    };
-}
-
-export function changeHTeachers(id, state) {
-    return { type: CHANGE_HTEACHERS,
-        payload: {
-            hteaId: id,
-            hteaState: state
-        }
-    };
-}
-
-export function changeTeachersGL(type, state) {
-    return { type: CHANGE_TEACHERS_GL,
-        payload: {
-            type: type,
-            state: state
-        }
-    };
-}
-
-export function changeTeachersDel(type, l1, l2) {
-    return { type: CHANGE_TEACHERS_DEL,
-        payload: {
-            type: type,
-            l1: l1,
-            l2: l2
-        }
-    };
-}
-
-export function changeTeachers(type, l1, l2, state, param = "name") {
-    return { type: CHANGE_TEACHERS,
-        payload: {
-            type: type,
+            type: l0,
             l1: l1,
             l2: l2,
             param: param,
@@ -365,11 +343,14 @@ export function changePeriods(id, state) {
     };
 }
 
-export function changeZvonki(id, state) {
-    return { type: CHANGE_ZVONKI,
+export function changeZvonki(type, l0, l1, l2, state) {
+    return {
+        type: type,
         payload: {
-            smenaId: id,
-            smenaState: state
+            l0: l0,
+            l1: l1,
+            l2: l2,
+            state: state
         }
     };
 }

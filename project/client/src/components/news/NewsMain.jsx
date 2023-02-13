@@ -3,7 +3,7 @@ import newsCSS from './newsMain.module.css';
 import {Outlet} from "react-router-dom";
 import {useSelector} from "react-redux";
 import {pane, states} from "../../store/selector";
-import Pane from "../pane/Pane";
+import Pane from "../other/pane/Pane";
 import {setActived} from "../main/Main";
 
 let gr, cState, ke;

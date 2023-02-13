@@ -1,14 +1,15 @@
 import React, {useEffect, useRef} from "react";
 import {Helmet} from "react-helmet-async";
-import adminsCSS from './admins.module.css';
+import peopleCSS from '../peopleMain.module.css';
 import {admins, themes} from "../../../store/selector";
 import {useDispatch, useSelector} from "react-redux";
 import {setActNew} from "../PeopleMain";
-import warn from "../../../media/warn_big.png";
 import profl from "../../../media/profl.png";
 import profd from "../../../media/profd.png";
+import ErrFound from "../../other/error/ErrFound";
 
-let dispatch, adminsInfo;
+let dispatch, adminsInfo, errText;
+errText = "К сожалению, информация не найдена...";
 
 export function Admins() {
     adminsInfo = useSelector(admins);
@@ -20,13 +21,6 @@ export function Admins() {
     const isFirstUpdate = useRef(true);
     useEffect(() => {
         console.log("I was triggered during componentDidMount Admins.jsx");
-        // dispatch(changeContacts("Por", "imageUrl", '/media/tuman.jpg'));
-        // dispatch(changeContacts("Por", "imageUrl"));
-        // dispatch(changeContacts("Por", "id_0", '8 (800) 555 35 37', '+78005553537'));
-        // dispatch(changeContacts("Por", "id_0"));
-        // setInterval(function() {
-        //     dispatch(changeContacts("Por", "id_" + Object.getOwnPropertyNames(adminsInfo.contactsPor.numbers).length, '8 (800) 555 35 37', '+78005553537'));
-        // }, 5000);
         return function() {
             dispatch = undefined;
             console.log("I was triggered during componentWillUnmount Admins.jsx");
@@ -40,38 +34,32 @@ export function Admins() {
         console.log('componentDidUpdate Admins.jsx');
     });
     return (
-        <>
+        <div className={peopleCSS.header}>
             <Helmet>
                 <title>Администраторы портала</title>
             </Helmet>
-            <div className={adminsCSS.AppHeader}>
-                {(Object.getOwnPropertyNames(adminsInfo).length == 0 && Object.getOwnPropertyNames(adminsInfo).length == 0) ?
-                    <div className={adminsCSS.block}>
-                        <img alt="banner" src={warn}/>
-                        <div className={adminsCSS.block_text}>
-                            К сожалению, информация не найдена...
-                        </div>
-                    </div> :
-                    <div className={adminsCSS.blockAdm}>
-                        <div className={adminsCSS.adm}>
-                            <div className={adminsCSS.nav_iZag}>
-                                <div className={adminsCSS.nav_i} id={adminsCSS.nav_i}>
+            {Object.getOwnPropertyNames(adminsInfo).length == 0 ?
+                    <ErrFound text={errText}/>
+                :
+                    <div className={peopleCSS.blockPep}>
+                        <div className={peopleCSS.pep}>
+                            <div className={peopleCSS.nav_iZag}>
+                                <div className={peopleCSS.nav_i} id={peopleCSS.nav_i}>
                                     Администраторы портала
                                 </div>
                                 {Object.getOwnPropertyNames(adminsInfo).map(param =>
                                     <div key={param}>
-                                        <div className={adminsCSS.nav_i+" "+adminsCSS.nav_iZag1} id={adminsCSS.nav_i}>
+                                        <div className={peopleCSS.nav_i+" "+peopleCSS.nav_iZag2} id={peopleCSS.nav_i}>
                                             {adminsInfo[param]}
                                         </div>
-                                        <img src={themeState.theme_ch ? profd : profl} title="Перейти в профиль" alt=""/>
+                                        <img className={peopleCSS.profIm} src={themeState.theme_ch ? profd : profl} title="Перейти в профиль" alt=""/>
                                     </div>
                                 )}
                             </div>
                         </div>
                     </div>
-                }
-            </div>
-        </>
+            }
+        </div>
     )
 }
 export default Admins;

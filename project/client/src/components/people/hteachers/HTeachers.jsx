@@ -1,30 +1,105 @@
-import React, {useEffect, useRef} from "react";
+import React, {useEffect, useReducer, useRef} from "react";
 import {Helmet} from "react-helmet-async";
-import hteachersCSS from './hteachers.module.css';
-import {hteachers, themes} from "../../../store/selector";
+import peopleCSS from '../peopleMain.module.css';
+import {hteachers, states, themes} from "../../../store/selector";
 import {useDispatch, useSelector} from "react-redux";
-import {setActNew} from "../PeopleMain";
-import warn from "../../../media/warn_big.png";
+import {chStatB, copyLink, ele, onClose, onDel, onEdit, onFin, refreshLink, setActNew} from "../PeopleMain";
 import profl from "../../../media/profl.png";
 import profd from "../../../media/profd.png";
+import ErrFound from "../../other/error/ErrFound";
+import ed from "../../../media/edit.png";
+import yes from "../../../media/yes.png";
+import no from "../../../media/no.png";
+import {CHANGE_HTEACHERS, CHANGE_HTEACHERS_DEL} from "../../../store/actions";
+import refreshCd from "../../../media/refreshCd.png";
+import refreshCl from "../../../media/refreshCl.png";
+import copyd from "../../../media/copyd.png";
+import copyl from "../../../media/copyl.png";
 
-let dispatch, hteachersInfo;
+let dispatch, hteachersInfo, errText, themeState, cState, inps, pari, sit;
+errText = "К сожалению, информация не найдена... Можете попробовать попросить завуча заполнить информацию.";
+sit = "http://localhost:3000";
+inps = {inpnpt : "Фамилия И.О."};
+pari = {elems: 0, paels: 0};
+let [_, forceUpdate] = [];
+
+function getHTea(x, b) {
+    return b ?
+        <>
+            <div className={peopleCSS.add+" "+peopleCSS.nav_iZag} data-st="0">
+                <div className={peopleCSS.nav_i+" "+peopleCSS.link} id={peopleCSS.nav_i} onClick={onEdit}>
+                    Добавить завуча
+                </div>
+                <div className={peopleCSS.pepl} data-st="0">
+                    <div className={peopleCSS.fi}>
+                        <div className={peopleCSS.nav_i + " " + peopleCSS.nav_iZag2} id={peopleCSS.nav_i}>
+                            {inps.inpnpt}
+                        </div>
+                        <img className={peopleCSS.profIm} src={themeState.theme_ch ? profd : profl} title="Так будет выглядеть иконка перехода в профиль" alt=""/>
+                        <img className={peopleCSS.imgfield} src={ed} onClick={onEdit} title="Редактировать" alt=""/>
+                        <img className={peopleCSS.imginp+" yes "} src={yes} onClick={(e)=>onFin(e, inps, forceUpdate, CHANGE_HTEACHERS)} title="Подтвердить" alt=""/>
+                        <img className={peopleCSS.imginp} style={{marginRight: "1vw"}} src={no} onClick={onClose} title="Отменить изменения и выйти из режима редактирования" alt=""/>
+                    </div>
+                    <div className={peopleCSS.ed}>
+                        <div className={peopleCSS.preinf}>
+                            ФИО:
+                        </div>
+                        <input className={peopleCSS.inp} id={"inpnpt_"} placeholder={"Фамилия И.О."} defaultValue={inps.inpnpt} onChange={(e)=>chStatB(e, inps)} type="text"/>
+                        {ele(false, "inpnpt_", true, inps, pari)}
+                        <img className={peopleCSS.imginp+" yes "} src={yes} onClick={(e)=>onFin(e, inps, forceUpdate, CHANGE_HTEACHERS)} title="Подтвердить" alt=""/>
+                        <img className={peopleCSS.imginp} style={{marginRight: "1vw"}} src={no} onClick={onClose} title="Отменить изменения и выйти из режима редактирования" alt=""/>
+                    </div>
+                </div>
+            </div>
+            {Object.getOwnPropertyNames(x).map(param =>
+                <div className={peopleCSS.pepl} key={param} data-st="0">
+                    <div className={peopleCSS.fi}>
+                        <div className={peopleCSS.nav_i+" "+peopleCSS.nav_iZag2} id={peopleCSS.nav_i}>
+                            {x[param].name}
+                        </div>
+                        <img className={peopleCSS.profIm} src={themeState.theme_ch ? profd : profl} title="Так будет выглядеть иконка перехода в профиль" alt=""/>
+                        <img className={peopleCSS.imgfield} src={ed} onClick={onEdit} title="Редактировать" alt=""/>
+                        <img className={peopleCSS.imginp} data-id={param} style={{marginRight: "1vw"}} src={no} onClick={(e)=>onDel(e, CHANGE_HTEACHERS_DEL)} title="Удалить" alt=""/>
+                        <input className={peopleCSS.inp+" "+peopleCSS.copyInp} data-id1={param} id={"inpcpt_" + param} placeholder="Ссылка не создана" value={x[param].link} type="text" readOnly/>
+                        <img className={peopleCSS.imginp+" "+peopleCSS.refrC} src={themeState.theme_ch ? refreshCd : refreshCl} onClick={(e)=>refreshLink(e, sit, CHANGE_HTEACHERS)} title="Создать ссылку-приглашение" alt=""/>
+                        <img className={peopleCSS.imginp} src={themeState.theme_ch ? copyd : copyl} title="Копировать" data-enable={x[param].link ? "1" : "0"} onClick={(e)=>copyLink(e, x[param].link, x[param].name)} alt=""/>
+                    </div>
+                    <div className={peopleCSS.ed}>
+                        <div className={peopleCSS.preinf}>
+                            ФИО:
+                        </div>
+                        <input className={peopleCSS.inp} data-id1={param} id={"inpnpt_" + param} placeholder={"Фамилия И.О."} defaultValue={x[param].name} onChange={(e)=>chStatB(e, inps)} type="text"/>
+                        {ele(false, "inpnpt_" + param, true, inps, pari)}
+                        <img className={peopleCSS.imginp+" yes "} src={yes} onClick={(e)=>onFin(e, inps, forceUpdate, CHANGE_HTEACHERS)} title="Подтвердить" alt=""/>
+                        <img className={peopleCSS.imginp} style={{marginRight: "1vw"}} src={no} onClick={onClose} title="Отменить изменения и выйти из режима редактирования" alt=""/>
+                    </div>
+                </div>
+            )}
+        </>
+    :
+        Object.getOwnPropertyNames(x).map(param =>
+            <div key={param}>
+                <div className={peopleCSS.nav_i+" "+peopleCSS.nav_iZag2} id={peopleCSS.nav_i}>
+                    {x[param].name}
+                </div>
+                <img className={peopleCSS.profIm} src={themeState.theme_ch ? profd : profl} title="Перейти в профиль" alt=""/>
+            </div>
+        );
+}
 
 export function HTeachers() {
     hteachersInfo = useSelector(hteachers);
-    const themeState = useSelector(themes);
+    themeState = useSelector(themes);
+    cState = useSelector(states);
     if(!dispatch) setActNew(1);
+    [_, forceUpdate] = useReducer((x) => x + 1, 0);
     dispatch = useDispatch();
     const isFirstUpdate = useRef(true);
     useEffect(() => {
         console.log("I was triggered during componentDidMount HTeachers.jsx");
-        // dispatch(changeContacts("Por", "imageUrl", '/media/tuman.jpg'));
-        // dispatch(changeContacts("Por", "imageUrl"));
-        // dispatch(changeContacts("Por", "id_0", '8 (800) 555 35 37', '+78005553537'));
-        // dispatch(changeContacts("Por", "id_0"));
-        // setInterval(function() {
-        //     dispatch(changeContacts("Por", "id_" + Object.getOwnPropertyNames(hteachersInfo.contactsPor.numbers).length, '8 (800) 555 35 37', '+78005553537'));
-        // }, 5000);
+        for(let el of document.querySelectorAll("." + peopleCSS.ed + " > *[id^='inpn']")){
+            chStatB({target: el}, inps);
+        }
         return function() {
             dispatch = undefined;
             console.log("I was triggered during componentWillUnmount HTeachers.jsx");
@@ -38,38 +113,25 @@ export function HTeachers() {
         console.log('componentDidUpdate HTeachers.jsx');
     });
     return (
-        <>
+        <div className={peopleCSS.header}>
             <Helmet>
                 <title>Администрация учебной организации</title>
             </Helmet>
-            <div className={hteachersCSS.AppHeader}>
-                {(Object.getOwnPropertyNames(hteachersInfo).length == 0 && Object.getOwnPropertyNames(hteachersInfo).length == 0) ?
-                    <div className={hteachersCSS.block}>
-                        <img alt="banner" src={warn}/>
-                        <div className={hteachersCSS.block_text}>
-                            К сожалению, информация не найдена... Можете попробовать попросить завуча заполнить информацию.
-                        </div>
-                    </div> :
-                    <div className={hteachersCSS.blockHTea}>
-                        <div className={hteachersCSS.htea}>
-                            <div className={hteachersCSS.nav_iZag}>
-                                <div className={hteachersCSS.nav_i} id={hteachersCSS.nav_i}>
+            {Object.getOwnPropertyNames(hteachersInfo).length == 0 && !(cState.auth && cState.role == 3) ?
+                    <ErrFound text={errText}/>
+                :
+                    <div className={peopleCSS.blockPep}>
+                        <div className={peopleCSS.pep}>
+                            <div className={peopleCSS.nav_iZag}>
+                                <div className={peopleCSS.nav_i} id={peopleCSS.nav_i}>
                                     Администрация учебной организации
                                 </div>
-                                {Object.getOwnPropertyNames(hteachersInfo).map(param =>
-                                    <div key={param}>
-                                        <div className={hteachersCSS.nav_i+" "+hteachersCSS.nav_iZag1} id={hteachersCSS.nav_i}>
-                                            {hteachersInfo[param]}
-                                        </div>
-                                        <img src={themeState.theme_ch ? profd : profl} title="Перейти в профиль" alt=""/>
-                                    </div>
-                                )}
+                                {getHTea(hteachersInfo, (cState.auth && cState.role == 3))}
                             </div>
                         </div>
                     </div>
-                }
-            </div>
-        </>
+            }
+        </div>
     )
 }
 export default HTeachers;

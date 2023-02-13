@@ -6,26 +6,6 @@
 	top: 7vh;
 }
 
-.block{
-	margin: auto;
-	text-align: center;
-}
-
-.block > img{
-	width: 30vmin;
-	height: 30vmin;
-}
-
-.block_text{
-	width: 70vmin;
-	color:var(--cV2);
-	font-weight: bold;
-	font-size: 1.5vw;
-	text-shadow: 2px 2px 2px #000;
-	transition: color 1s ease;
-	text-align: left;
-}
-
 .blockDay{
 	text-align: center;
 	margin: 5vh auto;

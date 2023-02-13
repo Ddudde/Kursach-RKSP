@@ -3,11 +3,12 @@ import {Helmet} from "react-helmet-async";
 import marksCSS from './marks.module.css';
 import {marks} from "../../../store/selector";
 import {useDispatch, useSelector} from "react-redux";
-import {setActived} from "../../main/Main";
 import {setActNew} from "../AnalyticsMain";
-import warn from "../../../media/warn_big.png";
+import ErrFound from "../../other/error/ErrFound";
 
-let dispatch, marksInfo, maxEl = 0;
+let dispatch, marksInfo, maxEl, errText;
+errText = "К сожалению, информация не найдена... Можете попробовать попросить завуча заполнить информацию.";
+maxEl = 0;
 
 export function Marks() {
     marksInfo = useSelector(marks);
@@ -20,14 +21,6 @@ export function Marks() {
     const isFirstUpdate = useRef(true);
     useEffect(() => {
         console.log("I was triggered during componentDidMount Marks.jsx");
-        // dispatch(changeContacts("Por", "imageUrl", '/media/tuman.jpg'));
-        // dispatch(changeContacts("Por", "imageUrl"));
-        // dispatch(changeContacts("Por", "id_0", '8 (800) 555 35 37', '+78005553537'));
-        // dispatch(changeContacts("Por", "id_0"));
-        // setInterval(function() {
-        //     dispatch(changeContacts("Por", "id_" + Object.getOwnPropertyNames(marksInfo.contactsPor.numbers).length, '8 (800) 555 35 37', '+78005553537'));
-        // }, 5000);
-        setActived(".panAna");
         let scr = document.querySelector("." + marksCSS.predm);
         scr.scrollTo(scr.scrollWidth, 0);
         return function() {
@@ -43,18 +36,13 @@ export function Marks() {
         console.log('componentDidUpdate Marks.jsx');
     });
     return (
-        <>
+        <div className={marksCSS.AppHeader}>
             <Helmet>
                 <title>Итоговые оценки</title>
             </Helmet>
-            <div className={marksCSS.AppHeader}>
-                {Object.getOwnPropertyNames(marksInfo.pers).length == 0 ?
-                    <div className={marksCSS.block}>
-                        <img alt="banner" src={warn}/>
-                        <div className={marksCSS.block_text}>
-                            К сожалению, информация не найдена... Можете попробовать попросить завуча заполнить информацию.
-                        </div>
-                    </div> :
+            {Object.getOwnPropertyNames(marksInfo.pers).length == 0 ?
+                    <ErrFound text={errText}/>
+                :
                     <div className={marksCSS.blockPredm}>
                         <div className={marksCSS.predm}>
                             <div className={marksCSS.persGrid} style={{gridTemplate: "15vh /22vw repeat(" + (maxEl + 2) + ", 2vw)"}}>
@@ -107,9 +95,8 @@ export function Marks() {
                             )}
                         </div>
                     </div>
-                }
-            </div>
-        </>
+            }
+        </div>
     )
 }
 export default Marks;
