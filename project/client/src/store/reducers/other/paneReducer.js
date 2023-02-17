@@ -1,4 +1,4 @@
-import {CHANGE_PANE, CHANGE_PANE_DEL_GRS, CHANGE_PANE_GR, CHANGE_PANE_GRS} from '../actions';
+import {CHANGE_PANE, CHANGE_PANE_DEL_GRS, CHANGE_PANE_GR, CHANGE_PANE_GRS} from '../../actions';
 
 const initialState = {
         els: []

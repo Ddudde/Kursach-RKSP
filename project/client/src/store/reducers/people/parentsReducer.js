@@ -64,25 +64,25 @@ export default function parentsReducer(state = initialState, action) {
             fd[action.payload.l1] = action.payload.state;
             return fd;
         case CHANGE_PARENTS:
-            if(!fd[action.payload.type]){
-                fd[action.payload.type] = {};
+            if(!fd[action.payload.l0]){
+                fd[action.payload.l0] = {};
             }
-            if(!fd[action.payload.type][action.payload.l1]){
-                fd[action.payload.type][action.payload.l1] = {};
+            if(!fd[action.payload.l0][action.payload.l1]){
+                fd[action.payload.l0][action.payload.l1] = {};
             }
-            if(!fd[action.payload.type][action.payload.l1][action.payload.l2]){
-                fd[action.payload.type][action.payload.l1][action.payload.l2] = {};
+            if(!fd[action.payload.l0][action.payload.l1][action.payload.l2]){
+                fd[action.payload.l0][action.payload.l1][action.payload.l2] = {};
             }
-            fd[action.payload.type][action.payload.l1][action.payload.l2][action.payload.param] = action.payload.state;
+            fd[action.payload.l0][action.payload.l1][action.payload.l2][action.payload.param] = action.payload.state;
             return fd;
         case CHANGE_PARENTS_DEL:
-            delete fd[action.payload.type][action.payload.l1][action.payload.l2];
+            delete fd[action.payload.l0][action.payload.l1][action.payload.l2];
             return fd;
         case CHANGE_PARENTS_DEL_L1:
-            delete fd[action.payload.type][action.payload.l1];
+            delete fd[action.payload.l0][action.payload.l1];
             return fd;
         case CHANGE_PARENTS_DEL_L0:
-            delete fd[action.payload.type];
+            delete fd[action.payload.l0];
             return fd;
         default:
             return state;

@@ -7,7 +7,7 @@ import {
     CHANGE_EVENTS_CLEAR,
     CHANGE_EVENTS_RL,
     CHANGE_EVENTS_STEP
-} from '../actions';
+} from '../../actions';
 
 const initialState = {
     steps: 0,

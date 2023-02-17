@@ -7,8 +7,14 @@ export const CHANGE_THEME = "CHANGE_THEME";
 export const CHANGE_STATE = "CHANGE_STATE";
 
 export const CHANGE_ZVONKI = "CHANGE_ZVONKI";
+export const CHANGE_ZVONKI_DEL = "CHANGE_ZVONKI_DEL";
+export const CHANGE_ZVONKI_DEL_L0 = "CHANGE_ZVONKI_DEL_L0";
+export const CHANGE_ZVONKI_SMENA = "CHANGE_ZVONKI_SMENA";
+export const CHANGE_ZVONKI_L1 = "CHANGE_ZVONKI_L1";
 
 export const CHANGE_PERIODS = "CHANGE_PERIODS";
+export const CHANGE_PERIODS_L1 = "CHANGE_PERIODS_L1";
+export const CHANGE_PERIODS_DEL = "CHANGE_PERIODS_DEL";
 
 export const CHANGE_PROFILE = "CHANGE_PROFILE";
 export const CHANGE_PROFILE_ROLES = "CHANGE_PROFILE_ROLES";
@@ -35,7 +41,9 @@ export const CHANGE_PJOURNAL_DZ = "CHANGE_PJOURNAL_DZ";
 
 export const CHANGE_TEACHERS_GL = "CHANGE_TEACHERS_GL";
 export const CHANGE_TEACHERS = "CHANGE_TEACHERS";
+export const CHANGE_TEACHERS_L1 = "CHANGE_TEACHERS_L1";
 export const CHANGE_TEACHERS_DEL = "CHANGE_TEACHERS_DEL";
+export const CHANGE_TEACHERS_DEL_L1 = "CHANGE_TEACHERS_DEL_L1";
 
 export const CHANGE_HTEACHERS_GL = "CHANGE_HTEACHERS_GL";
 export const CHANGE_HTEACHERS = "CHANGE_HTEACHERS";
@@ -298,7 +306,7 @@ export function changePeople(type, l0, l1, l2, state, param = "name") {
     return {
         type: type,
         payload: {
-            type: l0,
+            l0: l0,
             l1: l1,
             l2: l2,
             param: param,
@@ -325,25 +333,7 @@ export function changeJournal(id, state) {
     };
 }
 
-export function changeSchedule(id, state) {
-    return { type: CHANGE_SCHEDULE,
-        payload: {
-            schId: id,
-            schState: state
-        }
-    };
-}
-
-export function changePeriods(id, state) {
-    return { type: CHANGE_ZVONKI,
-        payload: {
-            perId: id,
-            perState: state
-        }
-    };
-}
-
-export function changeZvonki(type, l0, l1, l2, state) {
+export function changeAnalytics(type, l0, l1, l2, state) {
     return {
         type: type,
         payload: {

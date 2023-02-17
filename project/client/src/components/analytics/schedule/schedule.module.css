@@ -1,48 +1,85 @@
-.AppHeader {
-	width: 100%;
-	height: 86vh;
-	display: flex;
-	position: relative;
-	top: 7vh;
-}
-
-.blockDay{
-	text-align: center;
-	margin: 5vh auto;
-	width: 30%;
-}
-
 .day{
-	background-color: var(--bgcV1);
-	padding: 10px;
-	border-radius: 5px;
-	margin-bottom: 10px;
-	transition: background-color 1s ease;
 	display: grid;
-	grid-template: repeat(5, auto)/1fr 20% 1fr;
+	grid-template: repeat(5, auto)/auto;
+	overflow: visible;
 }
 
-.nav_i{
-	text-decoration: none;
-	border: 1px solid var(--bcV1);
-	cursor: pointer;
-	color: var(--cV1);
-	font-size: 1.25vw;
-	font-weight: bold;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	align-self: stretch;
-	-webkit-transition: color 1s ease;
-	-o-transition: color 1s ease;
-	transition: color 1s ease;
-	transition-property: color, text-shadow, border-color;
-	margin: -0.5px;
-	padding: 5px;
+.pane{
+	width: inherit;
+	height: 7vh;
+	position: fixed;
+	z-index: 1;
+}
+
+.blockList{
 	position: relative;
+	margin-inline: -0.5px;
+	display: inline-block;
+	margin-left: 1vw;
+	vertical-align: middle;
 }
 
-#nav_i:hover, #nav_i:hover *{
-	color: #00ff00 !important;
-	text-shadow: 0 0 2vw #66ff66;
+.selEl, .listEl{
+	display: grid !important;
+	justify-items: center;
+	margin-inline: 0;
+	font-weight: 500;
+	background-color: var(--bgcV1);
+}
+
+.selEl{
+	grid-template: auto auto / auto auto;
+	margin-block: -0.5px;
+}
+
+.listEl{
+	grid-template: auto / auto;
+	padding: 0;
+	height: 33%;
+	margin-bottom: -2px;
+}
+
+.selEl img, .listEl img{
+	width: 2vw;
+	grid-row: 1/3;
+	margin-right: 0.25vw;
+}
+
+.selEl:hover + .list, .list:hover, .listEl:hover + .list{
+	opacity: 1;
+	top: 100%;
+}
+
+.list{
+	position: absolute;
+	width: 100%;
+	height: 300%;
+	top: -300%;
+	transition: top 1s ease;
+	transition-property: top, opacity;
+	opacity: 0;
+	z-index: 1;
+	overflow: auto;
+}
+
+.elText{
+	align-self: baseline;
+	font-size: 0.75vw;
+}
+
+.elInf{
+	align-self: end;
+	font-size: 1.25vw;
+}
+
+.mapImg{
+	width: 2vw;
+	vertical-align: middle;
+	cursor: pointer;
+	margin: 0 0.1vw;
+	grid-column: 2;
+}
+
+*[data-enablem="0"] {
+	visibility: hidden;
 }

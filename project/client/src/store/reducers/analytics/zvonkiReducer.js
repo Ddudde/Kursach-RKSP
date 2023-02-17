@@ -1,4 +1,10 @@
-import {CHANGE_ZVONKI} from '../../actions';
+import {
+    CHANGE_ZVONKI,
+    CHANGE_ZVONKI_DEL,
+    CHANGE_ZVONKI_DEL_L0,
+    CHANGE_ZVONKI_L1,
+    CHANGE_ZVONKI_SMENA
+} from '../../actions';
 
 const initialState = {
         0 : {
@@ -38,6 +44,21 @@ export default function zvonkiReducer(state = initialState, action) {
                 fd[action.payload.l0][action.payload.l1] = {};
             }
             fd[action.payload.l0][action.payload.l1][action.payload.l2] = action.payload.state;
+            return fd;
+        case CHANGE_ZVONKI_SMENA:
+            fd[action.payload.l0] = action.payload.state;
+            return fd;
+        case CHANGE_ZVONKI_L1:
+            if(!fd[action.payload.l0]){
+                fd[action.payload.l0] = {};
+            }
+            fd[action.payload.l0][action.payload.l1] = action.payload.state;
+            return fd;
+        case CHANGE_ZVONKI_DEL:
+            delete fd[action.payload.l0][action.payload.l1][action.payload.l2];
+            return fd;
+        case CHANGE_ZVONKI_DEL_L0:
+            delete fd[action.payload.l0];
             return fd;
         default:
             return state;

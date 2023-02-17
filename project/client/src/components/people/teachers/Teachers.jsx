@@ -10,28 +10,15 @@ import copyl from "../../../media/copyl.png";
 import copyd from "../../../media/copyd.png";
 import refreshCd from "../../../media/refreshCd.png";
 import refreshCl from "../../../media/refreshCl.png";
-import {CHANGE_TEACHERS, CHANGE_TEACHERS_DEL, CHANGE_TEACHERS_GL, changePeople} from "../../../store/actions";
+import {CHANGE_TEACHERS, CHANGE_TEACHERS_DEL, CHANGE_TEACHERS_DEL_L1, CHANGE_TEACHERS_L1} from "../../../store/actions";
 import ed from "../../../media/edit.png";
 import yes from "../../../media/yes.png";
 import no from "../../../media/no.png";
 import ErrFound from "../../other/error/ErrFound";
 
-let dispatch, teachersInfo, cState, nmy, themeState, inps, pari, sit, errText;
+let dispatch, teachersInfo, cState, themeState, inps, pari, sit, errText;
 sit = "http://localhost:3000";
 errText = "К сожалению, информация не найдена... Можете попробовать попросить завуча заполнить информацию.";
-nmy = {
-    0: {
-        "id5" : {
-            name: "Петров А.А."
-        },
-        "id6" : {
-            name: "Петров А.С."
-        },
-        "id7" : {
-            name: "Петров А.Г."
-        }
-    }
-};
 inps = {inpnpt : "Фамилия И.О."};
 pari = {elems: 0, paels: 0};
 let [_, forceUpdate] = [];
@@ -69,27 +56,27 @@ function getTea(title, x, b, b1) {
                                 </div>
                             </div>
                         </div>
-                        {x[0] && Object.getOwnPropertyNames(x[0]).map(param =>
+                        {x && Object.getOwnPropertyNames(x).map(param =>
                             <div className={peopleCSS.nav_iZag + " " + peopleCSS.nav_iZag1} key={param}>
                                 <div className={peopleCSS.pepl} data-st="0">
                                     <div className={peopleCSS.fi}>
                                         <div className={peopleCSS.nav_i + " " + peopleCSS.nav_iZag2} id={peopleCSS.nav_i}>
-                                            {x[0][param].name}
+                                            {x[param].name}
                                         </div>
                                         <img className={peopleCSS.profIm} src={themeState.theme_ch ? profd : profl} title="Так будет выглядеть иконка перехода в профиль" alt=""/>
                                         <img className={peopleCSS.imgfield} src={ed} onClick={onEdit} title="Редактировать" alt=""/>
-                                        <img className={peopleCSS.imginp} data-id1={param} style={{marginRight: "1vw"}} src={no} onClick={(e)=>onDel(e, CHANGE_TEACHERS_DEL)} title="Удалить" alt=""/>
-                                        <input className={peopleCSS.inp+" "+peopleCSS.copyInp} data-id1={param} id={"inpcpt_" + param} placeholder="Ссылка не создана" value={x[0][param].link} type="text" readOnly/>
-                                        <img className={peopleCSS.imginp+" "+peopleCSS.refrC} src={themeState.theme_ch ? refreshCd : refreshCl} onClick={(e)=>refreshLink(e, sit, CHANGE_TEACHERS)} title="Создать ссылку-приглашение" alt=""/>
-                                        <img className={peopleCSS.imginp} src={themeState.theme_ch ? copyd : copyl} title="Копировать" data-enable={x[0][param].link ? "1" : "0"} onClick={(e)=>copyLink(e, x[0][param].link, x[0][param].name)} alt=""/>
+                                        <img className={peopleCSS.imginp} data-id1={param} style={{marginRight: "1vw"}} src={no} onClick={(e)=>onDel(e, CHANGE_TEACHERS_DEL_L1)} title="Удалить" alt=""/>
+                                        <input className={peopleCSS.inp+" "+peopleCSS.copyInp} data-id1={param} id={"inpcpt_" + param} placeholder="Ссылка не создана" value={x[param].link} type="text" readOnly/>
+                                        <img className={peopleCSS.imginp+" "+peopleCSS.refrC} src={themeState.theme_ch ? refreshCd : refreshCl} onClick={(e)=>refreshLink(e, sit, CHANGE_TEACHERS_L1)} title="Создать ссылку-приглашение" alt=""/>
+                                        <img className={peopleCSS.imginp} src={themeState.theme_ch ? copyd : copyl} title="Копировать" data-enable={x[param].link ? "1" : "0"} onClick={(e)=>copyLink(e, x[param].link, x[param].name)} alt=""/>
                                     </div>
                                     <div className={peopleCSS.ed}>
                                         <div className={peopleCSS.preinf}>
                                             ФИО:
                                         </div>
-                                        <input className={peopleCSS.inp} data-id1={param} id={"inpnpt_" + param} placeholder={"Фамилия И.О."} defaultValue={x[0][param].name} onChange={(e)=>chStatB(e, inps)} type="text"/>
+                                        <input className={peopleCSS.inp} data-id1={param} id={"inpnpt_" + param} placeholder={"Фамилия И.О."} defaultValue={x[param].name} onChange={(e)=>chStatB(e, inps)} type="text"/>
                                         {ele(false, "inpnpt_" + param, true, inps, pari)}
-                                        <img className={peopleCSS.imginp+" yes "} src={yes} onClick={(e)=>onFin(e, inps, forceUpdate, CHANGE_TEACHERS)} title="Подтвердить" alt=""/>
+                                        <img className={peopleCSS.imginp+" yes "} src={yes} onClick={(e)=>onFin(e, inps, forceUpdate, CHANGE_TEACHERS_L1)} title="Подтвердить" alt=""/>
                                         <img className={peopleCSS.imginp} style={{marginRight: "1vw"}} src={no} onClick={onClose} title="Отменить изменения и выйти из режима редактирования" alt=""/>
                                     </div>
                                 </div>
@@ -151,9 +138,6 @@ export function Teachers() {
     const isFirstUpdate = useRef(true);
     useEffect(() => {
         console.log("I was triggered during componentDidMount Teachers.jsx");
-        if (cState.auth && cState.role == 3){
-            dispatch(changePeople(CHANGE_TEACHERS_GL,1, undefined, undefined, nmy));
-        }
         for(let el of document.querySelectorAll("." + peopleCSS.ed + " > *[id^='inpn']")){
             chStatB({target: el}, inps);
         }
@@ -177,7 +161,7 @@ export function Teachers() {
             {(cState.auth && cState.role == 3) ?
                     <div className={peopleCSS.blockPep}>
                         <div className={peopleCSS.pep}>
-                            {getTea("Нераспределённые педагоги", teachersInfo[1], true, true)}
+                            {getTea("Нераспределённые педагоги", teachersInfo[2], true, true)}
                             {getTea("Педагоги", teachersInfo[0], true)}
                         </div>
                     </div>

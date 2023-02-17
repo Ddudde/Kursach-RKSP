@@ -54,7 +54,7 @@ export function refreshLink(e, sit, type) {
         dispatch(changeEvents(CHANGE_EVENT, undefined, undefined, title, text, 10));
     } else if (inp.hasAttribute("data-id1")) {
         id = inp.getAttribute("data-id1");
-        dispatch(changePeople(type, 1, 0, id, sit + "/invite/" + gen_cod(), "link"));
+        dispatch(changePeople(type, 2, id, undefined, sit + "/invite/" + gen_cod(), "link"));
         dispatch(changeEvents(CHANGE_EVENT, undefined, undefined, title, text, 10));
     }
 }
@@ -80,7 +80,7 @@ export function onDel(e, type, info) {
             if(type == CHANGE_PARENTS_DEL) {
                 dispatch(changePeople(type, "nw", "par", id));
             } else {
-                dispatch(changePeople(type, 1, 0, id));
+                dispatch(changePeople(type, 2, id));
             }
         }
     } else if(par.classList.contains(peopleCSS.nav_iZag)){
@@ -135,7 +135,7 @@ export function onFin(e, inps, forceUpdate, type, info) {
             }
         } else {
             par = par.parentElement;
-            dispatch(changePeople(type, 1, 0, "id8", inps.inpnpt));
+            dispatch(changePeople(type, 2, "id8", undefined, inps.inpnpt));
         }
         par.setAttribute('data-st', '0');
         return;
@@ -158,7 +158,7 @@ export function onFin(e, inps, forceUpdate, type, info) {
                     if(type == CHANGE_PARENTS) {
                         dispatch(changePeople(type, "nw", "par", id, inp.value));
                     } else {
-                        dispatch(changePeople(type, 1, 0, id, inp.value));
+                        dispatch(changePeople(type, 2, id, undefined, inp.value));
                     }
                 }
             } else {

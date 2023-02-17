@@ -1,4 +1,4 @@
-import {CHANGE_CHECKBOX} from '../actions';
+import {CHANGE_CHECKBOX} from '../../actions';
 
 const initialState = {
         "0": false

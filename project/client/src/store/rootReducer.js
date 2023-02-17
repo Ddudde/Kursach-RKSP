@@ -1,5 +1,5 @@
 import {combineReducers} from "redux";
-import checkBoxReducer from "./reducers/checkBoxReducer";
+import checkBoxReducer from "./reducers/other/checkBoxReducer";
 import themeReducer from "./reducers/main/themeReducer";
 import indicatorReducer from "./reducers/start/indicatorReducer";
 import newsReducer from "./reducers/newsReducer";
@@ -18,8 +18,8 @@ import parentsReducer from "./reducers/people/parentsReducer";
 import adminsReducer from "./reducers/people/adminsReducer";
 import profileReducer from "./reducers/profileReducer";
 import pjournalReducer from "./reducers/pjournalReducer";
-import paneReducer from "./reducers/paneReducer";
-import eventsReducer from "./reducers/eventsReducer";
+import paneReducer from "./reducers/other/paneReducer";
+import eventsReducer from "./reducers/other/eventsReducer";
 
 export default combineReducers({
     checkbox: checkBoxReducer,

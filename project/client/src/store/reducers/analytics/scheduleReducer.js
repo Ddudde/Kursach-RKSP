@@ -12,136 +12,149 @@ const initialState = {
     },
     days: {
         0 : {
-            lessons: [
-                {
+            name: "Понедельник",
+            lessons: {
+                0: {
                     cabinet: "300",
                     prepod: "Петренко А.А.",
                     group: "10A"
                 },
-                {
+                1 : {
                     cabinet: "300",
                     prepod: "Петренко А.А.",
                     group: "10A"
                 },
-                {
+                2 : {
                     cabinet: "300",
                     prepod: "Петренко А.А.",
                     group: "10A"
                 },
-                {
+                3 : {
                     cabinet: "300",
                     prepod: "Петренко А.А.",
                     group: "10A"
                 }
-            ]
+            }
         },
         1 : {
-            lessons: [
-                {
+            name: "Вторник",
+            lessons: {
+                0 : {
                     cabinet: "300",
                     prepod: "Петренко А.А.",
                     group: "10A"
                 },
-                {
+                1 : {
                     cabinet: "300",
                     prepod: "Петренко А.А.",
                     group: "10A"
                 },
-                {
+                2 : {
                     cabinet: "300",
                     prepod: "Петренко А.А.",
                     group: "10A"
                 },
-                {
+                3 : {
                     cabinet: "300",
                     prepod: "Петренко А.А.",
                     group: "10A"
                 },
-                {
+                4 : {
                     cabinet: "300",
                     prepod: "Петренко А.А.",
                     group: "10A"
                 },
-                {
+                5 : {
                     cabinet: "300",
                     prepod: "Петренко А.А.",
                     group: "10A"
                 }
-            ]
+            }
         },
         2 : {
-            lessons: [
-                {
+            name: "Среда",
+            lessons: {
+                0 : {
                     cabinet: "300",
                     prepod: "Петренко А.А.",
                     group: "10A"
                 },
-                {
+                1 : {
                     cabinet: "300",
                     prepod: "Петренко А.А.",
                     group: "10A"
                 },
-                {
+                2 : {
                     cabinet: "300",
                     prepod: "Петренко А.А.",
                     group: "10A"
                 },
-                {
+                3 : {
                     cabinet: "300",
                     prepod: "Петренко А.А.",
                     group: "10A"
                 },
-                {
+                4 : {
                     cabinet: "300",
                     prepod: "Петренко А.А.",
                     group: "10A"
                 }
-            ]
+            }
         },
         3 : {
-            lessons: [
-                {
+            name: "Четверг",
+            lessons: {
+                0 : {
                     cabinet: "300",
                     prepod: "Петренко А.А.",
                     group: "10A"
                 },
-                {
+                1 : {
                     cabinet: "300",
                     prepod: "Петренко А.А.",
                     group: "10A"
                 }
-            ]
+            }
         },
         4 : {
-            lessons: [
-                {
+            name: "Пятница",
+            lessons: {
+                0 : {
                     cabinet: "300",
                     prepod: "Петренко А.А.",
                     group: "10A"
                 },
-                {
+                1 : {
                     cabinet: "300",
                     prepod: "Петренко А.А.",
                     group: "10A"
                 }
-            ]
+            }
         },
         5 : {
-            lessons: []
+            name: "Суббота"
         },
         6 : {
-            lessons: []
+            name: "Воскресенье"
         }
+    },
+    edit: {
+
     }
 };
 
 export default function scheduleReducer(state = initialState, action) {
+    let fd = {...state};
     switch(action.type) {
         case CHANGE_SCHEDULE:
-            return {
-                    ...state,
-                    [action.payload.schId]: action.payload.schState
-                };
+            if(!fd.days[action.payload.l0]){
+                fd.days[action.payload.l0] = {};
+            }
+            if(!fd.days[action.payload.l0].lessons[action.payload.l1]){
+                fd.days[action.payload.l0].lessons[action.payload.l1] = {};
+            }
+            fd.days[action.payload.l0].lessons[action.payload.l1][action.payload.l2] = action.payload.state;
+            return fd;
         default:
             return state;
     }

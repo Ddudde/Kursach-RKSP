@@ -203,8 +203,8 @@ function getParents (pI, b) {
     return b ?
             <>
                 {getAdd()}
-                {pI.map(param=>
-                    (param != "nw" && parentsInfo[param].par) && (ppI = Object.getOwnPropertyNames(parentsInfo[param].par)) &&
+                {pI.map((param, i, x, ppI = parentsInfo[param].par ? Object.getOwnPropertyNames(parentsInfo[param].par) : [])=>
+                    (param != "nw" && parentsInfo[param].par) &&
                     <div className={peopleCSS.nav_iZag+" "+peopleCSS.nav_iZag1} key={param}>
                         <div className={parentsCSS.uch}>
                             <div className={peopleCSS.nav_i+" "+parentsCSS.nam} id={peopleCSS.nav_i}>
@@ -247,8 +247,8 @@ function getParents (pI, b) {
                 )}
             </>
         :
-            pI.map((param, ppI) =>
-                parentsInfo[param].par && (ppI = Object.getOwnPropertyNames(parentsInfo[param].par)) &&
+            pI.map((param, i, x, ppI = parentsInfo[param].par ? Object.getOwnPropertyNames(parentsInfo[param].par) : []) =>
+                parentsInfo[param].par &&
                 <div className={peopleCSS.nav_iZag+" "+peopleCSS.nav_iZag1} key={param}>
                     <div className={parentsCSS.uch}>
                         <div className={peopleCSS.nav_i+" "+parentsCSS.nam} id={peopleCSS.nav_i}>
@@ -309,7 +309,7 @@ export function Parents() {
                                 <Pane gro={gr} cla={true}/>
                             </div>
                         }
-                        <div className={peopleCSS.blockPep}>
+                        <div className={peopleCSS.blockPep} style={{marginTop: (cState.auth && cState.role == 3) ? "7vh" : undefined}}>
                             <div className={peopleCSS.pep}>
                                 <div className={peopleCSS.nav_iZag}>
                                     <div className={peopleCSS.nav_i} id={peopleCSS.nav_i}>
