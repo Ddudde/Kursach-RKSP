@@ -107,7 +107,7 @@
 	text-align: initial;
 	position: relative;
 	margin: -0.5px;
-	width: 100%;
+	/*width: 100%;*/
 }
 
 .link{
@@ -153,8 +153,8 @@
 	border-radius: 0.5vmax;
 	background-color: #4d4d4d;
 	user-select: none;
-	-webkit-box-shadow: 0 1px white, inset 0 2px 2px rgba(0, 0, 0, 0.1);
-	box-shadow: 0 1px white, inset 0 2px 2px rgba(0, 0, 0, 0.1);
+	-webkit-box-shadow: 0 1px #FFF, inset 0 2px 2px rgba(0,0,0,0.1);
+	box-shadow: 0 1px #FFF, inset 0 2px 2px rgba(0,0,0,0.1);
 	border: 1px solid var(--bcV2);
 	height: 90%;
 	position:relative;
@@ -164,8 +164,7 @@
 	display: inline-block;
 	width: 50%;
 	font-size: 1.25vw;
-	padding: 0;
-	padding-left: 1vw;
+	padding: 0 0 0 1vw;
 	margin-left: 1vw;
 }
 

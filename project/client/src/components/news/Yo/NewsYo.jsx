@@ -1,178 +1,21 @@
 import React, {useEffect, useReducer, useRef} from "react";
 import {Helmet} from "react-helmet-async";
-import newsCSS from './newsYo.module.css';
+import newsCSS from '../newsMain.module.css';
 import {news, states} from "../../../store/selector";
 import {useDispatch, useSelector} from "react-redux";
-import {setActNew} from "../NewsMain";
-import warn from "../../../media/warn_big.png";
+import {chStatB, ele, errLoadAddIm, errorLoad, onClose, onDel, onEdit, onFin, setActNew} from "../NewsMain";
 import yes from "../../../media/yes.png";
 import no from "../../../media/no.png";
-import {changeNews, changeNewsDel, changeNewsParam} from "../../../store/actions";
 import ed from "../../../media/edit.png";
+import ErrFound from "../../other/error/ErrFound";
 
-let dispatch, newsInfo, type, inps, pari, cState;
+let dispatch, newsInfo, type, inps, pari, cState, errText;
 type = "Yo";
 inps = {inpntt : "Текст", inpnzt : "Заголовок", inpndt: new Date().toLocaleString("ru", {day:"2-digit", month: "2-digit", year:"numeric"})};
 pari = {elems: 0, paels: 0};
+errText = "Новостей нет... Кажется, что новостная лента пустует не заслужено? Попробуйте попросить завуча заполнить информацию."
 
 let [_, forceUpdate] = [];
-
-function errorLoad(e) {
-    e.target.style.display = 'none';
-}
-
-function errLoadAddIm(e) {
-    if (e.target.hasAttribute("data-id")) {
-        dispatch(changeNewsParam(type, e.target.getAttribute("data-id"), "img_url", ""));
-    } else {
-        inps.addIm = undefined;
-        forceUpdate();
-    }
-}
-
-function onDel(e) {
-    let par, ima;
-    par = e.target.parentElement.parentElement;
-    if(par.classList.contains(newsCSS.banner)){
-        ima = par.querySelector("img");
-        if (ima.hasAttribute("data-id")) {
-            dispatch(changeNewsParam(type, ima.getAttribute("data-id"), "img_url", ""));
-        } else {
-            inps.addIm = undefined;
-            forceUpdate();
-        }
-    }
-}
-
-function onEdit(e) {
-    let par, ima;
-    par = e.target.parentElement;
-    if(par.classList.contains(newsCSS.news_line)){
-        par.setAttribute('data-st', '1');
-    }
-    if(par.parentElement.classList.contains(newsCSS.im) || par.parentElement.classList.contains(newsCSS.te) || par.parentElement.classList.contains(newsCSS.da) || par.parentElement.classList.contains(newsCSS.za)){
-        par = par.parentElement;
-        par.setAttribute('data-st', '1');
-    }
-    if(par.classList.contains(newsCSS.upr)){
-        ima = par.parentElement.querySelector("img");
-        if (ima.hasAttribute("data-id")) {
-            inps.edAddIm = newsInfo[type][ima.getAttribute("data-id")].img_url;
-            dispatch(changeNewsParam(type, ima.getAttribute("data-id"), "img_url", ""));
-        } else {
-            inps.edAddIm = inps.addIm;
-            inps.addIm = undefined;
-            forceUpdate();
-        }
-    }
-}
-
-function onFin(e) {
-    let par, inp, bul;
-    par = e.target.parentElement;
-    bul = par.parentElement.classList.contains(newsCSS.te);
-    inp = par.querySelector(bul ? "textarea" : "input");
-    if(par.classList.contains(newsCSS.upr)){
-        let news = Object.getOwnPropertyNames(newsInfo[type])
-        dispatch(changeNews("Yo", news.length == 0 ? 0 : parseInt(news[news.length-1]) + 1, inps.inpnzt, inps.inpndt, inps.addIm, inps.inpntt));
-        return;
-    }
-    if (inps[inp.id]) {
-        inp.style.outline = "none black";
-        if(par.parentElement.classList.contains(newsCSS.im)) {
-            if (inps.edAddIm) inps.edAddIm = undefined;
-            if (inp.hasAttribute("data-id")) {
-                dispatch(changeNewsParam(type, inp.getAttribute("data-id"), "img_url", inp.value));
-            } else {
-                inps.addIm = inp.value;
-                forceUpdate();
-            }
-        }
-        if(bul) {
-            par = par.parentElement;
-            if(inp.hasAttribute("data-id")){
-                dispatch(changeNewsParam(type, inp.getAttribute("data-id"),"text", inp.value));
-            }else {
-                inps.inpntt = inp.value;
-                forceUpdate();
-            }
-        }
-        if(par.parentElement.classList.contains(newsCSS.da)){
-            par = par.parentElement;
-            if(inp.hasAttribute("data-id")){
-                dispatch(changeNewsParam(type, inp.getAttribute("data-id"),"date", inp.value));
-            }else {
-                inps.inpndt = inp.value;
-                forceUpdate();
-            }
-        }
-        if(par.parentElement.classList.contains(newsCSS.za)){
-            par = par.parentElement;
-            if(inp.hasAttribute("data-id")){
-                dispatch(changeNewsParam(type, inp.getAttribute("data-id"),"title", inp.value));
-            }else{
-                inps.inpnzt = inp.value;
-                forceUpdate();
-            }
-        }
-        par.setAttribute('data-st', '0');
-    } else {
-        inp.style.animation = "but 1s ease infinite";
-        setTimeout(function () {
-            inp.style.animation = "none"
-        }, 1000);
-        inp.style.outline = "solid red";
-    }
-}
-
-function onClose(e) {
-    let par = e.target.parentElement;
-    if(par.parentElement.classList.contains(newsCSS.im) || par.parentElement.classList.contains(newsCSS.te) || par.parentElement.classList.contains(newsCSS.da) || par.parentElement.classList.contains(newsCSS.za)){
-        par = par.parentElement;
-        if(inps.edAddIm) {
-            inps.addIm = inps.edAddIm;
-            inps.edAddIm = undefined;
-            forceUpdate();
-        } else {
-            par.setAttribute('data-st', '0');
-        }
-    }
-    if(par.classList.contains(newsCSS.upr)){
-        if (par.hasAttribute("data-id")) {
-            dispatch(changeNewsDel(type, par.getAttribute("data-id")));
-        }else {
-            par = par.parentElement.parentElement;
-            par.setAttribute('data-st', '0');
-        }
-    }
-}
-
-function chStatB(e) {
-    let el = e.target;
-    if(el.pattern) {
-        inps[el.id] = !el.validity.patternMismatch && el.value.length != 0;
-    } else {
-        inps[el.id] = el.value.length != 0;
-    }
-    if (inps[el.id]) {
-        el.style.outline = "none black";
-    } else {
-        el.style.animation = "but 1s ease infinite";
-        setTimeout(function () {
-            el.style.animation = "none"
-        }, 1000);
-        el.style.outline = "solid red";
-    }
-    el.parentElement.querySelector(".yes").setAttribute("data-enable", +inps[el.id]);
-}
-
-function ele (x, par, b) {
-    if(b){
-        if(!inps[par]) inps[par] = x;
-    } else {
-        pari[par] = x;
-    }
-}
 
 function getAdd(x) {
     let ns, dati, dat, zagi, zag, imi, im, texi, tex;
@@ -184,22 +27,23 @@ function getAdd(x) {
     imi = "inpnit_" + (x?x:"");
     tex = x ? newsInfo[type][x].text : inps.inpntt;
     texi = "inpntt_" + (x?x:"");
-    ns = (<div className={newsCSS.ns}>
+    ns = (
+        <div className={newsCSS.ns}>
             <div className={newsCSS.za} data-st="0">
                 <div className={newsCSS.fi}>
                     <h2 className={newsCSS.zag}>
                         {zag}
                     </h2>
-                    <img className={newsCSS.imgfield} src={ed} onClick={onEdit} title="Редактировать" alt=""/>
+                    <img className={newsCSS.imgfield} src={ed} onClick={(e)=>onEdit(e, type, inps, forceUpdate, newsInfo)} title="Редактировать" alt=""/>
                 </div>
                 <div className={newsCSS.ed}>
                     <div className={newsCSS.preinf}>
                         Заголовок:
                     </div>
-                    <input className={newsCSS.inp} id={zagi} defaultValue={zag} data-id={x ? x : undefined} onChange={chStatB}/>
-                    {ele(false, zagi, true)}
-                    <img className={newsCSS.imginp+" yes "} src={yes} onClick={onFin} title="Подтвердить" alt=""/>
-                    <img className={newsCSS.imginp} style={{marginRight: "1vw"}} src={no} onClick={onClose} title="Отменить изменения и выйти из режима редактирования" alt=""/>
+                    <input className={newsCSS.inp} id={zagi} defaultValue={zag} data-id={x ? x : undefined} onChange={(e)=>chStatB(e, inps)}/>
+                    {ele(false, zagi, inps)}
+                    <img className={newsCSS.imginp+" yes "} src={yes} onClick={(e)=>onFin(e, type, inps, forceUpdate, newsInfo)} title="Подтвердить" alt=""/>
+                    <img className={newsCSS.imginp} style={{marginRight: "1vw"}} src={no} onClick={(e)=>onClose(e, type, inps, forceUpdate)} title="Отменить изменения и выйти из режима редактирования" alt=""/>
                 </div>
             </div>
             <div className={newsCSS.da} data-st="0">
@@ -207,25 +51,25 @@ function getAdd(x) {
                     <span className={newsCSS.date}>
                         {dat}
                     </span>
-                    <img className={newsCSS.imgfield} src={ed} onClick={onEdit} title="Редактировать" alt=""/>
+                    <img className={newsCSS.imgfield} src={ed} onClick={(e)=>onEdit(e, type, inps, forceUpdate, newsInfo)} title="Редактировать" alt=""/>
                 </div>
                 <div className={newsCSS.ed}>
                     <div className={newsCSS.preinf}>
                         Дата:
                     </div>
-                    <input className={newsCSS.inp} id={dati} data-id={x ? x : undefined} placeholder={"ДД.ММ.ГГГГ"} defaultValue={dat} pattern="^[0-9.]+$" onChange={chStatB}/>
-                    {ele(false, dati, true)}
-                    <img className={newsCSS.imginp+" yes "} src={yes} onClick={onFin} title="Подтвердить" alt=""/>
-                    <img className={newsCSS.imginp} style={{marginRight: "1vw"}} src={no} onClick={onClose} title="Отменить изменения и выйти из режима редактирования" alt=""/>
+                    <input className={newsCSS.inp} id={dati} data-id={x ? x : undefined} placeholder={"ДД.ММ.ГГГГ"} defaultValue={dat} pattern="^[0-9.]+$" onChange={(e)=>chStatB(e, inps)}/>
+                    {ele(false, dati, inps)}
+                    <img className={newsCSS.imginp+" yes "} src={yes} onClick={(e)=>onFin(e, type, inps, forceUpdate, newsInfo)} title="Подтвердить" alt=""/>
+                    <img className={newsCSS.imginp} style={{marginRight: "1vw"}} src={no} onClick={(e)=>onClose(e, type, inps, forceUpdate)} title="Отменить изменения и выйти из режима редактирования" alt=""/>
                 </div>
             </div>
             <div className={newsCSS.te} data-st="0">
                 {im ?
                         <span className={newsCSS.banner}>
-                            <img alt="banner" data-id={x ? x : undefined} src={im} onError={errLoadAddIm}/>
+                            <img alt="banner" data-id={x ? x : undefined} src={im} onError={(e)=>errLoadAddIm(e, type, inps, forceUpdate)}/>
                             <div className={newsCSS.upr}>
-                                <img className={newsCSS.imgfield} src={ed} onClick={onEdit} title="Редактировать" alt=""/>
-                                <img className={newsCSS.imginp} style={{marginRight: "1vw"}} src={no} onClick={onDel} title="Удалить изображение" alt=""/>
+                                <img className={newsCSS.imgfield} src={ed} onClick={(e)=>onEdit(e, type, inps, forceUpdate, newsInfo)} title="Редактировать" alt=""/>
+                                <img className={newsCSS.imginp} style={{marginRight: "1vw"}} src={no} onClick={(e)=>onDel(e, type, inps, forceUpdate)} title="Удалить изображение" alt=""/>
                             </div>
                         </span>
                     :
@@ -234,16 +78,16 @@ function getAdd(x) {
                                 <div>
                                     Изображение
                                 </div>
-                                <img className={newsCSS.imgfield} src={ed} onClick={onEdit} title="Редактировать" alt=""/>
+                                <img className={newsCSS.imgfield} src={ed} onClick={(e)=>onEdit(e, type, inps, forceUpdate, newsInfo)} title="Редактировать" alt=""/>
                             </div>
                             <div className={newsCSS.ed}>
                                 <div className={newsCSS.preinf}>
                                     Ссылка:
                                 </div>
-                                <input className={newsCSS.inp} id={imi} data-id={x ? x : undefined} placeholder={"/media/tuman.jpg"} defaultValue={inps.edAddIm} onChange={chStatB} type="text"/>
-                                {ele(false, imi, true)}
-                                <img className={newsCSS.imginp+" yes "} src={yes} onClick={onFin} title="Подтвердить" alt=""/>
-                                <img className={newsCSS.imginp} style={{marginRight: "1vw"}} src={no} onClick={onClose} title="Отменить изменения и выйти из режима редактирования" alt=""/>
+                                <input className={newsCSS.inp} id={imi} data-id={x ? x : undefined} placeholder={"/media/tuman.jpg"} defaultValue={inps.edAddIm} onChange={(e)=>chStatB(e, inps)} type="text"/>
+                                {ele(false, imi, inps)}
+                                <img className={newsCSS.imginp+" yes "} src={yes} onClick={(e)=>onFin(e, type, inps, forceUpdate, newsInfo)} title="Подтвердить" alt=""/>
+                                <img className={newsCSS.imginp} style={{marginRight: "1vw"}} src={no} onClick={(e)=>onClose(e, type, inps, forceUpdate)} title="Отменить изменения и выйти из режима редактирования" alt=""/>
                             </div>
                         </div>
                 }
@@ -251,26 +95,27 @@ function getAdd(x) {
                     <pre className={newsCSS.field}>
                         {tex}
                     </pre>
-                    <img className={newsCSS.imgfield} src={ed} onClick={onEdit} title="Редактировать" alt=""/>
+                    <img className={newsCSS.imgfield} src={ed} onClick={(e)=>onEdit(e, type, inps, forceUpdate, newsInfo)} title="Редактировать" alt=""/>
                 </div>
                 <div className={newsCSS.ed}>
                     <div className={newsCSS.preinf}>
                         Текст:
                     </div>
-                    <textarea className={newsCSS.inp+" "+newsCSS.inparea} data-id={x ? x : undefined} id={texi} defaultValue={tex} onChange={chStatB}/>
-                    {ele(false, texi, true)}
-                    <img className={newsCSS.imginp+" yes "} src={yes} onClick={onFin} title="Подтвердить" alt=""/>
-                    <img className={newsCSS.imginp} style={{marginRight: "1vw"}} src={no} onClick={onClose} title="Отменить изменения и выйти из режима редактирования" alt=""/>
+                    <textarea className={newsCSS.inp+" "+newsCSS.inparea} data-id={x ? x : undefined} id={texi} defaultValue={tex} onChange={(e)=>chStatB(e, inps)}/>
+                    {ele(false, texi, inps)}
+                    <img className={newsCSS.imginp+" yes "} src={yes} onClick={(e)=>onFin(e, type, inps, forceUpdate, newsInfo)} title="Подтвердить" alt=""/>
+                    <img className={newsCSS.imginp} style={{marginRight: "1vw"}} src={no} onClick={(e)=>onClose(e, type, inps, forceUpdate)} title="Отменить изменения и выйти из режима редактирования" alt=""/>
                 </div>
             </div>
             <div className={newsCSS.upr} data-id={x ? x : undefined}>
-                {!x && <img className={newsCSS.imginp+" yes "} src={yes} onClick={onFin} title="Подтвердить" alt=""/>}
-                <img className={newsCSS.imginp+" "} style={{marginRight: "1vw"}} src={no} onClick={onClose} title={x ? "Удалить новость" : "Отменить изменения и выйти из режима редактирования"} alt=""/>
+                {!x && <img className={newsCSS.imginp+" yes "} src={yes} onClick={(e)=>onFin(e, type, inps, forceUpdate, newsInfo)} title="Подтвердить" alt=""/>}
+                <img className={newsCSS.imginp+" "} style={{marginRight: "1vw"}} src={no} onClick={(e)=>onClose(e, type, inps, forceUpdate)} title={x ? "Удалить новость" : "Отменить изменения и выйти из режима редактирования"} alt=""/>
             </div>
-        </div>);
+        </div>
+    );
     return x ? (ns) : (
         <div className={newsCSS.news_line} data-st="0">
-            <div className={newsCSS.nav_i+" "+newsCSS.link} id={newsCSS.nav_i} onClick={onEdit}>
+            <div className={newsCSS.nav_i+" "+newsCSS.link} id={newsCSS.nav_i} onClick={(e)=>onEdit(e, type, inps, forceUpdate, newsInfo)}>
                 Добавить новость
             </div>
             {ns}
@@ -293,7 +138,7 @@ export function NewsYo() {
         //     dispatch(changeNews("Yo", "id_" + Object.getOwnPropertyNames(newsInfo.newsYo).length, 'ПОШЛА ВОДА В ХАТУ', '02.12.2020', '', 'Да'));
         // }, 5000);
         for(let el of document.querySelectorAll("." + newsCSS.ed + " > *[id^='inpn']")){
-            chStatB({target: el});
+            chStatB({target: el}, inps);
         }
         return function() {
             dispatch = undefined;
@@ -308,12 +153,12 @@ export function NewsYo() {
         console.log('componentDidUpdate NewsYo.jsx');
     });
     return (
-        <>
+        <div className={newsCSS.header}>
             <Helmet>
                 <title>Объявления учебного центра</title>
             </Helmet>
-            <div className={newsCSS.AppHeader}>
-                {(cState.auth && cState.role == 3) ?
+            {(cState.auth && cState.role == 3) ?
+                    <div className={newsCSS.block}>
                         <section className={newsCSS.center_colum}>
                             {getAdd()}
                             {Object.getOwnPropertyNames(newsInfo[type]).reverse().map(param =>
@@ -322,39 +167,31 @@ export function NewsYo() {
                                 </div>
                             )}
                         </section>
-                    :
-                        <>
-                            {Object.getOwnPropertyNames(newsInfo[type]).length == 0 ?
-                                    <div className={newsCSS.block}>
-                                        <img alt="banner" src={warn}/>
-                                        <div className={newsCSS.block_text}>
-                                            Новостей нет... Кажется, что новостная лента пустует не заслужено? Попробуйте
-                                            попросить
-                                            завуча заполнить информацию.
-                                        </div>
-                                    </div>
-                                :
-                                    <section className={newsCSS.center_colum}>
-                                        {Object.getOwnPropertyNames(newsInfo[type]).reverse().map(param =>
-                                            <div className={newsCSS.news_line} data-st="1" key={param}>
-                                                <h2 className={newsCSS.zag}>{newsInfo[type][param].title}</h2>
-                                                <span className={newsCSS.date}>{newsInfo[type][param].date}</span>
-                                                <div className={newsCSS.te}>
-                                                    <span className={newsCSS.banner}>
-                                                        <img alt="banner" src={newsInfo[type][param].img_url + ''} onError={errorLoad}/>
-                                                    </span>
-                                                    <pre className={newsCSS.field}>
-                                                        {newsInfo[type][param].text}
-                                                    </pre>
-                                                </div>
+                    </div>
+                :
+                    Object.getOwnPropertyNames(newsInfo[type]).length == 0 ?
+                            <ErrFound text={errText}/>
+                        :
+                            <div className={newsCSS.block}>
+                                <section className={newsCSS.center_colum}>
+                                    {Object.getOwnPropertyNames(newsInfo[type]).reverse().map(param =>
+                                        <div className={newsCSS.news_line} data-st="1" key={param}>
+                                            <h2 className={newsCSS.zag}>{newsInfo[type][param].title}</h2>
+                                            <span className={newsCSS.date}>{newsInfo[type][param].date}</span>
+                                            <div className={newsCSS.te}>
+                                                <span className={newsCSS.banner}>
+                                                    <img alt="banner" src={newsInfo[type][param].img_url + ''} onError={errorLoad}/>
+                                                </span>
+                                                <pre className={newsCSS.field}>
+                                                    {newsInfo[type][param].text}
+                                                </pre>
                                             </div>
-                                        )}
-                                    </section>
-                            }
-                        </>
-                }
-            </div>
-        </>
+                                        </div>
+                                    )}
+                                </section>
+                            </div>
+            }
+        </div>
     )
 }
 export default NewsYo;

@@ -2,21 +2,37 @@ import React, {useEffect, useReducer, useRef} from "react";
 import paneCSS from './pane.module.css';
 import {Link} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
-import {pane, states} from "../../../store/selector";
+import {groups, pane, states} from "../../../store/selector";
 import {
     CHANGE_EVENTS_STEP,
+    CHANGE_PANE,
+    CHANGE_PANE_DEL_GRS,
+    CHANGE_PANE_GR,
+    CHANGE_PANE_GRS,
     changeEvents,
-    changePane,
-    changePaneDelGRS,
-    changePaneGR,
-    changePaneGRS
+    changeGroups
 } from "../../../store/actions";
 import PanJs from "./PanJs";
 import yes from "../../../media/yes.png";
 import no from "../../../media/no.png";
 import ed from "../../../media/edit.png";
 
-let kel = 0;
+let kel, gType;
+kel = 0;
+gType = {
+    true : {
+        CHANGE_PANE: "CHANGE_GROUPS",
+        CHANGE_PANE_DEL_GRS: "CHANGE_GROUPS_DEL_GRS",
+        CHANGE_PANE_GR: "CHANGE_GROUPS_GR",
+        CHANGE_PANE_GRS: "CHANGE_GROUPS_GRS",
+    },
+    false: {
+        CHANGE_PANE: "CHANGE_PANE",
+        CHANGE_PANE_DEL_GRS: "CHANGE_PANE_DEL_GRS",
+        CHANGE_PANE_GR: "CHANGE_PANE_GR",
+        CHANGE_PANE_GRS: "CHANGE_PANE_GRS",
+    }
+}
 
 export function Pane(props) {
     const ele = (x, par, b) => {
@@ -31,21 +47,21 @@ export function Pane(props) {
         if (!inc) panJs.pari.elems++;
         let cla = [paneCSS.nav_i, paneCSS.nav_iJur, "pa", cl, dopClass ? dopClass : ""].join(" ");
         return link ?
-                <Link className={cla} id={paneCSS.nav_i} to={link} onClick={fun} data-id={namecl} key={namecl}>
-                    {name.nam}
-                </Link>
+            <Link className={cla} id={paneCSS.nav_i} to={link} onClick={fun} data-id={namecl} key={namecl}>
+                {name.nam}
+            </Link>
             :
-                <div className={cla} id={paneCSS.nav_i} onClick={fun} data-id={namecl} key={namecl} data-st="0">
-                    {props.cla && cState.role == 3 ?
-                        <>
-                            <div className={paneCSS.field+" "+paneCSS.fi}>
-                                {name}
-                            </div>
-                            <img className={paneCSS.imgfield+" "+paneCSS.fi} src={ed} onClick={onEdGr} title="Редактировать" alt=""/>
-                            <img className={paneCSS.imginp+" "+paneCSS.fi} src={no} onClick={onDel} title="Удалить группу" alt=""/>
-                        </> : name
-                    }
-                </div>
+            <div className={cla} id={paneCSS.nav_i} onClick={fun} data-id={namecl} key={namecl} data-st="0">
+                {props.cla && cState.role == 3 ?
+                    <>
+                        <div className={paneCSS.field+" "+paneCSS.fi}>
+                            {name}
+                        </div>
+                        <img className={paneCSS.imgfield+" "+paneCSS.fi} src={ed} onClick={onEdGr} title="Редактировать" alt=""/>
+                        <img className={paneCSS.imginp+" "+paneCSS.fi} src={no} onClick={onDel} title="Удалить группу" alt=""/>
+                    </> : name
+                }
+            </div>
     };
     const overpan = () => {
         let wid, pa, add;
@@ -83,15 +99,15 @@ export function Pane(props) {
         setGr();
     };
     const setGr = (bol) => {
-        let nam = ".pan" + paneInfo.els[panJs.ke].group;
+        let nam = ".pan" + info.group;
         if(panJs.blockCl == "DEL"){
             panJs.blockCl = false;
             return;
         }
-        if(paneInfo.els[panJs.ke].groups[paneInfo.els[panJs.ke].group]){
+        if(info.groups[info.group]){
             if (panJs.act != nam || !bol) setActivedMy(nam);
         } else {
-            let grps = Object.getOwnPropertyNames(paneInfo.els[panJs.ke].groups);
+            let grps = Object.getOwnPropertyNames(info.groups);
             if(grps.length == 0){
                 panJs.refes.lin.style.width = "0";
                 return;
@@ -119,9 +135,7 @@ export function Pane(props) {
                 </div>
                 <div className={paneCSS.predMenu+" pre "+paneCSS.predMM} style={{minWidth:bol ? "200%" : "100%", marginRight: bol ? "200%" : "100%"}} id="MM" ref={(re)=>(panJs.refes.MMel = re)}>
                     <div>
-                        {el.map(par =>
-                            par
-                        )}
+                        {el.map(par => par)}
                     </div>
                 </div>
             </>
@@ -176,12 +190,12 @@ export function Pane(props) {
         par = par.parentElement;
         if (panJs.inps[inp.id]) {
             if(panJs.edGr){
-                dispatch(changePaneGRS(panJs.ke, panJs.edGr, inp.value));
+                dispatch(changeGroups(gType[props.cla ? true : false][CHANGE_PANE_GRS], panJs.ke, inp.value, panJs.edGr));
                 panJs.edGr = undefined;
                 panJs.blockCl = false;
             } else {
-                let grop = Object.getOwnPropertyNames(paneInfo.els[panJs.ke].groups);
-                dispatch(changePaneGRS(panJs.ke, grop.length == 0 ? 0 : parseInt(grop[grop.length-1]) + 1, inp.value));
+                let grop = Object.getOwnPropertyNames(info.groups);
+                dispatch(changeGroups(gType[props.cla ? true : false][CHANGE_PANE_GRS], panJs.ke, inp.value, grop.length == 0 ? 0 : parseInt(grop[grop.length-1]) + 1));
             }
             par.setAttribute('data-st', '0');
         }
@@ -198,14 +212,14 @@ export function Pane(props) {
         panJs.blockCl = "ED";
         panJs.panAdd.setAttribute('data-st', 1);
         inp = panJs.panAdd.querySelector("input");
-        inp.value = paneInfo.els[panJs.ke].groups[par.getAttribute('data-id')];
+        inp.value = info.groups[par.getAttribute('data-id')];
         chStatB({target: inp});
         panJs.edGr = par.getAttribute('data-id');
     };
     const onDel = (e) => {
         let par = e.target.parentElement;
         panJs.blockCl = "DEL";
-        dispatch(changePaneDelGRS(panJs.ke, par.getAttribute('data-id')));
+        dispatch(changeGroups(gType[props.cla ? true : false][CHANGE_PANE_DEL_GRS], panJs.ke, undefined, par.getAttribute('data-id')));
     };
     const chStatB = (e) => {
         let el = e.target;
@@ -240,11 +254,15 @@ export function Pane(props) {
             </div>
         )
     };
+    const setGroup = (param) => {
+        dispatch(changeGroups(gType[props.cla ? true : false][CHANGE_PANE_GR], panJs.ke, param, undefined, panJs.blockCl));
+    };
     const cState = useSelector(states);
     const paneInfo = useSelector(pane);
+    const groupsInfo = useSelector(groups);
     const panJs = useRef(new PanJs()).current;
     const dispatch = useDispatch();
-    let bol;
+    let bol, info;
     if(panJs.ke == undefined) {
         panJs.ke = kel++;
         bol = true;
@@ -259,8 +277,8 @@ export function Pane(props) {
             panJs.nav.style.gridTemplate = "auto/ 15% repeat(5,1fr)";
             chStatB({target: panJs.nav.querySelector("." + paneCSS.nav_iZag + " input")});
         }
-        if(bol) {
-            dispatch(changePane(panJs.ke, props.gro));
+        if(bol && !props.cla) {
+            dispatch(changeGroups(CHANGE_PANE, panJs.ke, props.gro));
         }
         console.log("I was triggered during componentDidMount Pane.jsx");
         window.addEventListener('resize', preTim);
@@ -297,17 +315,20 @@ export function Pane(props) {
             forceUpdate();
         }
         panJs.pari.paels = el.length;
-        if(paneInfo.els[panJs.ke]) {
+        if(info) {
             setGr(true);
         }
         console.log('componentDidUpdate Pane.jsx');
     });
+    if(!info){
+        info = props.cla ? groupsInfo : paneInfo.els[panJs.ke];
+    }
     return (
         <nav className={paneCSS.panel} id="her" data-ke={panJs.ke} ref={(el)=>(panJs.nav = el)}>
             {ele(0, "elems")}
             {getAdd("Добавить группу", "Add")}
-            {paneInfo.els[panJs.ke] && Object.getOwnPropertyNames(paneInfo.els[panJs.ke].groups).map(param =>
-                panJs.gr[param] = getPan(paneInfo.els[panJs.ke].groups[param], param, paneInfo.els[panJs.ke].groups[param].linke, undefined, () => (dispatch(changePaneGR(panJs.ke, param, panJs.blockCl))))
+            {info && Object.getOwnPropertyNames(info.groups).map(param =>
+                panJs.gr[param] = getPan(info.groups[param], param, info.groups[param].linke, undefined, () => setGroup(param))
             )}
             {panJs.mor}
             <div className={paneCSS.lin} data-id={"1"} style={{width: (100 / panJs.pari.elems) + "%"}} id={"lin"} ref={(ele)=>(panJs.refes.lin = ele)}/>

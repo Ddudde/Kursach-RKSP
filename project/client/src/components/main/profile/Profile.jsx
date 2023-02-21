@@ -2,16 +2,16 @@ import React, {useEffect, useRef} from "react";
 import {useParams} from "react-router-dom"
 import {Helmet} from "react-helmet-async";
 import profileCSS from './profile.module.css';
-import warn from '../../media/warn_big.png';
-import {profiles, themes} from "../../store/selector";
+import warn from '../../../media/warn_big.png';
+import {profiles, themes} from "../../../store/selector";
 import {useDispatch, useSelector} from "react-redux";
-import yes from "../../media/yes.png";
-import no from "../../media/no.png";
-import ed from "../../media/edit.png";
-import profd from "../../media/profd.png";
-import profl from "../../media/profl.png";
-import {changeProfile, changeProfileRoles, changeState} from "../../store/actions";
-import {setActived} from "../main/Main";
+import yes from "../../../media/yes.png";
+import no from "../../../media/no.png";
+import ed from "../../../media/edit.png";
+import profd from "../../../media/profd.png";
+import profl from "../../../media/profl.png";
+import {changeProfile, changeProfileRoles, changeState} from "../../../store/actions";
+import {setActived} from "../Main";
 
 let profilesInfo, dispatch, warner, moore;
 

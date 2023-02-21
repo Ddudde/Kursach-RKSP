@@ -24,8 +24,8 @@ import Classmates from "./components/people/classmates/Classmates";
 import Parents from "./components/people/parents/Parents";
 import Admins from "./components/people/admins/Admins";
 import React from "react";
-import Profile from "./components/profile/Profile";
-import Settings from "./components/settings/Settings";
+import Profile from "./components/main/profile/Profile";
+import Settings from "./components/main/settings/Settings";
 import Tutor from "./components/tutor/Tutor";
 import Journal from "./components/prepjur/Journal";
 
@@ -70,7 +70,7 @@ function App() {
                   {(cState.auth && (cState.role == 0 || cState.role == 3)) && <Route path="parents" element={<Parents/>} />}
                   <Route path="admins" element={<Admins/>} />
               </Route>
-              {cState.role < 4 && <Route path="tutor" element={<Tutor/>} />}
+              {cState.role < 4 && <Route path="tutor/:typ" element={<Tutor/>} />}
               {cState.auth && <Route path="profiles" element={<Profile/>} />}
               {(cState.auth && cState.role == 2) && <Route path="journal" element={<Journal/>} />}
               <Route path="profiles/:log" element={<Profile/>} />

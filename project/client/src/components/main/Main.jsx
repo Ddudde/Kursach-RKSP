@@ -120,9 +120,9 @@ export function setActived(name) {
 function ini(stat) {
     document.body.setAttribute(thP[stat].c, '');
     if(document.body.hasAttribute(thP[stat].p)) document.body.removeAttribute(thP[stat].p)
-    Object.getOwnPropertyNames(thP[stat].params).map((param) =>{
-        document.documentElement.style.setProperty(param, thP[stat].params[param]);
-    });
+    Object.getOwnPropertyNames(thP[stat].params).map(param =>
+        document.documentElement.style.setProperty(param, thP[stat].params[param])
+    );
 }
 
 export function Main() {
@@ -158,10 +158,10 @@ export function Main() {
                 {getPan("Объявления", "New", "news")}
                 {getPan("Контакты", "Con", "contacts")}
                 {getPan("Люди", "Pep", "people")}
-                {(!cStateInfo.auth || (cStateInfo.auth && cStateInfo.role == 3)) && getPan("Школам", "Sch", "tutor")}
-                {(!cStateInfo.auth || (cStateInfo.auth && cStateInfo.role == 2)) && getPan("Педагогам", "Tea", "tutor")}
-                {(!cStateInfo.auth || (cStateInfo.auth && cStateInfo.role == 1)) && getPan("Родителям", "Par", "tutor")}
-                {(!cStateInfo.auth || (cStateInfo.auth && cStateInfo.role == 0)) && getPan("Обучающимся", "Kid", "tutor")}
+                {(!cStateInfo.auth || (cStateInfo.auth && cStateInfo.role == 3)) && getPan("Школам", "Sch", "tutor/sch")}
+                {(!cStateInfo.auth || (cStateInfo.auth && cStateInfo.role == 2)) && getPan("Педагогам", "Tea", "tutor/tea")}
+                {(!cStateInfo.auth || (cStateInfo.auth && cStateInfo.role == 1)) && getPan("Родителям", "Par", "tutor/par")}
+                {(!cStateInfo.auth || (cStateInfo.auth && cStateInfo.role == 0)) && getPan("Обучающимся", "Kid", "tutor/kid")}
                 {(cStateInfo.auth && cStateInfo.role == 2) && getPan("Расписание", "Ras", "/")}
                 {(cStateInfo.auth && cStateInfo.role == 2) && getPan("Журнал", "Jur", "journal")}
                 {(cStateInfo.auth && cStateInfo.role == 3) && getPan("Администрирование УО", "Ana", "admYO")}

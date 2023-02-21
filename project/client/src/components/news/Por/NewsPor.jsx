@@ -1,16 +1,14 @@
 import React, {useEffect, useRef} from "react";
 import {Helmet} from "react-helmet-async";
-import newsCSS from '../Por/newsPor.module.css';
+import newsCSS from '../newsMain.module.css';
 import {news} from "../../../store/selector";
 import {useDispatch, useSelector} from "react-redux";
-import {setActNew} from "../NewsMain";
-import warn from "../../../media/warn_big.png";
+import {errorLoad, setActNew} from "../NewsMain";
+import ErrFound from "../../other/error/ErrFound";
 
-let dispatch, newsInfo, type = "Por";
-
-function errorLoad(e) {
-    e.target.style.display = 'none';
-}
+let dispatch, newsInfo, type, errText;
+type = "Por";
+errText = "Новостей нет... Ждите новой информации.";
 
 export function NewsPor() {
     newsInfo = useSelector(news);
@@ -37,30 +35,33 @@ export function NewsPor() {
         console.log('componentDidUpdate NewsPor.jsx');
     });
     return (
-        <>
+        <div className={newsCSS.header}>
             <Helmet>
                 <title>Объявления портала</title>
             </Helmet>
-            <div className={newsCSS.AppHeader}>
-                {Object.getOwnPropertyNames(newsInfo[type]).length == 0 ?
+            {Object.getOwnPropertyNames(newsInfo[type]).length == 0 ?
+                    <ErrFound text={errText}/>
+                :
                     <div className={newsCSS.block}>
-                        <img alt="banner" src={warn}/>
-                        <div className={newsCSS.block_text}>
-                            Новостей нет... Ждите новой информации.
-                        </div>
-                    </div> :
-                    <section className={newsCSS.center_colum}>
-                        {Object.getOwnPropertyNames(newsInfo[type]).map(param =>
-                            <div className={newsCSS.news_line} key={param}>
-                                <h2>{newsInfo[type][param].title}</h2>
-                                <span className="date">{newsInfo[type][param].date}</span>
-                                <p><img alt="banner" src={newsInfo[type][param].img_url+''} onError={errorLoad}/>{newsInfo[type][param].text}</p>
-                            </div>
-                        )}
-                    </section>
-                }
-            </div>
-        </>
+                        <section className={newsCSS.center_colum}>
+                            {Object.getOwnPropertyNames(newsInfo[type]).reverse().map(param =>
+                                <div className={newsCSS.news_line} key={param}>
+                                    <h2 className={newsCSS.zag}>{newsInfo[type][param].title}</h2>
+                                    <span className={newsCSS.date}>{newsInfo[type][param].date}</span>
+                                    <div className={newsCSS.te}>
+                                        <span className={newsCSS.banner}>
+                                            <img alt="banner" src={newsInfo[type][param].img_url + ''} onError={errorLoad}/>
+                                        </span>
+                                        <pre className={newsCSS.field}>
+                                            {newsInfo[type][param].text}
+                                        </pre>
+                                    </div>
+                                </div>
+                            )}
+                        </section>
+                    </div>
+            }
+        </div>
     )
 }
 export default NewsPor;

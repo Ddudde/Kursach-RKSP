@@ -18,9 +18,6 @@ const initialState = {
             name: "IV четверть",
             per: "01.04.23-30.05.23"
         }
-    },
-    edit: {
-
     }
 };
 

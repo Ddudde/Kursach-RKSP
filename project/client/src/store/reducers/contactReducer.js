@@ -1,12 +1,22 @@
 import {CHANGE_CONTACT, CHANGE_CONTACT_MAP, CHANGE_CONTACT_MAPIMG} from '../actions';
 
-let contYO, mapTextYO;
+let contYO, mapTextYO, contPOR, mapTextPOR;
 
 contYO =
 `8 (800) 555 35 36
 5 (353) 555 00 88`;
 
 mapTextYO =
+`Ближайшие станции метро:
+Александровский сад, 610 м (Филёвская линия, выход 5)
+Библиотека им. Ленина, 680 м (Сокольническая линия, выход 3)
+Арбатская, 750 м (Арбатско-Покровская линия, выход 8)`;
+
+contPOR =
+`8 (800) 555 35 37
+5 (353) 555 00 88`;
+
+mapTextPOR =
 `Ближайшие станции метро:
 Александровский сад, 610 м (Филёвская линия, выход 5)
 Библиотека им. Ленина, 680 м (Сокольническая линия, выход 3)
@@ -21,17 +31,11 @@ const initialState = {
         }
     },
     "Por": {
-        numbers: {
-            0: {
-                title: '8 (800) 555 35 35',
-                number: '+78005553535'
-            },
-            1: {
-                title: '5 (353) 555 00 88',
-                number: '+53535550088'
-            }
-        },
-        imageUrl: "/media/map.jpg"
+        contact: contPOR,
+        mapPr: {
+            text: mapTextPOR,
+            imgUrl: "/media/map.jpg"
+        }
     }
 };
 export default function contactReducer(state = initialState, action) {

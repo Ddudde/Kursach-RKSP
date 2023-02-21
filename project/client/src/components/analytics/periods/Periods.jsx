@@ -27,7 +27,7 @@ export function Periods() {
     useEffect(() => {
         console.log("I was triggered during componentDidMount Periods.jsx");
         for(let el of document.querySelectorAll(" *[id^='inpn']")){
-            chStatB({target: el}, inps);
+            chStatB({target: el}, inps, forceUpdate);
         }
         return function() {
             dispatch = undefined;
@@ -105,7 +105,7 @@ export function Periods() {
                             <div className={analyticsCSS.nav_i} id={analyticsCSS.nav_i}>
                                 X
                             </div>
-                            <div className={analyticsCSS.add} data-st={periodsInfo.edit.nw ? "1" : "0"} style={{gridColumn: "2"}}>
+                            <div className={analyticsCSS.add} data-st={"0"} style={{gridColumn: "2/4"}}>
                                 <div className={analyticsCSS.nav_i+" "+analyticsCSS.link} id={analyticsCSS.nav_i} onClick={onEdit}>
                                     Добавить период
                                 </div>
@@ -113,18 +113,14 @@ export function Periods() {
                                     <div className={analyticsCSS.preinf}>
                                         Название:
                                     </div>
-                                    <input className={analyticsCSS.inp} id={"inpnnt_"} placeholder={"X Смена"} defaultValue={inps.inpnnt} onChange={(e)=>chStatB(e, inps)} type="text"/>
+                                    <input className={analyticsCSS.inp} id={"inpnnt_"} placeholder={"X Смена"} defaultValue={inps.inpnnt} onChange={(e)=>chStatB(e, inps, forceUpdate)} type="text"/>
                                     {ele(false, "inpnnt_", true, inps, pari)}
-                                </div>
-                            </div>
-                            <div className={analyticsCSS.add} data-st={periodsInfo.edit.nw ? "1" : "0"} style={{gridColumn: "3"}}>
-                                <div className={analyticsCSS.edbl+" "+analyticsCSS.nav_iZag3} data-st="0">
                                     <div className={analyticsCSS.preinf}>
-                                        Интервал:
+                                        , Интервал:
                                     </div>
-                                    <input className={analyticsCSS.inp} id={"inpnit_"} placeholder={"01.09.22-03.11.22"} defaultValue={inps.inpnit} onChange={(e)=>chStatB(e, inps)} type="text"/>
+                                    <input className={analyticsCSS.inp} id={"inpnit_"} placeholder={"01.09.22-03.11.22"} defaultValue={inps.inpnit} onChange={(e)=>chStatB(e, inps, forceUpdate)} type="text"/>
                                     {ele(false, "inpnit_", true, inps, pari)}
-                                    <img className={analyticsCSS.imginp+" yes "} src={yes} onClick={(e)=>onFin(e, inps, forceUpdate, CHANGE_PERIODS_L1, periodsInfo)} title="Подтвердить" alt=""/>
+                                    <img className={analyticsCSS.imginp} data-enable={inps.inpnnt_ && inps.inpnit_ ? "1" : "0"} src={yes} onClick={(e)=>onFin(e, inps, forceUpdate, CHANGE_PERIODS_L1, periodsInfo)} title="Подтвердить" alt=""/>
                                     <img className={analyticsCSS.imginp} style={{marginRight: "1vw"}} src={no} onClick={onClose} title="Отменить изменения и выйти из режима редактирования" alt=""/>
                                 </div>
                             </div>

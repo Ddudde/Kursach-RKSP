@@ -1,17 +1,14 @@
 import React, {useEffect, useRef} from "react";
 import {Helmet} from "react-helmet-async";
-import contactCSS from './contactPor.module.css';
+import contactCSS from '../contactMain.module.css';
 import {contacts} from "../../../store/selector";
 import {useDispatch, useSelector} from "react-redux";
-import {setActNew} from "../ContactMain";
-import warn from "../../../media/warn_big.png";
+import {errorLoad, setActNew} from "../ContactMain";
+import ErrFound from "../../other/error/ErrFound";
 
-let dispatch, contactsInfo, type;
+let dispatch, contactsInfo, type, errText;
 type = "Por";
-
-function errorLoad(e) {
-    e.target.style.display = 'none';
-}
+errText = "К сожалению, информация не найдена... Ждите новой информации.";
 
 export function ContactPor() {
     contactsInfo = useSelector(contacts);
@@ -40,33 +37,34 @@ export function ContactPor() {
         console.log('componentDidUpdate ContactPor.jsx');
     });
     return (
-        <>
+        <div className={contactCSS.header}>
             <Helmet>
                 <title>Контакты портала</title>
             </Helmet>
-            <div className={contactCSS.AppHeader}>
-                {(Object.getOwnPropertyNames(contactsInfo[type].numbers).length == 0 && !contactsInfo[type].imageUrl) ?
+            {(!contactsInfo[type].contact && !contactsInfo[type].mapPr.imgUrl) ?
+                    <ErrFound text={errText}/>
+                :
                     <div className={contactCSS.block}>
-                        <img alt="banner" src={warn}/>
-                        <div className={contactCSS.block_text}>
-                            К сожалению, информация не найдена... Ждите новой информации.
-                        </div>
-                    </div> :
-                    <section className={contactCSS.center_colum}>
-                        <div className={contactCSS.blockTel}>
-                            <h1>ТЕЛЕФОНЫ ДЛЯ СВЯЗИ</h1>
-                            {Object.getOwnPropertyNames(contactsInfo[type].numbers).map(param =>
-                                <p key={param}><a href={"tel:" + contactsInfo[type].numbers[param].number}>{contactsInfo[type].numbers[param].title}</a></p>
-                            )}
-                        </div>
-                        <div className={contactCSS.map+" "+contactCSS.blockTel}>
-                            <h1>КАРТА ПРОЕЗДА</h1>
-                            <p><img className={contactCSS.imk} alt="banner" src={contactsInfo[type].imageUrl+''} onError={errorLoad}/></p>
-                        </div>
-                    </section>
-                }
-            </div>
-        </>
+                        <section className={contactCSS.center_colum}>
+                            <div className={contactCSS.blockTel}>
+                                <h1 className={contactCSS.zag}>Телефоны для связи</h1>
+                                <pre className={contactCSS.field}>
+                                    {contactsInfo[type].contact}
+                                </pre>
+                            </div>
+                            <div className={contactCSS.map+" "+contactCSS.blockTel}>
+                                <h1 className={contactCSS.zag}>Карта проезда</h1>
+                                <pre className={contactCSS.field}>
+                                    {contactsInfo[type].mapPr.text}
+                                </pre>
+                                <span className={contactCSS.banner}>
+                                    <img alt="banner" src={contactsInfo[type].mapPr.imgUrl+''} onError={errorLoad}/>
+                                </span>
+                            </div>
+                        </section>
+                    </div>
+            }
+        </div>
     )
 }
 export default ContactPor;

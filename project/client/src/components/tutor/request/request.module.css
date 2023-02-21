@@ -1,0 +1,62 @@
+.preinf{
+    display: inline-block;
+    vertical-align: middle;
+    font-size: 1.25vw;
+    margin-inline: 0.2vw;
+    color: var(--cV1);
+    text-shadow: 1px 1px 3px var(--shdV1);
+    white-space: nowrap;
+}
+
+.blockInp{
+    height: 4vh;
+    margin-block: 1vh;
+}
+
+.inp {
+    -webkit-border-radius: 0.5vmax;
+    border-radius: 0.5vmax;
+    background-color: #4d4d4d;
+    user-select: none;
+    -webkit-box-shadow: 0 1px #FFFFFFAA, inset 0 2px 2px #000000AA;
+    box-shadow: 0 1px #FFFFFFAA, inset 0 2px 2px #000000AA;
+    border: 1px solid var(--bcV2);
+    position: relative;
+    transition: background-color 1s ease;
+    transition-property: background-color, border-color;
+    vertical-align: middle;
+    display: inline-block;
+    font-size: 1.25vw;
+    padding: 0 0 0 1vw;
+    margin-left: 1vw;
+}
+
+.tex{
+    pointer-events: none;
+    display: inline-block;
+    align-self: center;
+}
+
+.but{
+    -webkit-border-radius: 5px;
+    border-radius: 5px !important;
+    font-size: 2vmin !important;
+    height: 5vh;
+    width: fit-content;
+    padding-inline: 1vw;
+    font-weight: normal !important;
+    align-self: center;
+    display: flex;
+}
+
+.but:hover {
+    text-shadow: none;
+    -webkit-box-shadow: 0 0 5px 5px #B8860B, inset 0 -50px 2px #FFFFFF33;
+    box-shadow: 0 0 5px 5px #B8860B, inset 0 -50px 2px #FFFFFF33;
+}
+
+.but:active {
+    text-shadow: none;
+    -webkit-box-shadow: 0 0 10px 10px #B8860B, inset 0 -50px 2px #00000033;
+    box-shadow: 0 0 10px 10px #B8860B, inset 0 -50px 2px #00000033;
+}

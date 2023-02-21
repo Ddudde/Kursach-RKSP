@@ -57,7 +57,7 @@ export default function eventsReducer(state = initialState, action) {
                 action.payload.id = evs.length == 0 ? 0 : parseInt(evs[evs.length-1]) + 1;
             }
             fd.evs[action.payload.id] = action.payload.state;
-            if(action.payload.time) fd.time[action.payload.id] = action.payload.time;
+            if(action.payload.time.long) fd.time[action.payload.id] = action.payload.time;
             return fd;
         case CHANGE_EVENT_DEL:
             if(action.payload.state && !fd.time[action.payload.id]){

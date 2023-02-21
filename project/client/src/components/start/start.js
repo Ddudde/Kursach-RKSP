@@ -1,21 +1,18 @@
-import {changeCL, changeState} from "../../store/actions";
+import {CHANGE_EVENT, CHANGE_EVENT_DEL, changeCL, changeEvents, changeState} from "../../store/actions";
 
-let reg, vxod, logr, r, v, pasr, logv, warnev, warner, warnew, regb, ch1, ch2, wt, over, g_id, g_text_id_1, g_text_id_2, g_text_id_3, g_text_id_4;
+let reg, dispatch, vxod, logr, r, v, pasr, logv, regb, ch1, ch2, warnId, warnEmpId, over, g_id, g_text_id_1, g_text_id_2, g_text_id_3, g_text_id_4;
 
-export function ini() {
+export function ini(dispatchS) {
 	reg = document.getElementById("reg");
 	vxod = document.getElementById("vxod");
 	r = document.getElementById("r");
 	v = document.getElementById("v");
-	warnev = document.getElementsByClassName("warnev")[0];
-	warner = document.getElementsByClassName("warner")[0];
-	warnew = document.getElementsByClassName("warnew")[0];
+	dispatch = dispatchS;
 	logr = document.getElementById("logr");
 	pasr = document.getElementById("pasr");
 	logv = document.getElementById("logv");
 	ch1 = document.getElementById("ch1");
 	ch2 = document.getElementById("ch2");
-	wt = document.getElementById("wt");
 	over = document.getElementById("over");
 	g_id = document.getElementById("g_id");
 	g_text_id_1 = document.getElementById("g_text_id_1");
@@ -30,20 +27,6 @@ export function ini() {
 	g_id.addEventListener('mouseover', onsetText);
 	g_id.addEventListener('mouseout', unsetText);
 	regb = false;
-	// var clonedNode = document.querySelector("#but1"), crNode = document.createElement("div");
-	// crNode.innerHtml = 'df';
-	// document.body.appendChild(crNode);
-	// const styles = window.getComputedStyle(clonedNode), styles1 = window.getComputedStyle(crNode);
-	// var s = '', s1 = '';
-	// for(var i = 0; i < styles.length; i++){
-	// 	s1=styles[i] + ':' + styles.getPropertyValue(styles[i])+';';
-	// 	var s2=styles[i] + ':' + styles1.getPropertyValue(styles[i])+';';
-	// 	console.log(s1);
-	// 	console.log(s2);
-	// 	if(styles.getPropertyValue(styles[i]) != styles1.getPropertyValue(styles[i])) s += s1;
-	// }
-	// console.log(s);
-	// clonedNode.style.cssText = s;
 }
 
 function onsetText() {
@@ -54,9 +37,13 @@ function onsetText() {
 }
 
 export function destroy() {
-	warnew.style.display = "none";
-	warnev.style.display = "none";
-	warner.style.display = "none";
+	if(warnId != undefined) {
+		remEvent(warnId);
+		warnId = undefined;
+	} else if(warnEmpId != undefined) {
+		remEvent(warnEmpId);
+		warnEmpId = undefined;
+	}
 }
 
 function unsetText() {
@@ -64,6 +51,15 @@ function unsetText() {
 	g_text_id_2.innerHTML = "Педагогам";
 	g_text_id_3.innerHTML = "Родителям";
 	g_text_id_4.innerHTML = "Детям";
+}
+
+function addEvent(text, time) {
+	let title = "Внимание!";
+	return dispatch(changeEvents(CHANGE_EVENT, undefined, undefined, title, text, time)).payload.id;
+}
+
+function remEvent(id) {
+	dispatch(changeEvents(CHANGE_EVENT_DEL, undefined, id));
 }
 
 export function gen_pas(){
@@ -74,87 +70,11 @@ export function gen_pas(){
     }
     pasr.value = password;
 	navigator.clipboard.writeText(password);
-	wt.innerHTML = `Сгенерирован пароль: ${password}. Он скопирован в буфер обмена`;
-	warner.style.display = "inline";
-	setTimeout(function (){
-		warner.style.display = "none";
-		wt.innerHTML = `Допустимы только латинница и цифры`;
-	}, 10000);
+	addEvent(`Сгенерирован пароль: ${password}. Он скопирован в буфер обмена`, 10);
 }
 
 export function setVisibleOver(vis){
 	over.style.display = vis ? "block" : "none";
-}
-
-export function get(dispatch) {
-	fetch('http://localhost:8080/cts')
-		.then((res) => {
-			if (!res.ok) {
-				throw new Error(
-					`This is an HTTP error: The status is ${res.status}`
-				);
-			}
-			return res.json();
-		})
-		.then((repos) => {
-			dispatch(changeCL(repos));
-		})
-		.catch((err) => {
-			console.log(err.message);
-		});
-}
-
-export function del(idi) {
-	fetch(`http://localhost:8080/cts/${idi}`, {method: 'DELETE'})
-		.then((res) => {
-			if (!res.ok) {
-				throw new Error(
-					`This is an HTTP error: The status is ${res.status}`
-				);
-			}
-			console.log("Deleted!!!");
-		})
-		.catch((err) => {
-			console.log(err.message);
-		});
-}
-
-export function post(bod) {
-	fetch('http://localhost:8080/cts/', {method: 'POST',
-		headers: {
-			'Content-Type': 'application/json'
-		},
-		body: bod})
-		.then((res) => {
-			if (!res.ok) {
-				throw new Error(
-					`This is an HTTP error: The status is ${res.status}`
-				);
-			}
-			console.log("Post!!!");
-		})
-		.catch((err) => {
-			console.log(err.message);
-		});
-}
-
-function put(id, bod) {
-	fetch(`http://localhost:8080/cts/${id}`, {method: 'PUT',
-		headers: {
-			'Content-Type': 'application/json'
-		},
-		body: bod})
-		.then((res) => {
-			if (!res.ok) {
-				throw new Error(
-					`This is an HTTP error: The status is ${res.status}`
-				);
-			}
-			console.log("Put!!!");
-		})
-		.catch((err) => {
-			console.log(err.message);
-		});
 }
 
 export function rego(){
@@ -168,34 +88,41 @@ export function rego(){
 export function vxo(disp){
 	disp(changeState("auth", true));
 	disp(changeState("login", logv.value));
-	/*for(let el of window.location.hash.split(";"))
-	{
-		let al = el.split('=');
-		if(al[0] == '#login')
-			vxodb = al[1] == logv.value;
-		if(al[0] == 'pas')
-			vxodb &= al[1] == pasv.value;
-	}
-	if(vxodb)
-	{
-		warnew.style.display = 'none';
-		console.log('vxod');
-		window.location.href = 'home.html' + window.location.hash;
-	}
-	else
-		warnew.style.display = 'inline';*/
 }
 
-function inpchr(event){
-	var dat = event.target;
+function inpchr(e){
+	var dat = e.target;
+	if(!e.inputType) return;
 	if (dat.validity.patternMismatch || dat.value.length == 0) {
 		dat.style.animation = "but 1s ease infinite";
-		setTimeout(function () {dat.style.animation = "none"}, 1000)
+		setTimeout(function () {dat.style.animation = "none"}, 1000);
 		dat.style.outline = "solid red";
-		warner.style.display = "inline";
+		if(dat.value.length == 0){
+			if(warnEmpId == undefined) {
+				warnEmpId = addEvent("Необходимо заполнить поле");
+				if(warnId != undefined) {
+					remEvent(warnId);
+					warnId = undefined;
+				}
+			}
+		} else {
+			if(warnId == undefined) {
+				warnId = addEvent("Допустимы только латиница или цифры");
+				if(warnEmpId != undefined) {
+					remEvent(warnEmpId);
+					warnEmpId = undefined;
+				}
+			}
+		}
 	} else {
 		dat.style.outline = "none black";
-		warner.style.display = "none";
+		if(warnId != undefined) {
+			remEvent(warnId);
+			warnId = undefined;
+		} else if(warnEmpId != undefined) {
+			remEvent(warnEmpId);
+			warnEmpId = undefined;
+		}
 	}
 }
 
@@ -333,4 +260,75 @@ export function getLic(){
 			<p><strong><br /></strong></p>
 		</>
 	)
+}
+
+export function get(dispatch) {
+	fetch('http://localhost:8080/cts')
+		.then((res) => {
+			if (!res.ok) {
+				throw new Error(
+					`This is an HTTP error: The status is ${res.status}`
+				);
+			}
+			return res.json();
+		})
+		.then((repos) => {
+			dispatch(changeCL(repos));
+		})
+		.catch((err) => {
+			console.log(err.message);
+		});
+}
+
+export function del(idi) {
+	fetch(`http://localhost:8080/cts/${idi}`, {method: 'DELETE'})
+		.then((res) => {
+			if (!res.ok) {
+				throw new Error(
+					`This is an HTTP error: The status is ${res.status}`
+				);
+			}
+			console.log("Deleted!!!");
+		})
+		.catch((err) => {
+			console.log(err.message);
+		});
+}
+
+export function post(bod) {
+	fetch('http://localhost:8080/cts/', {method: 'POST',
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		body: bod})
+		.then((res) => {
+			if (!res.ok) {
+				throw new Error(
+					`This is an HTTP error: The status is ${res.status}`
+				);
+			}
+			console.log("Post!!!");
+		})
+		.catch((err) => {
+			console.log(err.message);
+		});
+}
+
+function put(id, bod) {
+	fetch(`http://localhost:8080/cts/${id}`, {method: 'PUT',
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		body: bod})
+		.then((res) => {
+			if (!res.ok) {
+				throw new Error(
+					`This is an HTTP error: The status is ${res.status}`
+				);
+			}
+			console.log("Put!!!");
+		})
+		.catch((err) => {
+			console.log(err.message);
+		});
 }

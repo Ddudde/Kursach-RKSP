@@ -4,7 +4,7 @@ import themeReducer from "./reducers/main/themeReducer";
 import indicatorReducer from "./reducers/start/indicatorReducer";
 import newsReducer from "./reducers/newsReducer";
 import contactReducer from "./reducers/contactReducer";
-import statusReducer from "./reducers/main/statusReducer";
+import statusReducer from "./reducers/statusReducer";
 import dnevnikReducer from "./reducers/dnevnikReducer";
 import zvonkiReducer from "./reducers/analytics/zvonkiReducer";
 import periodsReducer from "./reducers/analytics/periodsReducer";
@@ -16,10 +16,11 @@ import hteachersReducer from "./reducers/people/hteachersReducer";
 import classmatesReducer from "./reducers/people/classmatesReducer";
 import parentsReducer from "./reducers/people/parentsReducer";
 import adminsReducer from "./reducers/people/adminsReducer";
-import profileReducer from "./reducers/profileReducer";
+import profileReducer from "./reducers/main/profileReducer";
 import pjournalReducer from "./reducers/pjournalReducer";
 import paneReducer from "./reducers/other/paneReducer";
 import eventsReducer from "./reducers/other/eventsReducer";
+import groupReducer from "./reducers/people/groupReducer";
 
 export default combineReducers({
     checkbox: checkBoxReducer,
@@ -42,5 +43,6 @@ export default combineReducers({
     profiles: profileReducer,
     pjournal: pjournalReducer,
     pane: paneReducer,
-    events: eventsReducer
+    events: eventsReducer,
+    groups: groupReducer
 });

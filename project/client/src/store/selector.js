@@ -4,6 +4,7 @@ export const profiles = state => state.profiles || {};
 export const indicators = state => state.indicators || {};
 export const checkbox = state => state.checkbox || {};
 export const themes = state => state.themes || {};
+export const groups = state => state.groups || {};
 export const dnevnik = state => state.dnevnik || {};
 export const periods = state => state.periods || {};
 export const teachers = state => state.teachers || {};

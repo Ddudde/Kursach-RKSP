@@ -19,14 +19,16 @@ import {useDispatch, useSelector} from "react-redux";
 import {checkbox, indicators} from "../../store/selector";
 import {changeInd, changeIndNext, changeIndPrev} from "../../store/actions";
 import {setActived} from "../main/Main";
-import warnb from '../../media/warn_big.png';
 import {useParams} from "react-router-dom"
+import ErrFound from "../other/error/ErrFound";
 
-let dispatch, timer, indActState, checkBoxState, regbut, regb, vxbut, rb, vb, sm, zb, els;
+let dispatch, timer, indActState, checkBoxState, regbut, regb, vxbut, rb, vb, sm, zb, els, warnYesInv, warnNoInv;
 rb = [false, false];
 vb = [false, false];
 sm = false;
 zb = [false, false, false, false];
+warnNoInv = "Приглашение неверно или недействительно.";
+warnYesInv = "К действующему аккаунту была добавлена новая роль.";
 els = {"logz": 0, "secz": 1, "pasnz": 2, "paspz": 3, "logv": 0, "pasv": 1, "logr": 0, "pasr": 1};
 
 function reset_timer() {
@@ -79,18 +81,9 @@ export function Start() {
         //put(14, JSON.stringify({id: 14, name: 'nm127', email: 'm@y.ru7'}))
         regbut = document.getElementById("regbut");
         vxbut = document.getElementById("but1");
-        st.ini();
+        st.ini(dispatch);
         chStatVb({target: document.getElementById("logv")});
         chStatZb({target: document.getElementById("logz")});
-        setTimeout(function() {
-            for(let el of document.getElementsByClassName("ic")) {
-                if(!el.classList.contains("vx")) continue;
-                let style = window.getComputedStyle(document.querySelector('#logv'))
-                if (style && style.backgroundColor != "rgb(77, 77, 77)") {
-                    chStatVb({target: el}, true);
-                }
-            }
-        }, 700);
         setActived(".panGL");
         dispatch(changeInd(0, reset_timer));
         return function() {
@@ -107,27 +100,17 @@ export function Start() {
         console.log('componentDidUpdate Start.jsx');
     });
     return (
-        <>
+        <div className={start.AppHeader}>
             <Helmet>
                 <title>Главная</title>
             </Helmet>
-            <div className={start.AppHeader+" prole"} data-act="0">
-                <div className={start.block}>
-                    <img alt="banner" src={warnb}/>
-                    <div className={start.block_text}>
-                        К действующему аккаунту была добавлена новая роль.
-                    </div>
-                </div>
-            </div>
-            <div className={start.AppHeader+" inver"} data-act="0">
-                <div className={start.block}>
-                    <img alt="banner" src={warnb}/>
-                    <div className={start.block_text}>
-                        Приглашение неверно или недействительно.
-                    </div>
-                </div>
-            </div>
-            <div className={start.AppHeader+" def"} data-act="1">
+            <div className={start.block}>
+                {inv=="ds3" &&
+                    <ErrFound text={warnYesInv}/>
+                }
+                {inv=="ds3" &&
+                    <ErrFound text={warnNoInv}/>
+                }
                 <div className={start.g} id="g_id">
                     <div className={start.g_block} id='g_block_1' data-act={!indActState.actived ? "1" : "0"}>
                         <img src={zavuch} className={start.pic_g} alt=""/>
@@ -170,12 +153,7 @@ export function Start() {
                     <img src={sta} alt="" onClick={() => {window.scrollTo(0, window.innerHeight)}}/>
                 </div>
             </div>
-            <div className={start.AppHeader+" def"} data-act="1">
-                {/*<pre>{JSON.stringify(checkBoxInfo.checkbox, null, "\t")}</pre>*/}
-                {/*<pre>{JSON.stringify(clientsInfo, null, "\t")}</pre>*/}
-                {/*<pre style={{position: 'fixed', top: '50%', color: '#fff'}}>{JSON.stringify(themeState, null, "\t")}</pre>*/}
-                {/*<pre style={{position: 'fixed', top: '70%', color: '#fff'}}>{JSON.stringify(themeCheckBoxState, null, "\t")}</pre>*/}
-                {/*<pre style={{position: 'fixed', top: '70%', color: '#fff'}}>{JSON.stringify(indActState.actived, null, "\t")}</pre>*/}
+            <div className={start.block}>
                 <div className={start.posit} id="posform">
                     {inv && <div className={start.help}>
                         <span className={start.r} id="r">
@@ -275,7 +253,7 @@ export function Start() {
                     <div className={[button.button, start.lic_but_text].join(' ')} onClick={() => st.setVisibleOver(false)}>Прочитал</div>
                 </div>
             </div>
-        </>
+        </div>
     )
 }
 export default Start;

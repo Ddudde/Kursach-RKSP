@@ -6,21 +6,18 @@ import {useDispatch, useSelector} from "react-redux";
 import Pane from "../other/pane/Pane";
 import {setActived} from "../main/Main";
 import {
-    CHANGE_PARENTS,
-    CHANGE_PARENTS_DEL,
-    CHANGE_PARENTS_DEL_L0,
-    CHANGE_PARENTS_DEL_L1,
-    CHANGE_PARENTS_L1,
     CHANGE_PERIODS,
     CHANGE_PERIODS_DEL,
     CHANGE_PERIODS_L1,
+    CHANGE_SCHEDULE,
+    CHANGE_SCHEDULE_DEL,
+    CHANGE_SCHEDULE_PARAM,
     CHANGE_ZVONKI,
     CHANGE_ZVONKI_DEL,
     CHANGE_ZVONKI_DEL_L0,
     CHANGE_ZVONKI_L1,
     CHANGE_ZVONKI_SMENA,
-    changeAnalytics,
-    changePeople
+    changeAnalytics
 } from "../../store/actions";
 
 let gr, cState, ke, dispatch;
@@ -34,53 +31,30 @@ export function onDel(e, type, info) {
     par = e.target.parentElement.parentElement;
     if(par.classList.contains(analyticsCSS.edbl)){
         inp = par.querySelector("input");
-        if (inp.hasAttribute("data-id")) {
+        if(!inp){
+            if(type == CHANGE_SCHEDULE_DEL) {
+                dispatch(changeAnalytics(type, info.id, info.id1));
+            }
+        }else if (inp.hasAttribute("data-id")) {
             id = inp.getAttribute("data-id").split("_");
-            if(type == CHANGE_PARENTS_DEL) {
-                if(Object.getOwnPropertyNames(info[id[0]].par).length < 2){
-                    dispatch(changePeople(CHANGE_PARENTS_DEL_L0, id[0]));
-                } else {
-                    dispatch(changePeople(type, id[0], "par", id[1]));
-                }
-            } else if(type == CHANGE_ZVONKI_DEL) {
+            if(type == CHANGE_ZVONKI_DEL) {
                 dispatch(changeAnalytics(type, id[0], "lessons", id[1]));
             } else if(type == CHANGE_PERIODS_DEL) {
                 dispatch(changeAnalytics(type, "prs", id[0]));
-            } else {
-                dispatch(changePeople(type, 0, id[0], id[1]));
             }
         } else if(inp.hasAttribute("data-id1")){
             let id = inp.getAttribute("data-id1");
-            if(type == CHANGE_PARENTS_DEL) {
-                dispatch(changePeople(type, "nw", "par", id));
-            } else if(type == CHANGE_ZVONKI_DEL_L0) {
+            if(type == CHANGE_ZVONKI_DEL_L0) {
                 dispatch(changeAnalytics(type, id));
-            } else {
-                dispatch(changePeople(type, 1, 0, id));
-            }
-        }
-    } else if(par.classList.contains(analyticsCSS.nav_iZag)){
-        if(e.target.hasAttribute("data-id1")){
-            let id = e.target.getAttribute("data-id1");
-            if(type == CHANGE_PARENTS_DEL_L0) {
-                dispatch(changePeople(type, id));
             }
         }
     }
 }
 
 export function onEdit(e) {
-    let par, inp, ids;
-    par = e.target.parentElement;
+    let par = e.target.parentElement;
     if(par.classList.contains(analyticsCSS.add)){
-        inp = par.querySelector("input");
-        ids = inp.id.split("_");
-        if(ids[0] == "inpnnt" || ids[0] == "inpnit")
-        {
-            dispatch(changeAnalytics(CHANGE_PERIODS_L1, "edit", ids[1] == "" ? "nw" : ids[1], undefined, true));
-        } else {
-            par.setAttribute('data-st', '1');
-        }
+        par.setAttribute('data-st', '1');
     }
     if(par.parentElement.classList.contains(analyticsCSS.edbl)){
         par = par.parentElement;
@@ -91,61 +65,71 @@ export function onEdit(e) {
 export function onFin(e, inps, forceUpdate, type, info) {
     let par, inp;
     par = e.target.parentElement;
-    if (par.classList.contains(analyticsCSS.upr)) {
-        par = par.parentElement;
-        dispatch(changePeople(CHANGE_PARENTS_L1, undefined, inps.nyid, undefined, {...info.nw}));
-        inps.nyid = undefined;
-        dispatch(changePeople(CHANGE_PARENTS_DEL_L1, "nw", "par"));
-        par.setAttribute('data-st', '0');
-        return;
-    }
-    if (par.classList.contains(analyticsCSS.fi)){
-        par = par.parentElement;
-        if(type == CHANGE_PARENTS)
-        {
-            let grop, id, inp;
-            inp = par.querySelector("input");
-            par = par.parentElement;
-            if(inp.hasAttribute("data-id1")) {
-                id = inp.getAttribute("data-id1");
-                grop = info[id] && info[id].par ? Object.getOwnPropertyNames(info[id].par) : [];
-                let id1 = grop.length == 0 ? "id0" : "id" + (parseInt(grop[grop.length-1].replace("id", "")) + 1);
-                dispatch(changePeople(type, id, "par", id1, inps.inpnpt));
-            } else {
-                grop = info.nw && info.nw.par ? Object.getOwnPropertyNames(info.nw.par) : [];
-                id = grop.length == 0 ? "id0" : "id" + (parseInt(grop[grop.length-1].replace("id", "")) + 1);
-                dispatch(changePeople(type, "nw", "par", id, inps.inpnpt));
-            }
-        } else {
-            par = par.parentElement;
-            dispatch(changePeople(type, 1, 0, "id8", inps.inpnpt));
-        }
-        par.setAttribute('data-st', '0');
-        return;
-    }
     inp = par.querySelector("input");
-    if(par.classList.contains(analyticsCSS.edbl) && type == CHANGE_PERIODS_L1){
-        let inpm = ["inpnnt_", "inpnit_"];
-        if(inps.inpnnt_ && inps.inpnit_)
-        {
-            let grop, id, obj;
-            grop = Object.getOwnPropertyNames(info.prs);
-            id = grop.length == 0 ? 0 : (parseInt(grop[grop.length-1]) + 1);
-            obj = {
-                name: inps.inpnnt_,
-                per: inps.inpnit_
+    if(par.classList.contains(analyticsCSS.edbl)){
+        if(type == CHANGE_PERIODS_L1){
+            let inpm = ["inpnnt_", "inpnit_"];
+            if(inps.inpnnt_ && inps.inpnit_)
+            {
+                let grop, id, obj;
+                grop = Object.getOwnPropertyNames(info.prs);
+                id = grop.length == 0 ? 0 : (parseInt(grop[grop.length-1]) + 1);
+                obj = {
+                    name: inps.inpnnt_,
+                    per: inps.inpnit_
+                }
+                dispatch(changeAnalytics(type, "prs", id, undefined, obj));
+            } else {
+                for(let i = 0, inpf; i < inpm.length; i++) {
+                    inpf = document.querySelector("." + analyticsCSS.edbl + " *[id='" + inpm[i] + "']")
+                    inpf.style.animation = "but 1s ease infinite";
+                    setTimeout(function () {
+                        inpf.style.animation = "none"
+                    }, 1000);
+                    inpf.style.outline = "solid red";
+                }
             }
-            dispatch(changeAnalytics(CHANGE_PERIODS_L1, "prs", id, undefined, obj));
-        } else {
-            for(let i = 0, inpf; i < inpm.length; i++) {
-                inpf = document.querySelector("." + analyticsCSS.edbl + " *[id='" + inpm[i] + "']")
-                inpf.style.animation = "but 1s ease infinite";
-                setTimeout(function () {
-                    inpf.style.animation = "none"
-                }, 1000);
-                inpf.style.outline = "solid red";
+            return;
+        } else if(type == CHANGE_SCHEDULE){
+            let inpm = ["sinpnpt_", "sinpnkt_"];
+            if(inps.sinpnpt_ && inps.sinpnkt_ && inps.nyid)
+            {
+                let grop, id, obj, param;
+                param = inp.getAttribute("data-id1");
+                grop = Object.getOwnPropertyNames(info[param].lessons);
+                id = grop.length == 0 ? 0 : (parseInt(grop[grop.length-1]) + 1);
+                obj = {
+                    name: inps.sinpnpt_,
+                    cabinet: inps.sinpnkt_,
+                    prepod: {
+                        name: info[param].nw.prepod,
+                        id: inps.nyid
+                    }
+                }
+                dispatch(changeAnalytics(type, param, id, undefined, obj));
+            } else {
+                for(let i = 0, inpf; i < inpm.length; i++) {
+                    inpf = document.querySelector("." + analyticsCSS.edbl + " *[id='" + inpm[i] + "']")
+                    inpf.style.animation = "but 1s ease infinite";
+                    setTimeout(function () {
+                        inpf.style.animation = "none"
+                    }, 1000);
+                    inpf.style.outline = "solid red";
+                }
             }
+            return;
         }
+    }
+    if(!inp){
+        if(type == CHANGE_SCHEDULE_PARAM) {
+            let obj = {
+                name: info.st[info.id].nw.prepod,
+                id: inps.nyid
+            }
+            dispatch(changeAnalytics(type, info.id, info.id1, info.par, obj));
+        }
+        par = par.parentElement;
+        par.setAttribute('data-st', '0');
         return;
     }
     if (inps[inp.id]) {
@@ -155,23 +139,17 @@ export function onFin(e, inps, forceUpdate, type, info) {
             if(type){
                 if(inp.hasAttribute("data-id")){
                     let id = inp.getAttribute("data-id").split("_");
-                    if(type == CHANGE_PARENTS) {
-                        dispatch(changePeople(type, id[0], "par", id[1], inp.value));
-                    } else if(type == CHANGE_ZVONKI) {
+                    if(type == CHANGE_ZVONKI) {
                         dispatch(changeAnalytics(type, id[0], "lessons", id[1], inp.value));
                     } else if(type == CHANGE_PERIODS) {
                         dispatch(changeAnalytics(type, "prs", id[0], id[1], inp.value));
-                    } else {
-                        dispatch(changePeople(type, 0, id[0], id[1], inp.value));
+                    } else if(type == CHANGE_SCHEDULE_PARAM) {
+                        dispatch(changeAnalytics(type, id[0], id[1], info, inp.value));
                     }
                 } else if(inp.hasAttribute("data-id1")){
                     let id = inp.getAttribute("data-id1");
-                    if(type == CHANGE_PARENTS) {
-                        dispatch(changePeople(type, "nw", "par", id, inp.value));
-                    } else if(type == CHANGE_ZVONKI_L1) {
+                    if(type == CHANGE_ZVONKI_L1) {
                         dispatch(changeAnalytics(type, id, "name", undefined, inp.value));
-                    } else {
-                        dispatch(changePeople(type, 1, 0, id, inp.value));
                     }
                 }
             } else {
@@ -217,20 +195,12 @@ export function onClose(e, type) {
         }
         par.setAttribute('data-st', '0');
     } else if(par.classList.contains(analyticsCSS.edbl)) {
-        let inp, ids;
-        inp = par.querySelector("input");
-        ids = inp.id.split("_");
         par = par.parentElement;
-        if(ids[0] == "inpnnt" || ids[0] == "inpnit")
-        {
-            dispatch(changeAnalytics(CHANGE_PERIODS_L1, "edit", ids[1] == "" ? "nw" : ids[1], undefined, false));
-        } else {
-            par.setAttribute('data-st', '0');
-        }
+        par.setAttribute('data-st', '0');
     }
 }
 
-export function chStatB(e, inps) {
+export function chStatB(e, inps, upd) {
     let el = e.target;
     if(el.pattern) {
         inps[el.id] = !el.validity.patternMismatch ? el.value : false;
@@ -246,8 +216,11 @@ export function chStatB(e, inps) {
         }, 1000);
         el.style.outline = "solid red";
     }
+    if(upd) upd();
     let ye = el.parentElement.querySelector(".yes");
-    if(ye) ye.setAttribute("data-enable", +inps[el.id]);
+    if(ye) {
+        ye.setAttribute("data-enable", +inps[el.id]);
+    }
 }
 
 export function ele (x, par, b, inps, pari) {

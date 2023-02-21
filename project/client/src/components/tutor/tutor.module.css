@@ -31,13 +31,9 @@
 .nav_i{
 	cursor: default;
 	color: var(--cV1);
-	font-size: 1.25vw;
+	font-size: 1vw;
+	text-shadow: 1px 1px 3px var(--shdV1);
 	font-weight: 500;
-    margin-block: 0.2vw;
-	-webkit-transition: color 1s ease;
-	-o-transition: color 1s ease;
-	transition: color 1s ease;
-	transition-property: color, text-shadow, border-color;
 }
 
 #nav_i:hover{
@@ -45,29 +41,41 @@
 	text-shadow: 0 0 2vw #66ff66;
 }
 
+.zag, .zag1{
+	-webkit-transition: color 1s ease;
+	-o-transition: color 1s ease;
+	transition: color 1s ease;
+	transition-property: color, text-shadow, border-color;
+	backface-visibility: hidden;
+	perspective: 1000px;
+}
+
 .zag1{
-	font-size: 1vw;
 	text-decoration: underline;
-	margin-left: 2vw;
 	font-weight: bold;
 	cursor: pointer;
 }
 
 .zag{
-	margin-inline: 2vw;
+	/*margin-inline: 2vw;*/
+	font-size: 1.25vw;
+	margin-bottom: 0.5vw;
+}
+
+.block{
+    margin-inline: 2vw;
 }
 
 .zag2{
-	font-size: 1vw;
+	/*font-size: 1vw;*/
 }
 
 .blockOtv{
 	margin-inline: 2vw;
-	display: none;
 }
 
-.blockOtv[data-act]{
-	display: block;
+.blockOtv[data-act="0"]{
+	display: none;
 }
 
 .blockImg{
@@ -77,6 +85,8 @@
 
 .blockImg > img{
 	max-width: 75%;
+	display: block;
+	margin: auto;
 }
 
 .GotCW{
@@ -100,4 +110,8 @@
 	font-weight: bold;
 	text-shadow: 2px 2px 2px #000;
 	transition: color 1s ease;
+}
+
+.GotCW[data-act="0"]{
+	display: none;
 }

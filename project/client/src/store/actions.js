@@ -19,7 +19,10 @@ export const CHANGE_PERIODS_DEL = "CHANGE_PERIODS_DEL";
 export const CHANGE_PROFILE = "CHANGE_PROFILE";
 export const CHANGE_PROFILE_ROLES = "CHANGE_PROFILE_ROLES";
 
+export const CHANGE_SCHEDULE_PARAM = "CHANGE_SCHEDULE_PARAM";
 export const CHANGE_SCHEDULE = "CHANGE_SCHEDULE";
+export const CHANGE_SCHEDULE_DEL = "CHANGE_SCHEDULE_DEL";
+export const CHANGE_SCHEDULE_L2 = "CHANGE_SCHEDULE_L2";
 
 export const CHANGE_JOURNAL = "CHANGE_JOURNAL";
 
@@ -29,6 +32,11 @@ export const CHANGE_PANE = "CHANGE_PANE";
 export const CHANGE_PANE_GRS = "CHANGE_PANE_GRS";
 export const CHANGE_PANE_DEL_GRS = "CHANGE_PANE_DEL_GRS";
 export const CHANGE_PANE_GR = "CHANGE_PANE_GR";
+
+export const CHANGE_GROUPS = "CHANGE_GROUPS";
+export const CHANGE_GROUPS_GRS = "CHANGE_GROUPS_GRS";
+export const CHANGE_GROUPS_DEL_GRS = "CHANGE_GROUPS_DEL_GRS";
+export const CHANGE_GROUPS_GR = "CHANGE_GROUPS_GR";
 
 export const CHANGE_PJOURNAL_MARKS = "CHANGE_PJOURNAL_MARKS";
 export const CHANGE_PJOURNAL_DEL_MARKS = "CHANGE_PJOURNAL_DEL_MARKS";
@@ -229,30 +237,13 @@ export function changeProfile(id, state) {
     };
 }
 
-export function changePaneDelGRS(id, gid) {
-    return { type: CHANGE_PANE_DEL_GRS,
-        payload: {
-            Id: id,
-            gId: gid
-        }
-    };
-}
-
-export function changePaneGRS(id, gid, state) {
-    return { type: CHANGE_PANE_GRS,
+export function changeGroups(type, id, state, gid, block) {
+    if(block) return {type: "default", payload: {}};
+    return {
+        type: type,
         payload: {
             Id: id,
             gId: gid,
-            State: state
-        }
-    };
-}
-
-export function changePaneGR(id, state, block) {
-    if(block) return {type: "default", payload: {}};
-    return { type: CHANGE_PANE_GR,
-        payload: {
-            Id: id,
             State: state
         }
     };
@@ -290,15 +281,6 @@ export function changeEvents(type, state, id, title, text, time) {
     return {
         type: type,
         payload: payload
-    };
-}
-
-export function changePane(id, state) {
-    return { type: CHANGE_PANE,
-        payload: {
-            Id: id,
-            State: state
-        }
     };
 }
 

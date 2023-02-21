@@ -1,4 +1,4 @@
-import {CHANGE_PROFILE, CHANGE_PROFILE_ROLES} from "../actions";
+import {CHANGE_PROFILE, CHANGE_PROFILE_ROLES} from "../../actions";
 
 const initialState = {
         login: "test",

@@ -1,4 +1,4 @@
-import {CHANGE_STATE} from '../../actions';
+import {CHANGE_STATE} from '../actions';
 
 const initialState = {
         auth: true,

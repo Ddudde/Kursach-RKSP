@@ -26,61 +26,12 @@ import refreshCl from "../../../media/refreshCl.png";
 import copyd from "../../../media/copyd.png";
 import copyl from "../../../media/copyl.png";
 
-let dispatch, parentsInfo, classmatesInfo, gr, errText, inps, pari, sit, themeState, cState;
+let dispatch, parentsInfo, classmatesInfo, errText, inps, pari, sit, themeState, cState;
 errText = "К сожалению, информация не найдена... Можете попробовать попросить завуча заполнить информацию.";
 sit = "http://localhost:3000";
 inps = {nyid : undefined, inpnpt : "Фамилия И.О."};
 pari = {elems: 0, paels: 0};
 let [_, forceUpdate] = [];
-gr = {
-    groups: {
-        0: "11A",
-        1: "11Б",
-        2: "11В",
-        3: "11Г",
-        4: "10А",
-        5: "10Б",
-        6: "10В",
-        7: "10Г",
-        8: "9А",
-        9: "9Б",
-        10: "9В",
-        11: "9Г",
-        12: "8А",
-        13: "8Б",
-        14: "8В",
-        15: "8Г",
-        16: "7А",
-        17: "7Б",
-        18: "7В",
-        19: "7Г",
-        20: "6А",
-        21: "6Б",
-        22: "6В",
-        23: "6Г",
-        24: "5А",
-        25: "5Б",
-        26: "5В",
-        27: "5Г",
-        28: "4А",
-        29: "4Б",
-        30: "4В",
-        31: "4Г",
-        32: "3А",
-        33: "3Б",
-        34: "3В",
-        35: "3Г",
-        36: "2А",
-        37: "2Б",
-        38: "2В",
-        39: "2Г",
-        40: "1А",
-        41: "1Б",
-        42: "1В",
-        43: "1Г"
-    },
-    group: 1
-};
 
 function selecKid(e, id) {
     inps.nyid = id;
@@ -101,18 +52,18 @@ function getKids() {
     }
     inps.ppI = inps.nyid && parentsInfo.nw.par ? Object.getOwnPropertyNames(parentsInfo.nw.par) : [];
     return (inps.nyid &&
-        <div className={parentsCSS.predBlock}>
-            <div className={peopleCSS.nav_i+' '+parentsCSS.nav_iJur+' '+parentsCSS.predEl} id={peopleCSS.nav_i}>
-                <div className={parentsCSS.predInf}>Ученик:</div>
-                <div className={parentsCSS.predText}>{parentsInfo.nw.name}</div>
+        <div className={parentsCSS.blockList}>
+            <div className={peopleCSS.nav_i+' '+parentsCSS.selEl} id={peopleCSS.nav_i}>
+                <div className={parentsCSS.elInf}>Ученик:</div>
+                <div className={parentsCSS.elText}>{parentsInfo.nw.name}</div>
                 <img className={parentsCSS.mapImg} data-enablem={lpI.length < 2 ? "0" : "1"} src={themeState.theme_ch ? mapd : mapl} alt=""/>
             </div>
-            <div className={parentsCSS.predMenu}>
+            <div className={parentsCSS.list}>
                 {parentsInfo && lpI.map(param1 =>
                     param1 != inps.nyid &&
-                    <div className={peopleCSS.nav_i+' '+parentsCSS.nav_iJur+' '+parentsCSS.pred} key={param1} id={peopleCSS.nav_i} onClick={(e) => (selecKid(e, param1))}>
-                        <div className={parentsCSS.predInf}>Ученик:</div>
-                        <div className={parentsCSS.predText}>{classmatesInfo[param1].name}</div>
+                    <div className={peopleCSS.nav_i+' '+parentsCSS.listEl} key={param1} id={peopleCSS.nav_i} onClick={(e) => (selecKid(e, param1))}>
+                        <div className={parentsCSS.elInf}>Ученик:</div>
+                        <div className={parentsCSS.elText}>{classmatesInfo[param1].name}</div>
                     </div>
                 )}
             </div>
@@ -199,7 +150,6 @@ function getAdd() {
 }
 
 function getParents (pI, b) {
-    let ppI;
     return b ?
             <>
                 {getAdd()}
@@ -305,8 +255,8 @@ export function Parents() {
                 :
                     <>
                         {(cState.auth && cState.role == 3) &&
-                            <div style={{width:"inherit", height: "7vh", position: "fixed", zIndex:"1"}}>
-                                <Pane gro={gr} cla={true}/>
+                            <div className={parentsCSS.pane}>
+                                <Pane cla={true}/>
                             </div>
                         }
                         <div className={peopleCSS.blockPep} style={{marginTop: (cState.auth && cState.role == 3) ? "7vh" : undefined}}>
