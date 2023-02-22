@@ -102,7 +102,7 @@ function chRoles() {
     let r = cStateInfo.role;
     r++;
     if(r > 4) r = 0;
-    dispatch(changeState("role", r, dispatch, cStateInfo.rolesDescrs));
+    dispatch(changeState("role", r));
 }
 
 function onExit() {
@@ -165,6 +165,7 @@ export function Main() {
                 {(cStateInfo.auth && cStateInfo.role == 2) && getPan("Расписание", "Ras", "/")}
                 {(cStateInfo.auth && cStateInfo.role == 2) && getPan("Журнал", "Jur", "journal")}
                 {(cStateInfo.auth && cStateInfo.role == 3) && getPan("Администрирование УО", "Ana", "admYO")}
+                {(cStateInfo.auth && cStateInfo.role == 4) && getPan("Заявки", "Req", "request")}
                 {(cStateInfo.auth && cStateInfo.role < 2) && getPan("Дневник", "Dnev", "/")}
                 {(cStateInfo.auth && cStateInfo.role < 2) && getPan("Аналитика", "Ana", "analytics")}
                 {cStateInfo.auth && getLogin()}

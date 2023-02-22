@@ -4,8 +4,8 @@ const initialState = {
         auth: true,
         login: "test",
         ico: 2,
-        role: 3,
-        roleDesc: "завуч",
+        role: 4,
+        roleDesc: "администратор портала",
         roles: true,
         secFr: true,
         rolesDescrs: ["обучающийся", "родитель", "педагог", "завуч", "администратор портала"],
@@ -17,12 +17,14 @@ const initialState = {
     };
 
 export default function statusReducer(state = initialState, action) {
+    let fd = {...state};
     switch(action.type) {
         case CHANGE_STATE:
-            return {
-                    ...state,
-                    [action.payload.stateId]: action.payload.cState,
-                };
+            fd[action.payload.stateId] = action.payload.cState;
+            if(action.payload.stateId == "role") {
+                fd.roleDesc = fd.rolesDescrs[action.payload.cState];
+            }
+            return fd;
         default:
             return state;
     }

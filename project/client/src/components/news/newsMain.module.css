@@ -120,7 +120,7 @@ span.banner > img{
 div.banner {
 	border: var(--cV3) dashed;
 	height: 114px;
-	display: none;
+	display: flex;
 	flex-wrap: wrap;
 	align-content: center;
 	justify-content: center;
@@ -172,6 +172,10 @@ div.banner > div{
 
 .news_line[data-st='0'] > .link, .im[data-st='0'] > .fi, .te[data-st='0'] > .fi, .da[data-st='0'] > .fi, .za[data-st='0'] > .fi{
 	display: flex;
+}
+
+.im > .fi {
+	float: left;
 }
 
 .imginp, .imgfield{

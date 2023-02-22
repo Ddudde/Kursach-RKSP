@@ -5,7 +5,10 @@ import {useDispatch, useSelector} from "react-redux";
 import {pane, states} from "../../store/selector";
 import Pane from "../other/pane/Pane";
 import {setActived} from "../main/Main";
-import {changeContacts, changeContactsMap, changeContactsMapImage} from "../../store/actions";
+import {CHANGE_CONTACT, CHANGE_CONTACT_MAP, CHANGE_CONTACT_MAPIMG, changeContacts} from "../../store/actions";
+import ed from "../../media/edit.png";
+import yes from "../../media/yes.png";
+import no from "../../media/no.png";
 
 let gr, cState, dispatch;
 
@@ -13,19 +16,91 @@ gr = {
     group: 0
 }
 
+export function getEdField(edFi, titleEd, inf, inp, type, info, inps, forceUpdate, placeholder, pattern) {
+    return (<>
+        <div className={contactCSS.fi}>
+            {edFi}
+            {titleEd != "Ссылка:" && <img className={contactCSS.imgfield} src={ed} onClick={(e)=>onEdit(e, type, inps, info)} title="Редактировать" alt=""/>}
+        </div>
+        <div className={contactCSS.ed}>
+            <div className={contactCSS.preinf}>
+                {titleEd}
+            </div>
+            {edFi.type == "pre" ?
+                    <textarea className={contactCSS.inp+" "+contactCSS.inparea} id={inp} placeholder={placeholder} defaultValue={inf} onChange={(e)=>chStatB(e, inps)}/>
+                :
+                    <input className={contactCSS.inp} id={inp} placeholder={placeholder} pattern={pattern} defaultValue={inf} onChange={(e)=>chStatB(e, inps)}/>
+            }
+            {ele(false, inp, inps)}
+            <img className={contactCSS.imginp+" yes "} src={yes} onClick={(e)=>onFin(e, type, inps)} title="Подтвердить" alt=""/>
+            <img className={contactCSS.imginp} style={{marginRight: "1vw"}} src={no} onClick={(e)=>onClose(e, inps, forceUpdate)} title="Отменить изменения и выйти из режима редактирования" alt=""/>
+        </div>
+    </>)
+}
+
+export function getEdCon(type, info, inps, forceUpdate) {
+    let telFi, tel, telM, telMFi, im, imFi;
+    tel = info[type].contact;
+    telFi = <pre className={contactCSS.field}>
+        {tel}
+    </pre>;
+    telM = info[type].mapPr.text;
+    telMFi = <pre className={contactCSS.field}>
+        {telM}
+    </pre>;
+    im = inps.edAddIm;
+    imFi = <div className={contactCSS.banner}>
+        <div>
+            <div>
+                Изображение
+            </div>
+            <img className={contactCSS.imgfield} src={ed} onClick={(e)=>onEdit(e, inps, type, info)} title="Редактировать" alt=""/>
+        </div>
+    </div>;
+    return (
+        <section className={contactCSS.center_colum}>
+            <div className={contactCSS.blockTel}>
+                <h1 className={contactCSS.zag}>Телефоны для связи</h1>
+                <div className={contactCSS.te} data-st="0">
+                    {getEdField(telFi, "Текст:", tel, "inpntt_c", type, info, inps, forceUpdate)}
+                </div>
+            </div>
+            <div className={contactCSS.map+" "+contactCSS.blockTel}>
+                <h1 className={contactCSS.zag}>Карта проезда</h1>
+                <div className={contactCSS.te+" mapt"} data-st="0">
+                    {getEdField(telMFi, "Текст:", telM, "inpntt_m", type, info, inps, forceUpdate)}
+                    {info[type].mapPr.imgUrl ?
+                            <span className={contactCSS.banner}>
+                                <img alt="banner" src={info[type].mapPr.imgUrl} onError={(e)=>errLoadAddIm(e, type)}/>
+                                <div className={contactCSS.upr}>
+                                    <img className={contactCSS.imgfield} src={ed} onClick={(e)=>onEdit(e, inps, type, info)} title="Редактировать" alt=""/>
+                                    <img className={contactCSS.imginp} style={{marginRight: "1vw"}} src={no} onClick={(e)=>onDel(e, type)} title="Удалить изображение" alt=""/>
+                                </div>
+                            </span>
+                        :
+                            <div className={contactCSS.im} data-st={inps.edAddIm ? "1" : "0"}>
+                                {getEdField(imFi, "Ссылка:", im, "inpnit_m", type, info, inps, forceUpdate, "/media/tuman.jpg")}
+                            </div>
+                    }
+                </div>
+            </div>
+        </section>
+    );
+}
+
 export function errorLoad(e) {
     e.target.style.display = 'none';
 }
 
 export function errLoadAddIm(e, type) {
-    dispatch(changeContactsMapImage(type, ""));
+    dispatch(changeContacts(CHANGE_CONTACT_MAPIMG, type, ""));
 }
 
 export function onDel(e, type) {
     let par;
     par = e.target.parentElement.parentElement;
     if(par.classList.contains(contactCSS.banner)){
-        dispatch(changeContactsMapImage(type, ""));
+        dispatch(changeContacts(CHANGE_CONTACT_MAPIMG, type, ""));
     }
 }
 
@@ -36,13 +111,13 @@ export function onEdit(e, inps, type, info) {
         par = par.parentElement;
         par.setAttribute('data-st', '1');
     }
-    if(par.parentElement.parentElement.classList.contains(contactCSS.im)){
-        par = par.parentElement.parentElement;
+    if(par.parentElement.parentElement.parentElement.classList.contains(contactCSS.im)){
+        par = par.parentElement.parentElement.parentElement;
         par.setAttribute('data-st', '1');
     }
     if(par.classList.contains(contactCSS.upr)){
         inps.edAddIm = info[type].mapPr.imgUrl;
-        dispatch(changeContactsMapImage(type, ""));
+        dispatch(changeContacts(CHANGE_CONTACT_MAPIMG, type, ""));
     }
 }
 
@@ -55,14 +130,14 @@ export function onFin(e, type, inps) {
         inp.style.outline = "none black";
         if(par.parentElement.classList.contains(contactCSS.im)) {
             if (inps.edAddIm) inps.edAddIm = undefined;
-            dispatch(changeContactsMapImage(type, inp.value));
+            dispatch(changeContacts(CHANGE_CONTACT_MAPIMG, type, inp.value));
         }
         if(bul) {
             par = par.parentElement;
             if(par.classList.contains("mapt")){
-                dispatch(changeContactsMap(type, inp.value));
+                dispatch(changeContacts(CHANGE_CONTACT_MAP, type, inp.value));
             } else {
-                dispatch(changeContacts(type, inp.value));
+                dispatch(changeContacts(CHANGE_CONTACT, type, inp.value));
             }
         }
         par.setAttribute('data-st', '0');

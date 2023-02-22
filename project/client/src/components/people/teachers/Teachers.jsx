@@ -3,7 +3,7 @@ import {Helmet} from "react-helmet-async";
 import peopleCSS from "../peopleMain.module.css";
 import {states, teachers, themes} from "../../../store/selector";
 import {useDispatch, useSelector} from "react-redux";
-import {chStatB, copyLink, ele, onClose, onDel, onEdit, onFin, refreshLink, setActNew} from "../PeopleMain";
+import {chStatB, copyLink, ele, onClose, onDel, onEdit, onFin, refreshLink, setActNew, sit} from "../PeopleMain";
 import profl from "../../../media/profl.png";
 import profd from "../../../media/profd.png";
 import copyl from "../../../media/copyl.png";
@@ -16,11 +16,9 @@ import yes from "../../../media/yes.png";
 import no from "../../../media/no.png";
 import ErrFound from "../../other/error/ErrFound";
 
-let dispatch, teachersInfo, cState, themeState, inps, pari, sit, errText;
-sit = "http://localhost:3000";
+let dispatch, teachersInfo, cState, themeState, inps, errText;
 errText = "К сожалению, информация не найдена... Можете попробовать попросить завуча заполнить информацию.";
 inps = {inpnpt : "Фамилия И.О."};
-pari = {elems: 0, paels: 0};
 let [_, forceUpdate] = [];
 
 function getTea(title, x, b, b1) {
@@ -50,7 +48,7 @@ function getTea(title, x, b, b1) {
                                         ФИО:
                                     </div>
                                     <input className={peopleCSS.inp} id={"inpnpt_"} placeholder={"Фамилия И.О."} defaultValue={inps.inpnpt} onChange={(e)=>chStatB(e, inps)} type="text"/>
-                                    {ele(false, "inpnpt_", true, inps, pari)}
+                                    {ele(false, "inpnpt_", inps)}
                                     <img className={peopleCSS.imginp+" yes "} src={yes} onClick={(e)=>onFin(e, inps, forceUpdate, CHANGE_TEACHERS)} title="Подтвердить" alt=""/>
                                     <img className={peopleCSS.imginp} style={{marginRight: "1vw"}} src={no} onClick={onClose} title="Отменить изменения и выйти из режима редактирования" alt=""/>
                                 </div>
@@ -75,7 +73,7 @@ function getTea(title, x, b, b1) {
                                             ФИО:
                                         </div>
                                         <input className={peopleCSS.inp} data-id1={param} id={"inpnpt_" + param} placeholder={"Фамилия И.О."} defaultValue={x[param].name} onChange={(e)=>chStatB(e, inps)} type="text"/>
-                                        {ele(false, "inpnpt_" + param, true, inps, pari)}
+                                        {ele(false, "inpnpt_" + param, inps)}
                                         <img className={peopleCSS.imginp+" yes "} src={yes} onClick={(e)=>onFin(e, inps, forceUpdate, CHANGE_TEACHERS_L1)} title="Подтвердить" alt=""/>
                                         <img className={peopleCSS.imginp} style={{marginRight: "1vw"}} src={no} onClick={onClose} title="Отменить изменения и выйти из режима редактирования" alt=""/>
                                     </div>
@@ -108,7 +106,7 @@ function getTea(title, x, b, b1) {
                                                 ФИО:
                                             </div>
                                             <input className={peopleCSS.inp} data-id={param + "_" + param1} id={"inpnpt_" + param + "_" + param1} placeholder={"Фамилия И.О."} defaultValue={x[param][param1].name} onChange={(e)=>chStatB(e, inps)} type="text"/>
-                                            {ele(false, "inpnpt_" + param + "_" + param1, true, inps, pari)}
+                                            {ele(false, "inpnpt_" + param + "_" + param1, inps)}
                                             <img className={peopleCSS.imginp+" yes "} src={yes} onClick={(e)=>onFin(e, inps, forceUpdate, CHANGE_TEACHERS)} title="Подтвердить" alt=""/>
                                             <img className={peopleCSS.imginp} style={{marginRight: "1vw"}} src={no} onClick={onClose} title="Отменить изменения и выйти из режима редактирования" alt=""/>
                                         </div>

@@ -54,6 +54,8 @@ export const CHANGE_TEACHERS_DEL = "CHANGE_TEACHERS_DEL";
 export const CHANGE_TEACHERS_DEL_L1 = "CHANGE_TEACHERS_DEL_L1";
 
 export const CHANGE_HTEACHERS_GL = "CHANGE_HTEACHERS_GL";
+export const CHANGE_HTEACHERS_L2 = "CHANGE_HTEACHERS_L2";
+export const CHANGE_HTEACHERS_DEL_L2 = "CHANGE_HTEACHERS_DEL_L2";
 export const CHANGE_HTEACHERS = "CHANGE_HTEACHERS";
 export const CHANGE_HTEACHERS_DEL = "CHANGE_HTEACHERS_DEL";
 
@@ -69,7 +71,9 @@ export const CHANGE_PARENTS_DEL = "CHANGE_PARENTS_DEL";
 export const CHANGE_PARENTS_DEL_L1 = "CHANGE_PARENTS_DEL_L1";
 export const CHANGE_PARENTS_DEL_L0 = "CHANGE_PARENTS_DEL_L0";
 
+export const CHANGE_ADMINS_GL = "CHANGE_ADMINS_GL";
 export const CHANGE_ADMINS = "CHANGE_ADMINS";
+export const CHANGE_ADMINS_DEL = "CHANGE_ADMINS_DEL";
 
 export const CHANGE_MARKS = "CHANGE_MARKS";
 
@@ -80,6 +84,10 @@ export const CHANGE_DNEVNIK_DAY_DOWN = "CHANGE_DNEVNIK_DAY_DOWN";
 export const CHANGE_CLIENT = "CHANGE_CLIENT";
 
 export const CHANGE_INDICATOR = "CHANGE_INDICATOR";
+
+export const CHANGE_REQUEST = "CHANGE_REQUEST";
+export const CHANGE_REQUEST_PARAM = "CHANGE_REQUEST_PARAM";
+export const CHANGE_REQUEST_DEL = "CHANGE_REQUEST_DEL";
 
 export const CHANGE_NEWS = "CHANGE_NEWS";
 export const CHANGE_NEWS_PARAM = "CHANGE_NEWS_PARAM";
@@ -99,7 +107,8 @@ export const CHANGE_EVENTS_STEP = "CHANGE_EVENTS_STEP";
 export const CHANGE_EVENTS_RL = "CHANGE_EVENTS_RL";
 
 export function changeCB(checkboxId, checkBoxState) {
-    return { type: CHANGE_CHECKBOX,
+    return {
+        type: CHANGE_CHECKBOX,
         payload: {
             checkBoxId: checkboxId,
             checkBoxState: !checkBoxState
@@ -107,12 +116,9 @@ export function changeCB(checkboxId, checkBoxState) {
     };
 }
 
-export function changeState(id, state, dispatch, roleDescrs) {
-    if(id == "role")
-    {
-        dispatch(changeState("roleDesc", roleDescrs[state]));
-    }
-    return { type: CHANGE_STATE,
+export function changeState(id, state) {
+    return {
+        type: CHANGE_STATE,
         payload: {
             stateId: id,
             cState: state
@@ -123,7 +129,8 @@ export function changeState(id, state, dispatch, roleDescrs) {
 export function changeJType(pret, t, st) {
     if(!pret) {
         if(!st)
-            return { type: CHANGE_PJOURNAL_DEL_TYPE,
+            return {
+                type: CHANGE_PJOURNAL_DEL_TYPE,
                 payload: {
                     t: t
                 }
@@ -136,7 +143,8 @@ export function changeJType(pret, t, st) {
             }
         };
     }
-    return { type: CHANGE_PJOURNAL_TYPE,
+    return {
+        type: CHANGE_PJOURNAL_TYPE,
         payload: {
             pret: pret,
             t: t,
@@ -146,7 +154,8 @@ export function changeJType(pret, t, st) {
 }
 
 export function changeDZ(dz, st) {
-    return { type: CHANGE_PJOURNAL_DZ,
+    return {
+        type: CHANGE_PJOURNAL_DZ,
         payload: {
             dz: dz,
             st: st
@@ -336,19 +345,20 @@ export function changeDnevnik(id, state, type) {
     };
 }
 
-export function changeNewsDel(type, id) {
+export function changeReq(typeR, id, state, param) {
     return {
-        type: CHANGE_NEWS_DEL,
+        type: typeR,
         payload: {
-            type: type,
-            id: id
+            id: id,
+            param: param,
+            state: state
         }
     };
 }
 
-export function changeNewsParam(type, id, param, state) {
+export function changeNews(typeR, type, id, state, param) {
     return {
-        type: CHANGE_NEWS_PARAM,
+        type: typeR,
         payload: {
             type: type,
             id: id,
@@ -358,48 +368,12 @@ export function changeNewsParam(type, id, param, state) {
     };
 }
 
-export function changeNews(type, id, title, date, img_url, text) {
+export function changeContacts(typeR, type, state) {
     return {
-        type: CHANGE_NEWS,
+        type: typeR,
         payload: {
             type: type,
-            id: id,
-            state: {
-                title: title,
-                date: date,
-                img_url: img_url,
-                text: text
-            }
-        }
-    };
-}
-
-export function changeContactsMapImage(type, url) {
-    return {
-        type: CHANGE_CONTACT_MAPIMG,
-        payload: {
-            type: type,
-            state: url
-        }
-    };
-}
-
-export function changeContactsMap(type, text) {
-    return {
-        type: CHANGE_CONTACT_MAP,
-        payload: {
-            type: type,
-            state: text
-        }
-    };
-}
-
-export function changeContacts(type, text) {
-    return {
-        type: CHANGE_CONTACT,
-        payload: {
-            type: type,
-            state: text
+            state: state
         }
     };
 }
@@ -408,9 +382,9 @@ export function changeTheme(themeState) {
     let stat = !themeState;
     document.body.setAttribute(thP[stat].c, '');
     if(document.body.hasAttribute(thP[stat].p)) document.body.removeAttribute(thP[stat].p)
-    Object.getOwnPropertyNames(thP[stat].params).map((param) =>{
-        document.documentElement.style.setProperty(param, thP[stat].params[param]);
-    });
+    Object.getOwnPropertyNames(thP[stat].params).map(param =>
+        document.documentElement.style.setProperty(param, thP[stat].params[param])
+    );
     return {type: CHANGE_THEME, payload: stat};
 }
 

@@ -21,6 +21,7 @@ import pjournalReducer from "./reducers/pjournalReducer";
 import paneReducer from "./reducers/other/paneReducer";
 import eventsReducer from "./reducers/other/eventsReducer";
 import groupReducer from "./reducers/people/groupReducer";
+import requestReducer from "./reducers/requestReducer";
 
 export default combineReducers({
     checkbox: checkBoxReducer,
@@ -44,5 +45,6 @@ export default combineReducers({
     pjournal: pjournalReducer,
     pane: paneReducer,
     events: eventsReducer,
-    groups: groupReducer
+    groups: groupReducer,
+    requests: requestReducer
 });

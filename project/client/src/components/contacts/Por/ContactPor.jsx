@@ -1,18 +1,22 @@
-import React, {useEffect, useRef} from "react";
+import React, {useEffect, useReducer, useRef} from "react";
 import {Helmet} from "react-helmet-async";
 import contactCSS from '../contactMain.module.css';
-import {contacts} from "../../../store/selector";
+import {contacts, states} from "../../../store/selector";
 import {useDispatch, useSelector} from "react-redux";
-import {errorLoad, setActNew} from "../ContactMain";
+import {errorLoad, getEdCon, setActNew} from "../ContactMain";
 import ErrFound from "../../other/error/ErrFound";
 
-let dispatch, contactsInfo, type, errText;
+let dispatch, contactsInfo, type, errText, cState, inps;
 type = "Por";
+inps = {};
 errText = "К сожалению, информация не найдена... Ждите новой информации.";
+let [_, forceUpdate] = [];
 
 export function ContactPor() {
     contactsInfo = useSelector(contacts);
+    cState = useSelector(states);
     if(!dispatch) setActNew(0);
+    [_, forceUpdate] = useReducer((x) => x + 1, 0);
     dispatch = useDispatch();
     const isFirstUpdate = useRef(true);
     useEffect(() => {
@@ -41,27 +45,31 @@ export function ContactPor() {
             <Helmet>
                 <title>Контакты портала</title>
             </Helmet>
-            {(!contactsInfo[type].contact && !contactsInfo[type].mapPr.imgUrl) ?
+            {(!contactsInfo[type].contact && !contactsInfo[type].mapPr.imgUrl && !(cState.auth && cState.role == 4)) ?
                     <ErrFound text={errText}/>
                 :
                     <div className={contactCSS.block}>
-                        <section className={contactCSS.center_colum}>
-                            <div className={contactCSS.blockTel}>
-                                <h1 className={contactCSS.zag}>Телефоны для связи</h1>
-                                <pre className={contactCSS.field}>
-                                    {contactsInfo[type].contact}
-                                </pre>
-                            </div>
-                            <div className={contactCSS.map+" "+contactCSS.blockTel}>
-                                <h1 className={contactCSS.zag}>Карта проезда</h1>
-                                <pre className={contactCSS.field}>
-                                    {contactsInfo[type].mapPr.text}
-                                </pre>
-                                <span className={contactCSS.banner}>
-                                    <img alt="banner" src={contactsInfo[type].mapPr.imgUrl+''} onError={errorLoad}/>
-                                </span>
-                            </div>
-                        </section>
+                        {(cState.auth && cState.role == 4) ?
+                                getEdCon(type, contactsInfo, inps, forceUpdate)
+                            :
+                                <section className={contactCSS.center_colum}>
+                                    <div className={contactCSS.blockTel}>
+                                        <h1 className={contactCSS.zag}>Телефоны для связи</h1>
+                                        <pre className={contactCSS.field}>
+                                            {contactsInfo[type].contact}
+                                        </pre>
+                                    </div>
+                                    <div className={contactCSS.map+" "+contactCSS.blockTel}>
+                                        <h1 className={contactCSS.zag}>Карта проезда</h1>
+                                        <pre className={contactCSS.field}>
+                                            {contactsInfo[type].mapPr.text}
+                                        </pre>
+                                        <span className={contactCSS.banner}>
+                                            <img alt="banner" src={contactsInfo[type].mapPr.imgUrl+''} onError={errorLoad}/>
+                                        </span>
+                                    </div>
+                                </section>
+                        }
                     </div>
             }
         </div>

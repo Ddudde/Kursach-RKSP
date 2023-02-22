@@ -5,12 +5,98 @@ import {useDispatch, useSelector} from "react-redux";
 import {pane, states} from "../../store/selector";
 import Pane from "../other/pane/Pane";
 import {setActived} from "../main/Main";
-import {changeNews, changeNewsDel, changeNewsParam} from "../../store/actions";
+import {CHANGE_NEWS, CHANGE_NEWS_DEL, CHANGE_NEWS_PARAM, changeNews} from "../../store/actions";
+import ed from "../../media/edit.png";
+import yes from "../../media/yes.png";
+import no from "../../media/no.png";
 
 let gr, cState, dispatch;
 
 gr = {
     group: 0
+}
+
+export function getEdField(edFi, titleEd, x, inf, inp, type, info, inps, forceUpdate, placeholder, pattern) {
+    return (<>
+        <div className={newsCSS.fi}>
+            {edFi}
+            {titleEd != "Ссылка:" && <img className={newsCSS.imgfield} src={ed} onClick={(e)=>onEdit(e, type, inps, forceUpdate, info)} title="Редактировать" alt=""/>}
+        </div>
+        <div className={newsCSS.ed}>
+            <div className={newsCSS.preinf}>
+                {titleEd}
+            </div>
+            {edFi.type == "pre" ?
+                    <textarea className={newsCSS.inp+" "+newsCSS.inparea} id={inp} placeholder={placeholder} defaultValue={inf} data-id={x} onChange={(e)=>chStatB(e, inps)}/>
+                :
+                    <input className={newsCSS.inp} id={inp} placeholder={placeholder} pattern={pattern} defaultValue={inf} data-id={x} onChange={(e)=>chStatB(e, inps)}/>
+            }
+            {ele(false, inp, inps)}
+            <img className={newsCSS.imginp+" yes "} src={yes} onClick={(e)=>onFin(e, type, inps, forceUpdate, info)} title="Подтвердить" alt=""/>
+            <img className={newsCSS.imginp} style={{marginRight: "1vw"}} src={no} onClick={(e)=>onClose(e, type, inps, forceUpdate)} title="Отменить изменения и выйти из режима редактирования" alt=""/>
+        </div>
+    </>)
+}
+
+export function getAdd(type, info, inps, forceUpdate, x) {
+    let edFi, dat, datFi, zag, zagFi, imiFi, im, tex, texFi;
+    zag = x ? info[type][x].title : inps.inpnzt;
+    zagFi = <h2 className={newsCSS.zag}>
+        {zag}
+    </h2>;
+    dat = x ? info[type][x].date : inps.inpndt;
+    datFi = <span className={newsCSS.date}>
+        {dat}
+    </span>;
+    im = x ? info[type][x].img_url : inps.addIm;
+    imiFi = <div className={newsCSS.banner}>
+        <div>
+            Изображение
+        </div>
+        <img className={newsCSS.imgfield} src={ed} onClick={(e)=>onEdit(e, type, inps, forceUpdate, info)} title="Редактировать" alt=""/>
+    </div>;
+    tex = x ? info[type][x].text : inps.inpntt;
+    texFi = <pre className={newsCSS.field}>
+        {tex}
+    </pre>;
+    edFi = (
+        <div className={newsCSS.ns}>
+            <div className={newsCSS.za} data-st="0">
+                {getEdField(zagFi, "Заголовок:", x, zag, "inpnzt_" + (x?x:""), type, info, inps, forceUpdate)}
+            </div>
+            <div className={newsCSS.da} data-st="0">
+                {getEdField(datFi, "Дата:", x, dat, "inpndt_" + (x?x:""), type, info, inps, forceUpdate, "ДД.ММ.ГГГГ", "^[0-9.]+$")}
+            </div>
+            <div className={newsCSS.te} data-st="0">
+                {im ?
+                        <span className={newsCSS.banner}>
+                            <img alt="banner" data-id={x} src={im} onError={(e)=>errLoadAddIm(e, type, inps, forceUpdate)}/>
+                            <div className={newsCSS.upr}>
+                                <img className={newsCSS.imgfield} src={ed} onClick={(e)=>onEdit(e, type, inps, forceUpdate, info)} title="Редактировать" alt=""/>
+                                <img className={newsCSS.imginp} style={{marginRight: "1vw"}} src={no} onClick={(e)=>onDel(e, type, inps, forceUpdate)} title="Удалить изображение" alt=""/>
+                            </div>
+                        </span>
+                    :
+                        <div className={newsCSS.im} data-st={inps.edAddIm ? "1" : "0"}>
+                            {getEdField(imiFi, "Ссылка:", x, inps.edAddIm, "inpnit_" + (x?x:""), type, info, inps, forceUpdate, "/media/tuman.jpg")}
+                        </div>
+                }
+                {getEdField(texFi, "Текст:", x, tex, "inpntt_" + (x?x:""), type, info, inps, forceUpdate)}
+            </div>
+            <div className={newsCSS.upr} data-id={x}>
+                {!x && <img className={newsCSS.imginp+" yes "} src={yes} onClick={(e)=>onFin(e, type, inps, forceUpdate, info)} title="Подтвердить" alt=""/>}
+                <img className={newsCSS.imginp+" "} style={{marginRight: "1vw"}} src={no} onClick={(e)=>onClose(e, type, inps, forceUpdate)} title={x ? "Удалить новость" : "Отменить изменения и выйти из режима редактирования"} alt=""/>
+            </div>
+        </div>
+    );
+    return x ? (edFi) : (
+        <div className={newsCSS.news_line} data-st="0">
+            <div className={newsCSS.nav_i+" "+newsCSS.link} id={newsCSS.nav_i} onClick={(e)=>onEdit(e, type, inps, forceUpdate, info)}>
+                Добавить новость
+            </div>
+            {edFi}
+        </div>
+    )
 }
 
 export function errorLoad(e) {
@@ -19,7 +105,7 @@ export function errorLoad(e) {
 
 export function errLoadAddIm(e, type, inps, forceUpdate) {
     if (e.target.hasAttribute("data-id")) {
-        dispatch(changeNewsParam(type, e.target.getAttribute("data-id"), "img_url", ""));
+        dispatch(changeNews(CHANGE_NEWS_PARAM, type, e.target.getAttribute("data-id"), "", "img_url"));
     } else {
         inps.addIm = undefined;
         forceUpdate();
@@ -32,7 +118,7 @@ export function onDel(e, type, inps, forceUpdate) {
     if(par.classList.contains(newsCSS.banner)){
         ima = par.querySelector("img");
         if (ima.hasAttribute("data-id")) {
-            dispatch(changeNewsParam(type, ima.getAttribute("data-id"), "img_url", ""));
+            dispatch(changeNews(CHANGE_NEWS_PARAM, type, ima.getAttribute("data-id"), "", "img_url"));
         } else {
             inps.addIm = undefined;
             forceUpdate();
@@ -50,11 +136,15 @@ export function onEdit(e, type, inps, forceUpdate, info) {
         par = par.parentElement;
         par.setAttribute('data-st', '1');
     }
+    if(par.parentElement.parentElement.classList.contains(newsCSS.im)){
+        par = par.parentElement.parentElement;
+        par.setAttribute('data-st', '1');
+    }
     if(par.classList.contains(newsCSS.upr)){
         ima = par.parentElement.querySelector("img");
         if (ima.hasAttribute("data-id")) {
             inps.edAddIm = info[type][ima.getAttribute("data-id")].img_url;
-            dispatch(changeNewsParam(type, ima.getAttribute("data-id"), "img_url", ""));
+            dispatch(changeNews(CHANGE_NEWS_PARAM, type, ima.getAttribute("data-id"), "", "img_url"));
         } else {
             inps.edAddIm = inps.addIm;
             inps.addIm = undefined;
@@ -69,8 +159,15 @@ export function onFin(e, type, inps, forceUpdate, info) {
     bul = par.parentElement.classList.contains(newsCSS.te);
     inp = par.querySelector(bul ? "textarea" : "input");
     if(par.classList.contains(newsCSS.upr)){
-        let news = Object.getOwnPropertyNames(info[type])
-        dispatch(changeNews("Yo", news.length == 0 ? 0 : parseInt(news[news.length-1]) + 1, inps.inpnzt, inps.inpndt, inps.addIm, inps.inpntt));
+        let news, obj;
+        news = Object.getOwnPropertyNames(info[type]);
+        obj = {
+            title: inps.inpnzt,
+            date: inps.inpndt,
+            img_url: inps.addIm,
+            text: inps.inpntt
+        }
+        dispatch(changeNews(CHANGE_NEWS, type, news.length == 0 ? 0 : parseInt(news[news.length-1]) + 1, obj));
         return;
     }
     if (inps[inp.id]) {
@@ -78,7 +175,7 @@ export function onFin(e, type, inps, forceUpdate, info) {
         if(par.parentElement.classList.contains(newsCSS.im)) {
             if (inps.edAddIm) inps.edAddIm = undefined;
             if (inp.hasAttribute("data-id")) {
-                dispatch(changeNewsParam(type, inp.getAttribute("data-id"), "img_url", inp.value));
+                dispatch(changeNews(CHANGE_NEWS_PARAM, type, inp.getAttribute("data-id"), inp.value, "img_url"));
             } else {
                 inps.addIm = inp.value;
                 forceUpdate();
@@ -87,7 +184,7 @@ export function onFin(e, type, inps, forceUpdate, info) {
         if(bul) {
             par = par.parentElement;
             if(inp.hasAttribute("data-id")){
-                dispatch(changeNewsParam(type, inp.getAttribute("data-id"),"text", inp.value));
+                dispatch(changeNews(CHANGE_NEWS_PARAM, type, inp.getAttribute("data-id"), inp.value,"text"));
             }else {
                 inps.inpntt = inp.value;
                 forceUpdate();
@@ -96,7 +193,7 @@ export function onFin(e, type, inps, forceUpdate, info) {
         if(par.parentElement.classList.contains(newsCSS.da)){
             par = par.parentElement;
             if(inp.hasAttribute("data-id")){
-                dispatch(changeNewsParam(type, inp.getAttribute("data-id"),"date", inp.value));
+                dispatch(changeNews(CHANGE_NEWS_PARAM, type, inp.getAttribute("data-id"), inp.value,"date"));
             }else {
                 inps.inpndt = inp.value;
                 forceUpdate();
@@ -105,7 +202,7 @@ export function onFin(e, type, inps, forceUpdate, info) {
         if(par.parentElement.classList.contains(newsCSS.za)){
             par = par.parentElement;
             if(inp.hasAttribute("data-id")){
-                dispatch(changeNewsParam(type, inp.getAttribute("data-id"),"title", inp.value));
+                dispatch(changeNews(CHANGE_NEWS_PARAM, type, inp.getAttribute("data-id"), inp.value,"title"));
             }else{
                 inps.inpnzt = inp.value;
                 forceUpdate();
@@ -135,7 +232,7 @@ export function onClose(e, type, inps, forceUpdate) {
     }
     if(par.classList.contains(newsCSS.upr)){
         if (par.hasAttribute("data-id")) {
-            dispatch(changeNewsDel(type, par.getAttribute("data-id")));
+            dispatch(changeNews(CHANGE_NEWS_DEL, type, par.getAttribute("data-id")));
         }else {
             par = par.parentElement.parentElement;
             par.setAttribute('data-st', '0');

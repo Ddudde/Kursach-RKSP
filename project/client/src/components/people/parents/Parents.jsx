@@ -4,7 +4,7 @@ import peopleCSS from '../peopleMain.module.css';
 import parentsCSS from './parents.module.css';
 import {classmates, parents, states, themes} from "../../../store/selector";
 import {useDispatch, useSelector} from "react-redux";
-import {chStatB, copyLink, ele, onClose, onDel, onEdit, onFin, refreshLink, setActNew} from "../PeopleMain";
+import {chStatB, copyLink, ele, onClose, onDel, onEdit, onFin, refreshLink, setActNew, sit} from "../PeopleMain";
 import profl from "../../../media/profl.png";
 import profd from "../../../media/profd.png";
 import Pane from "../../other/pane/Pane";
@@ -26,11 +26,9 @@ import refreshCl from "../../../media/refreshCl.png";
 import copyd from "../../../media/copyd.png";
 import copyl from "../../../media/copyl.png";
 
-let dispatch, parentsInfo, classmatesInfo, errText, inps, pari, sit, themeState, cState;
+let dispatch, parentsInfo, classmatesInfo, errText, inps, themeState, cState;
 errText = "К сожалению, информация не найдена... Можете попробовать попросить завуча заполнить информацию.";
-sit = "http://localhost:3000";
 inps = {nyid : undefined, inpnpt : "Фамилия И.О."};
-pari = {elems: 0, paels: 0};
 let [_, forceUpdate] = [];
 
 function selecKid(e, id) {
@@ -92,7 +90,7 @@ function getAddPred(param) {
                         ФИО:
                     </div>
                     <input className={peopleCSS.inp} data-id1={param ? param : undefined} id={"inpnpt_"} placeholder={"Фамилия И.О."} defaultValue={inps.inpnpt} onChange={(e)=>chStatB(e, inps)} type="text"/>
-                    {ele(false, "inpnpt_", true, inps, pari)}
+                    {ele(false, "inpnpt_", inps)}
                     <img className={peopleCSS.imginp+" yes "} src={yes} onClick={(e)=>onFin(e, inps, forceUpdate)} title="Подтвердить" alt=""/>
                     <img className={peopleCSS.imginp} style={{marginRight: "1vw"}} src={no} onClick={onClose} title="Отменить изменения и выйти из режима редактирования" alt=""/>
                 </div>
@@ -134,7 +132,7 @@ function getAdd() {
                                 ФИО:
                             </div>
                             <input className={peopleCSS.inp} data-id1={param1} id={"inpnpt_" + param1} placeholder={"Фамилия И.О."} defaultValue={parentsInfo.nw.par[param1].name} onChange={(e)=>chStatB(e, inps)} type="text"/>
-                            {ele(false, "inpnpt_" + param1, true, inps, pari)}
+                            {ele(false, "inpnpt_" + param1, inps)}
                             <img className={peopleCSS.imginp+" yes "} src={yes} onClick={(e)=>onFin(e, inps, forceUpdate, CHANGE_PARENTS, parentsInfo)} title="Подтвердить" alt=""/>
                             <img className={peopleCSS.imginp} style={{marginRight: "1vw"}} src={no} onClick={onClose} title="Отменить изменения и выйти из режима редактирования" alt=""/>
                         </div>
@@ -184,7 +182,7 @@ function getParents (pI, b) {
                                         ФИО:
                                     </div>
                                     <input className={peopleCSS.inp} data-id={param + "_" + param1} id={"inpnpt_" + param1} placeholder={"Фамилия И.О."} defaultValue={parentsInfo[param].par[param1].name} onChange={(e)=>chStatB(e, inps)} type="text"/>
-                                    {ele(false, "inpnpt_" + param + "_" + param1, true, inps, pari)}
+                                    {ele(false, "inpnpt_" + param + "_" + param1, inps)}
                                     <img className={peopleCSS.imginp+" yes "} src={yes} onClick={(e)=>onFin(e, inps, forceUpdate, CHANGE_PARENTS, parentsInfo)} title="Подтвердить" alt=""/>
                                     <img className={peopleCSS.imginp} style={{marginRight: "1vw"}} src={no} onClick={onClose} title="Отменить изменения и выйти из режима редактирования" alt=""/>
                                 </div>

@@ -2,7 +2,7 @@ import React, {useEffect, useReducer, useRef} from "react";
 import {Helmet} from "react-helmet-async";
 import {classmates, states, themes} from "../../../store/selector";
 import {useDispatch, useSelector} from "react-redux";
-import {chStatB, copyLink, ele, onClose, onDel, onEdit, onFin, refreshLink, setActNew} from "../PeopleMain";
+import {chStatB, copyLink, ele, onClose, onDel, onEdit, onFin, refreshLink, setActNew, sit} from "../PeopleMain";
 import profl from "../../../media/profl.png";
 import profd from "../../../media/profd.png";
 import Pane from "../../other/pane/Pane";
@@ -17,11 +17,9 @@ import refreshCl from "../../../media/refreshCl.png";
 import copyd from "../../../media/copyd.png";
 import copyl from "../../../media/copyl.png";
 
-let dispatch, classmatesInfo, errText, inps, pari, sit, themeState, cState;
+let dispatch, classmatesInfo, errText, inps, themeState, cState;
 errText = "К сожалению, информация не найдена... Можете попробовать попросить завуча заполнить информацию.";
-sit = "http://localhost:3000";
 inps = {inpnpt : "Фамилия И.О."};
-pari = {elems: 0, paels: 0};
 let [_, forceUpdate] = [];
 
 function getMates(x, b) {
@@ -46,7 +44,7 @@ function getMates(x, b) {
                                 ФИО:
                             </div>
                             <input className={peopleCSS.inp} id={"inpnpt_"} placeholder={"Фамилия И.О."} defaultValue={inps.inpnpt} onChange={(e)=>chStatB(e, inps)} type="text"/>
-                            {ele(false, "inpnpt_", true, inps, pari)}
+                            {ele(false, "inpnpt_", inps)}
                             <img className={peopleCSS.imginp+" yes "} src={yes} onClick={(e)=>onFin(e, inps, forceUpdate, CHANGE_CLASSMATES)} title="Подтвердить" alt=""/>
                             <img className={peopleCSS.imginp} style={{marginRight: "1vw"}} src={no} onClick={onClose} title="Отменить изменения и выйти из режима редактирования" alt=""/>
                         </div>
@@ -70,7 +68,7 @@ function getMates(x, b) {
                                 ФИО:
                             </div>
                             <input className={peopleCSS.inp} data-id1={param} id={"inpnpt_" + param} placeholder={"Фамилия И.О."} defaultValue={x[param].name} onChange={(e)=>chStatB(e, inps)} type="text"/>
-                            {ele(false, "inpnpt_" + param, true, inps, pari)}
+                            {ele(false, "inpnpt_" + param, inps)}
                             <img className={peopleCSS.imginp+" yes "} src={yes} onClick={(e)=>onFin(e, inps, forceUpdate, CHANGE_CLASSMATES)} title="Подтвердить" alt=""/>
                             <img className={peopleCSS.imginp} style={{marginRight: "1vw"}} src={no} onClick={onClose} title="Отменить изменения и выйти из режима редактирования" alt=""/>
                         </div>

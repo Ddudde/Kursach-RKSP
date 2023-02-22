@@ -14,6 +14,7 @@ export const admins = state => state.admins || {};
 export const hteachers = state => state.hteachers || {};
 export const schedules = state => state.schedules || {};
 export const marks = state => state.marks || {};
+export const requests = state => state.requests || {};
 export const journals = state => state.journals || {};
 export const pjournal = state => state.pjournal || {};
 export const pane = state => state.pane || {};
