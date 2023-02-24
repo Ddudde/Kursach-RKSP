@@ -1,6 +1,7 @@
-import {CHANGE_EVENT, CHANGE_EVENT_DEL, changeCL, changeEvents, changeState} from "../../store/actions";
+import {CHANGE_EVENT, CHANGE_EVENT_DEL, CHANGE_STATE_GL, changeEvents, changeState} from "../../store/actions";
+import {send} from "../main/Main";
 
-let reg, dispatch, vxod, logr, r, v, pasr, logv, regb, ch1, ch2, warnId, warnEmpId, over, g_id, g_text_id_1, g_text_id_2, g_text_id_3, g_text_id_4;
+let reg, dispatch, vxod, logr, r, v, pasr, logv, pasv, regb, ch1, ch2, warnId, warnEmpId, over, g_id, g_text_id_1, g_text_id_2, g_text_id_3, g_text_id_4;
 
 export function ini(dispatchS) {
 	reg = document.getElementById("reg");
@@ -11,6 +12,7 @@ export function ini(dispatchS) {
 	logr = document.getElementById("logr");
 	pasr = document.getElementById("pasr");
 	logv = document.getElementById("logv");
+	pasv = document.getElementById("pasv");
 	ch1 = document.getElementById("ch1");
 	ch2 = document.getElementById("ch2");
 	over = document.getElementById("over");
@@ -85,9 +87,29 @@ export function rego(){
 	}
 }
 
-export function vxo(disp){
-	disp(changeState("auth", true));
-	disp(changeState("login", logv.value));
+export function vxo(){
+	console.log("Вход!");
+	let bod = {
+		type: "auth",
+		body: {
+			login: logv.value,
+			password: pasv.value
+		}
+	};
+	bod = JSON.stringify(bod);
+	// console.log(bod);
+	const checkVx = (data) => {
+		if(data.body.auth && !data.error){
+			console.log(data.body.auth);
+			dispatch(changeState(CHANGE_STATE_GL, undefined, data.body));
+			// dispatch(changeState("login", logv.value));
+			// dispatch(changeState("ico", 2));
+			// dispatch(changeState("role", 0));
+		} else {
+			addEvent("Неверный логин или пароль", 10);
+		}
+	};
+	send('POST', bod, undefined, checkVx);
 }
 
 function inpchr(e){
@@ -260,75 +282,4 @@ export function getLic(){
 			<p><strong><br /></strong></p>
 		</>
 	)
-}
-
-export function get(dispatch) {
-	fetch('http://localhost:8080/cts')
-		.then((res) => {
-			if (!res.ok) {
-				throw new Error(
-					`This is an HTTP error: The status is ${res.status}`
-				);
-			}
-			return res.json();
-		})
-		.then((repos) => {
-			dispatch(changeCL(repos));
-		})
-		.catch((err) => {
-			console.log(err.message);
-		});
-}
-
-export function del(idi) {
-	fetch(`http://localhost:8080/cts/${idi}`, {method: 'DELETE'})
-		.then((res) => {
-			if (!res.ok) {
-				throw new Error(
-					`This is an HTTP error: The status is ${res.status}`
-				);
-			}
-			console.log("Deleted!!!");
-		})
-		.catch((err) => {
-			console.log(err.message);
-		});
-}
-
-export function post(bod) {
-	fetch('http://localhost:8080/cts/', {method: 'POST',
-		headers: {
-			'Content-Type': 'application/json'
-		},
-		body: bod})
-		.then((res) => {
-			if (!res.ok) {
-				throw new Error(
-					`This is an HTTP error: The status is ${res.status}`
-				);
-			}
-			console.log("Post!!!");
-		})
-		.catch((err) => {
-			console.log(err.message);
-		});
-}
-
-function put(id, bod) {
-	fetch(`http://localhost:8080/cts/${id}`, {method: 'PUT',
-		headers: {
-			'Content-Type': 'application/json'
-		},
-		body: bod})
-		.then((res) => {
-			if (!res.ok) {
-				throw new Error(
-					`This is an HTTP error: The status is ${res.status}`
-				);
-			}
-			console.log("Put!!!");
-		})
-		.catch((err) => {
-			console.log(err.message);
-		});
 }

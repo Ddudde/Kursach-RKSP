@@ -4,10 +4,14 @@ spring:
     username: sa
     password:
     driverClassName: org.h2.Driver
+  mvc:
+    converters:
+#      preferred-json-mapper: gson
+      preferred-json: gson
   h2:
     console:
       enabled: true
       path: /console_db/
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
-    hibernate.ddl-auto: update
+    hibernate.ddl-auto: create

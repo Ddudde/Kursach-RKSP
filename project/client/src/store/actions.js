@@ -1,10 +1,9 @@
-import {thP} from "../components/main/Main";
-
 export const CHANGE_CHECKBOX = "CHANGE_CHECKBOX";
 
 export const CHANGE_THEME = "CHANGE_THEME";
 
 export const CHANGE_STATE = "CHANGE_STATE";
+export const CHANGE_STATE_GL = "CHANGE_STATE_GL";
 
 export const CHANGE_ZVONKI = "CHANGE_ZVONKI";
 export const CHANGE_ZVONKI_DEL = "CHANGE_ZVONKI_DEL";
@@ -116,9 +115,9 @@ export function changeCB(checkboxId, checkBoxState) {
     };
 }
 
-export function changeState(id, state) {
+export function changeState(type, id, state) {
     return {
-        type: CHANGE_STATE,
+        type: type,
         payload: {
             stateId: id,
             cState: state
@@ -378,7 +377,7 @@ export function changeContacts(typeR, type, state) {
     };
 }
 
-export function changeTheme(themeState) {
+export function changeTheme(themeState, thP) {
     let stat = !themeState;
     document.body.setAttribute(thP[stat].c, '');
     if(document.body.hasAttribute(thP[stat].p)) document.body.removeAttribute(thP[stat].p)

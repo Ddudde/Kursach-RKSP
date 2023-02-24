@@ -3,48 +3,17 @@ import mainCSS from './main.module.css';
 import {Link, Outlet} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 import {states, themes} from "../../store/selector";
-import {CHANGE_EVENTS_STEP, changeEvents, changeState, changeTheme} from "../../store/actions";
-import * as def from "./default";
+import {CHANGE_EVENTS_STEP, CHANGE_STATE, changeEvents, changeState, changeTheme} from "../../store/actions";
 import profd from "../../media/profd.png";
 import profl from "../../media/profl.png";
 import mapd from "../../media/Map_symbolD.png";
 import mapl from "../../media/Map_symbolL.png";
+import up from "../../media/up.png";
 import Events from "../other/events/Events";
 
-let act, cStateInfo, dispatch, themeInfo;
+let act, cStateInfo, dispatch, themeInfo, scrolling, timid, d1;
+scrolling = false;
 act = ".panGL";
-export let thP = {
-    true: {
-        c: "theme_light",
-        p: "theme_dark",
-        params: {
-            "--bgcV1": "#DBDBDBe6",
-            "--bgcV2": "#242424e6",
-            "--bgcV3": "#000000b3",
-            "--shdV1": "#fff",
-            "--cV1": "#006600",
-            "--cV2": "#009900",
-            "--cV3": "#090a0b",
-            "--bcV1": "#4d4d4d",
-            "--bcV2": "#090a0b",
-        }
-    },
-    false: {
-        c: "theme_dark",
-        p: "theme_light",
-        params: {
-            "--bgcV1": "#242424e6",
-            "--bgcV2": "#DBDBDBe6",
-            "--bgcV3": "#0000004d",
-            "--shdV1": "#000",
-            "--cV1": "#009900",
-            "--cV2": "#00bb00",
-            "--cV3": "#f5f6f7",
-            "--bcV1": "#b3b3b3",
-            "--bcV2": "#f5f6f7",
-        }
-    }
-}
 
 function getPan(name, namecl, link, dopClass, fun) {
     let cl = "pan" + namecl;
@@ -68,9 +37,9 @@ function getLogin() {
             </div>
             <div className={mainCSS.logMenu}>
                 {getPan("Профиль", "Pro", "profiles", mainCSS.logMenuBlock)}
-                {cStateInfo.roles && getPan("Сменить роль", "Rol", "", mainCSS.logMenuBlock,() => {chRoles()})}
+                {cStateInfo.roles && getPan("Сменить роль", "Rol", "", mainCSS.logMenuBlock,chRoles)}
                 {getPan("Настройки", "Set", "settings", mainCSS.logMenuBlock)}
-                {getPan("Выход", "Exi", "", mainCSS.logMenuBlock,() => {onExit()})}
+                {getPan("Выход", "Exi", "", mainCSS.logMenuBlock,onExit)}
             </div>
         </div>
     )
@@ -87,7 +56,7 @@ function getKids() {
             </div>
             <div className={mainCSS.logMenu}>
                 {cStateInfo.kids && Object.getOwnPropertyNames(cStateInfo.kids).map(param1 =>
-                    <div className={mainCSS.nav_i+' '+mainCSS.log+' '+mainCSS.kidBlock} id={mainCSS.nav_i} onClick={() => (dispatch(changeState("kid", param1)))}>
+                    <div className={mainCSS.nav_i+' '+mainCSS.log+' '+mainCSS.kidBlock} id={mainCSS.nav_i} onClick={() => (dispatch(changeState(CHANGE_STATE, "kid", param1)))}>
                         <img className={mainCSS.kidImg} src={themeInfo.theme_ch ? profd : profl} title="Перейти в профиль" alt=""/>
                         <div className={mainCSS.kidInf}>Информация о:</div>
                         <div className={mainCSS.kidText}>{cStateInfo.kids[param1]}</div>
@@ -98,15 +67,45 @@ function getKids() {
     )
 }
 
+export function send(type, bod, url, fun) {
+    let sed = {
+        method: type//'PUT', 'GET', 'DELETE', 'POST'
+    };
+    if(bod){
+        sed.headers = {
+            'Content-Type': 'application/json'
+        };
+        sed.body = bod;
+    }
+    fetch("http://localhost:8080/cts/"+(url ? url : ""), sed)
+        .then((res) => {
+            if (!res.ok) {
+                throw new Error(
+                    `This is an HTTP error: The status is ${res.status}`
+                );
+            }
+            console.log(type + "!!!st");
+            return res.json();
+        })
+        .then((repos) => {
+            console.log(type + "!!!");
+            if(fun) fun(repos);
+            // dispatch(changeCL(repos));
+        })
+        .catch((err) => {
+            console.log(err.message);
+        });
+}
+
 function chRoles() {
     let r = cStateInfo.role;
     r++;
     if(r > 4) r = 0;
-    dispatch(changeState("role", r));
+    dispatch(changeState(CHANGE_STATE, "role", r));
 }
 
 function onExit() {
-    dispatch(changeState("auth", !cStateInfo.auth));
+    dispatch(changeState(CHANGE_STATE, "auth", !cStateInfo.auth));
 }
 
 export function setActived(name) {
@@ -117,12 +116,34 @@ export function setActived(name) {
     }
 }
 
-function ini(stat) {
-    document.body.setAttribute(thP[stat].c, '');
-    if(document.body.hasAttribute(thP[stat].p)) document.body.removeAttribute(thP[stat].p)
-    Object.getOwnPropertyNames(thP[stat].params).map(param =>
-        document.documentElement.style.setProperty(param, thP[stat].params[param])
+function iniTheme(stat) {
+    document.body.setAttribute(themeInfo.thP[stat].c, '');
+    if(document.body.hasAttribute(themeInfo.thP[stat].p)) document.body.removeAttribute(themeInfo.thP[stat].p)
+    Object.getOwnPropertyNames(themeInfo.thP[stat].params).map(param =>
+        document.documentElement.style.setProperty(param, themeInfo.thP[stat].params[param])
     );
+}
+
+function scr() {
+    if (window.pageYOffset >= window.innerHeight * 0.5)
+        d1.style.display = "block";
+    else
+        d1.style.display = "none";
+}
+
+function tim() {
+    if (scrolling) {
+        scrolling = false;
+        scr();
+    }
+}
+
+function onTop(e){
+    window.scroll({
+        left: 0,
+        top: 0,
+        behavior: "smooth"
+    });
 }
 
 export function Main() {
@@ -132,10 +153,22 @@ export function Main() {
     dispatch = useDispatch();
     useEffect(() => {
         console.log("I was triggered during componentDidMount Main.jsx");
-        def.ini();
-        ini(themeInfo.theme_ch);
+        scr();
+        iniTheme(themeInfo.theme_ch);
+        window.onscroll = () => {
+            if(!scrolling) {
+                scrolling = true;
+                timid = setTimeout(tim,300);
+            }
+        };
         dispatch(changeEvents(CHANGE_EVENTS_STEP, 1));
+        // send('GET');
+        // send('POST', JSON.stringify({id: 25, login: "nm1", password: "1111", fio: "Петров В.В.", roles: {3:{yo: 4, group: 1}}}));
+        // send('PUT', JSON.stringify({id: 28, login: "nm1", password: "11111", fio: "Петров 1В.В.", roles: {3:{yo: 4, group: 1}}}), 65);
+        //put(14, JSON.stringify({id: 14, name: 'nm127', email: 'm@y.ru7'}))
         return function() {
+            window.onwheel = undefined;
+            clearTimeout(timid);
             dispatch(changeEvents(CHANGE_EVENTS_STEP, -1));
             console.log("I was triggered during componentWillUnmount Main.jsx")
         }
@@ -175,13 +208,17 @@ export function Main() {
             <Events/>
             <div className={mainCSS.switcher}>
                 <label className={mainCSS.switch}>
-                    <input className={mainCSS.inp_sw} type="checkbox" checked={themeInfo.theme_ch ? "checked" : ""} onChange={() => {dispatch(changeTheme(themeInfo.theme_ch))}}/>
+                    <input className={mainCSS.inp_sw} type="checkbox" checked={themeInfo.theme_ch ? "checked" : ""} onChange={() => {dispatch(changeTheme(themeInfo.theme_ch, themeInfo.thP))}}/>
                     <span className={mainCSS.slider}/>
                 </label>
                 <div className={mainCSS.lab_sw}>
                     Тема: {themeInfo.theme}
                 </div>
             </div>
+            <div className={mainCSS.d}>
+                © 2020 ООО "Рога и Копыта" Все права защищены. Project on <a href="https://github.com/Ddudde/Kursach-HTML" style={{color: "var(--cV2)"}}>github</a>.
+            </div>
+            <img className={mainCSS.d1} src={up} title="Вверх" alt="" onClick={onTop} ref={(el)=>d1 = el}/>
         </>
     )
 }

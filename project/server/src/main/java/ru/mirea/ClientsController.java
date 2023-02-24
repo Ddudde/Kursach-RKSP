@@ -1,51 +1,107 @@
 package ru.mirea;
 
-import org.springframework.http.ResponseEntity;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import ru.mirea.data.User;
+import ru.mirea.data.UserRepository;
+import ru.mirea.data.json.Role;
 
-import java.net.URI;
-import java.net.URISyntaxException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/cts")
 @CrossOrigin(origins = "http://localhost:3000")
 public class ClientsController {
 
-    private final ClientRepository clientRepository;
+    private final UserRepository userRepository;
 
-    public ClientsController(ClientRepository clientRepository) {
-        this.clientRepository = clientRepository;
+    public ClientsController(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
+
+//    public List<User> createUser(User user) {
+//        User savedUser = userRepository.save(user);
+//        System.out.println(savedUser);
+//        return userRepository.findAll();
+//    }
+
     @GetMapping
-    public List<Client> getClients() {
-        return clientRepository.findAll();
+    public List<User> getUsers() {
+        return userRepository.findAll();
     }
 
     @GetMapping("/{id}")
-    public Client getClient(@PathVariable Long id) {
-        return clientRepository.findById(id).orElseThrow(RuntimeException::new);
+    public User getUser(@PathVariable Long id) {
+        return userRepository.findById(id).orElseThrow(RuntimeException::new);
     }
 
-    @PostMapping
-    public ResponseEntity createClient(@RequestBody Client client) throws URISyntaxException {
-        Client savedClient = clientRepository.save(client);
-        return ResponseEntity.created(new URI("/clients/" + savedClient.getId())).body(savedClient);
+    @RequestMapping(method = RequestMethod.POST)
+    public JsonObject post(@RequestBody JsonObject data) {
+        System.out.println("Post!");
+        System.out.println(data);
+        JsonObject ans, body, bodyAns;
+        ans = new JsonObject();
+        body = null;
+        if(data.get("body").isJsonObject()) body = data.get("body").getAsJsonObject();
+        System.out.println(body);
+        switch (data.get("type").getAsString()){
+            case "auth" -> {
+                bodyAns = new JsonObject();
+                ans.add("body", bodyAns);
+                bodyAns.addProperty("auth", false);
+                List<User> users = userRepository.findByLogin(body.get("login").getAsString());
+                if(!users.isEmpty()){
+                    User user = users.get(0);
+                    if(Objects.equals(user.getPassword(), body.get("password").getAsString())) {
+                        bodyAns.addProperty("auth", true);
+                        bodyAns.addProperty("login", user.getLogin());
+                        bodyAns.addProperty("role", (Long) user.getRoles().keySet().toArray()[0]);
+                        bodyAns.addProperty("ico", user.getIco());
+                        bodyAns.addProperty("roles", user.getRoles().size() > 1);
+                    }
+                }
+                return ans;
+            }
+            default -> {
+                System.out.println("Error Type" + data.get("type"));
+                ans.addProperty("error", true);
+                return ans;
+            }
+        }
+    }
+
+//    @PostMapping
+    public List<User> createUser(@RequestBody User user) {
+        User savedUser = userRepository.save(user);
+        System.out.println(savedUser);
+        return userRepository.findAll();
+    }
+
+    public List<User> get(String log) {
+        return userRepository.findByLogin(log);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity updateClient(@PathVariable Long id, @RequestBody Client client) {
-        Client currentClient = clientRepository.findById(id).orElseThrow(RuntimeException::new);
-        currentClient.setName(client.getName());
-        currentClient.setEmail(client.getEmail());
-        currentClient = clientRepository.save(client);
-
-        return ResponseEntity.ok(currentClient);
+    public List<User> updateUser(@PathVariable Long id, @RequestBody User user) {
+        User currentUser = userRepository.findById(id).orElseThrow(RuntimeException::new);
+        System.out.println(user.getId());
+        currentUser.setId(user.getId());
+        currentUser.setLogin(user.getLogin());
+        currentUser.setFio(user.getFio());
+        currentUser = userRepository.save(user);
+        System.out.println(currentUser);
+        return userRepository.findAll();
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity deleteClient(@PathVariable Long id) {
-        clientRepository.deleteById(id);
-        return ResponseEntity.ok().build();
+    public List<User> deleteUser(@PathVariable Long id) {
+        userRepository.deleteById(id);
+        return userRepository.findAll();
     }
 }

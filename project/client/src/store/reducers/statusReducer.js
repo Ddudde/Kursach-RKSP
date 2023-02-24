@@ -1,19 +1,18 @@
-import {CHANGE_STATE} from '../actions';
+import {CHANGE_STATE, CHANGE_STATE_GL} from '../actions';
 
 const initialState = {
-        auth: true,
-        login: "test",
-        ico: 2,
-        role: 4,
-        roleDesc: "администратор портала",
-        roles: true,
-        secFr: true,
+        auth: false,
+        // login: "test",
+        // ico: 2,
+        role: 0,
+        roles: false,
+        secFr: false,
         rolesDescrs: ["обучающийся", "родитель", "педагог", "завуч", "администратор портала"],
-        kid: "id1",
-        kids:{
-            "id1": "Петров А.А.",
-            "id2": "Петрова А.Б."
-        }
+        // kid: "id1",
+        // kids:{
+        //     "id1": "Петров А.А.",
+        //     "id2": "Петрова А.Б."
+        // }
     };
 
 export default function statusReducer(state = initialState, action) {
@@ -23,6 +22,16 @@ export default function statusReducer(state = initialState, action) {
             fd[action.payload.stateId] = action.payload.cState;
             if(action.payload.stateId == "role") {
                 fd.roleDesc = fd.rolesDescrs[action.payload.cState];
+            }
+            return fd;
+        case CHANGE_STATE_GL:
+            if(action.payload.cState){
+                for(let el of Object.getOwnPropertyNames(action.payload.cState)){
+                    fd[el] = action.payload.cState[el];
+                    if(el == "role") {
+                        fd.roleDesc = fd.rolesDescrs[action.payload.cState[el]];
+                    }
+                }
             }
             return fd;
         default:

@@ -10,7 +10,7 @@ import no from "../../../media/no.png";
 import ed from "../../../media/edit.png";
 import profd from "../../../media/profd.png";
 import profl from "../../../media/profl.png";
-import {changeProfile, changeProfileRoles, changeState} from "../../../store/actions";
+import {CHANGE_STATE, changeProfile, changeProfileRoles, changeState} from "../../../store/actions";
 import {setActived} from "../Main";
 
 let profilesInfo, dispatch, warner, moore;
@@ -65,7 +65,7 @@ function onFin(e) {
             if (inp.type == "email") {
                 dispatch(changeProfileRoles(e.target.getAttribute('data-id'), "email", inp.value));
             } else {
-                dispatch(changeState("login", inp.value));
+                dispatch(changeState(CHANGE_STATE, "login", inp.value));
                 dispatch(changeProfile("login", inp.value));
             }
             field.setAttribute('data-act', '1');

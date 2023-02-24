@@ -276,3 +276,25 @@
 	margin: 0 0.1vw;
 	grid-column: 3;
 }
+
+.d{
+	position: fixed;
+	right: 12.5vw;
+	font-size: 2vw;
+	color: var(--cV2);
+	bottom: 0;
+	font-weight: bold;
+	text-shadow: 2px 2px 2px #000;
+}
+
+.d1{
+	user-select: none;
+	cursor: pointer;
+	position: fixed;
+	width: 4vw;
+	bottom: 50px;
+	right: 6.25vw;
+	display: none;
+	box-shadow: rgb(0 0 0) 2px 2px 5px 3px;
+	border-radius: 50%;
+}

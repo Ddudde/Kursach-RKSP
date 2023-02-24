@@ -3,7 +3,7 @@ import {Helmet} from "react-helmet-async";
 import settingsCSS from './settings.module.css';
 import {checkbox, states} from "../../../store/selector";
 import {useDispatch, useSelector} from "react-redux";
-import {changeState} from "../../../store/actions";
+import {CHANGE_STATE, changeState} from "../../../store/actions";
 import ran from "../../../media/random.png";
 import button from "../../button.module.css";
 import CheckBox from "../../other/checkBox/CheckBox";
@@ -59,7 +59,7 @@ function chStatB(e) {
 
 function chStatAv(e) {
     e.target.firstChild.checked = true;
-    dispatch(changeState("ico", els[e.target.firstChild.id]));
+    dispatch(changeState(CHANGE_STATE, "ico", els[e.target.firstChild.id]));
 }
 
 function chStatSb1(e) {
