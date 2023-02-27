@@ -2,89 +2,18 @@ import React, {useEffect, useReducer, useRef} from "react";
 import {Helmet} from "react-helmet-async";
 import {classmates, states, themes} from "../../../store/selector";
 import {useDispatch, useSelector} from "react-redux";
-import {chStatB, copyLink, ele, onClose, onDel, onEdit, onFin, refreshLink, setActNew, sit} from "../PeopleMain";
+import {chStatB, getPep, setActNew} from "../PeopleMain";
 import profl from "../../../media/profl.png";
 import profd from "../../../media/profd.png";
 import Pane from "../../other/pane/Pane";
 import ErrFound from "../../other/error/ErrFound";
 import peopleCSS from "../peopleMain.module.css";
-import ed from "../../../media/edit.png";
-import yes from "../../../media/yes.png";
-import {CHANGE_CLASSMATES, CHANGE_CLASSMATES_DEL} from "../../../store/actions";
-import no from "../../../media/no.png";
-import refreshCd from "../../../media/refreshCd.png";
-import refreshCl from "../../../media/refreshCl.png";
-import copyd from "../../../media/copyd.png";
-import copyl from "../../../media/copyl.png";
 
-let dispatch, classmatesInfo, errText, inps, themeState, cState;
+let dispatch, classmatesInfo, errText, inps, themeState, cState, typ;
 errText = "К сожалению, информация не найдена... Можете попробовать попросить завуча заполнить информацию.";
+typ = "kids";
 inps = {inpnpt : "Фамилия И.О."};
 let [_, forceUpdate] = [];
-
-function getMates(x, b) {
-    return b ?
-            <>
-                <div className={peopleCSS.add+" "+peopleCSS.nav_iZag} data-st="0">
-                    <div className={peopleCSS.nav_i+" "+peopleCSS.link} id={peopleCSS.nav_i} onClick={onEdit}>
-                        Добавить ученика
-                    </div>
-                    <div className={peopleCSS.pepl} data-st="0">
-                        <div className={peopleCSS.fi}>
-                            <div className={peopleCSS.nav_i + " " + peopleCSS.nav_iZag2} id={peopleCSS.nav_i}>
-                                {inps.inpnpt}
-                            </div>
-                            <img className={peopleCSS.profIm} src={themeState.theme_ch ? profd : profl} title="Так будет выглядеть иконка перехода в профиль" alt=""/>
-                            <img className={peopleCSS.imgfield} src={ed} onClick={onEdit} title="Редактировать" alt=""/>
-                            <img className={peopleCSS.imginp+" yes "} src={yes} onClick={(e)=>onFin(e, inps, forceUpdate, CHANGE_CLASSMATES)} title="Подтвердить" alt=""/>
-                            <img className={peopleCSS.imginp} style={{marginRight: "1vw"}} src={no} onClick={onClose} title="Отменить изменения и выйти из режима редактирования" alt=""/>
-                        </div>
-                        <div className={peopleCSS.ed}>
-                            <div className={peopleCSS.preinf}>
-                                ФИО:
-                            </div>
-                            <input className={peopleCSS.inp} id={"inpnpt_"} placeholder={"Фамилия И.О."} defaultValue={inps.inpnpt} onChange={(e)=>chStatB(e, inps)} type="text"/>
-                            {ele(false, "inpnpt_", inps)}
-                            <img className={peopleCSS.imginp+" yes "} src={yes} onClick={(e)=>onFin(e, inps, forceUpdate, CHANGE_CLASSMATES)} title="Подтвердить" alt=""/>
-                            <img className={peopleCSS.imginp} style={{marginRight: "1vw"}} src={no} onClick={onClose} title="Отменить изменения и выйти из режима редактирования" alt=""/>
-                        </div>
-                    </div>
-                </div>
-                {Object.getOwnPropertyNames(x).map(param =>
-                    <div className={peopleCSS.pepl} key={param} data-st="0">
-                        <div className={peopleCSS.fi}>
-                            <div className={peopleCSS.nav_i+" "+peopleCSS.nav_iZag2} id={peopleCSS.nav_i}>
-                                {x[param].name}
-                            </div>
-                            <img className={peopleCSS.profIm} src={themeState.theme_ch ? profd : profl} title="Так будет выглядеть иконка перехода в профиль" alt=""/>
-                            <img className={peopleCSS.imgfield} src={ed} onClick={onEdit} title="Редактировать" alt=""/>
-                            <img className={peopleCSS.imginp} data-id={param} style={{marginRight: "1vw"}} src={no} onClick={(e)=>onDel(e, CHANGE_CLASSMATES_DEL)} title="Удалить" alt=""/>
-                            <input className={peopleCSS.inp+" "+peopleCSS.copyInp} data-id1={param} id={"inpcpt_" + param} placeholder="Ссылка не создана" value={x[param].link} type="text" readOnly/>
-                            <img className={peopleCSS.imginp+" "+peopleCSS.refrC} src={themeState.theme_ch ? refreshCd : refreshCl} onClick={(e)=>refreshLink(e, sit, CHANGE_CLASSMATES)} title="Создать ссылку-приглашение" alt=""/>
-                            <img className={peopleCSS.imginp} src={themeState.theme_ch ? copyd : copyl} title="Копировать" data-enable={x[param].link ? "1" : "0"} onClick={(e)=>copyLink(e, x[param].link, x[param].name)} alt=""/>
-                        </div>
-                        <div className={peopleCSS.ed}>
-                            <div className={peopleCSS.preinf}>
-                                ФИО:
-                            </div>
-                            <input className={peopleCSS.inp} data-id1={param} id={"inpnpt_" + param} placeholder={"Фамилия И.О."} defaultValue={x[param].name} onChange={(e)=>chStatB(e, inps)} type="text"/>
-                            {ele(false, "inpnpt_" + param, inps)}
-                            <img className={peopleCSS.imginp+" yes "} src={yes} onClick={(e)=>onFin(e, inps, forceUpdate, CHANGE_CLASSMATES)} title="Подтвердить" alt=""/>
-                            <img className={peopleCSS.imginp} style={{marginRight: "1vw"}} src={no} onClick={onClose} title="Отменить изменения и выйти из режима редактирования" alt=""/>
-                        </div>
-                    </div>
-                )}
-            </>
-        :
-            Object.getOwnPropertyNames(x).map(param =>
-                <div key={param}>
-                    <div className={peopleCSS.nav_i+" "+peopleCSS.nav_iZag2} id={peopleCSS.nav_i}>
-                        {x[param].name}
-                    </div>
-                    <img className={peopleCSS.profIm} src={themeState.theme_ch ? profd : profl} title="Перейти в профиль" alt=""/>
-                </div>
-            );
-}
 
 export function Classmates() {
     classmatesInfo = useSelector(classmates);
@@ -116,7 +45,7 @@ export function Classmates() {
             <Helmet>
                 <title>{cState.role == 3 ? "Обучающиеся" : "Одноклассники"}</title>
             </Helmet>
-            {Object.getOwnPropertyNames(classmatesInfo).length == 0 ?
+            {Object.getOwnPropertyNames(classmatesInfo).length == 0 && !(cState.auth && cState.role == 3) ?
                     <ErrFound text={errText}/>
                 :
                     <>
@@ -131,7 +60,17 @@ export function Classmates() {
                                     <div className={peopleCSS.nav_i} id={peopleCSS.nav_i}>
                                         {cState.role == 3 ? "Обучающиеся" : "Одноклассники"}
                                     </div>
-                                    {getMates(classmatesInfo, (cState.auth && cState.role == 3))}
+                                    {(cState.auth && cState.role == 3) && getPep("Добавить ученика", typ, inps, forceUpdate)}
+                                    {Object.getOwnPropertyNames(classmatesInfo).map(param =>
+                                        (cState.auth && cState.role == 3) ?
+                                            getPep("Добавить ученика", typ, inps, forceUpdate, param, classmatesInfo[param])
+                                            : <div key={param}>
+                                                <div className={peopleCSS.nav_i + " " + peopleCSS.nav_iZag2} id={peopleCSS.nav_i}>
+                                                    {classmatesInfo[param].name}
+                                                </div>
+                                                <img className={peopleCSS.profIm} src={themeState.theme_ch ? profd : profl} title="Перейти в профиль" alt=""/>
+                                            </div>
+                                    )}
                                 </div>
                             </div>
                         </div>

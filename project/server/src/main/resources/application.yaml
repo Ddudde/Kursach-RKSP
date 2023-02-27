@@ -6,7 +6,6 @@ spring:
     driverClassName: org.h2.Driver
   mvc:
     converters:
-#      preferred-json-mapper: gson
       preferred-json: gson
   h2:
     console:

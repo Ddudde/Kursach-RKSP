@@ -27,13 +27,13 @@ export default function classmatesReducer(state = initialState, action) {
         case CHANGE_CLASSMATES_GL:
             return action.payload.state;
         case CHANGE_CLASSMATES:
-            if(!fd[action.payload.l2]){
-                fd[action.payload.l2] = {};
+            if(!fd[action.payload.l1]){
+                fd[action.payload.l1] = {};
             }
-            fd[action.payload.l2][action.payload.param] = action.payload.state;
+            fd[action.payload.l1][action.payload.param] = action.payload.state;
             return fd;
         case CHANGE_CLASSMATES_DEL:
-            delete fd[action.payload.l2];
+            delete fd[action.payload.l1];
             return fd;
         default:
             return state;

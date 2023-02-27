@@ -175,7 +175,7 @@ function getSched(dI, b) {
                                 {les.cabinet}
                             </div>
                             <div className={analyticsCSS.nav_i} id={analyticsCSS.nav_i}>
-                                {cState.role == 2 ? les.group : les.prepod}
+                                {cState.role == 2 ? les.group : les.prepod.name}
                             </div>
                         </>
                     )}
@@ -269,12 +269,12 @@ export function Schedule() {
     themeState = useSelector(themes);
     cState = useSelector(states);
     if(!dispatch && cState.role != 2) setActNew(2);
+    if(!dispatch && cState.role == 2) setActived(8);
     [_, forceUpdate] = useReducer((x) => x + 1, 0);
     dispatch = useDispatch();
     const isFirstUpdate = useRef(true);
     useEffect(() => {
         console.log("I was triggered during componentDidMount Schedule.jsx");
-        if(cState.role == 2) setActived(".panRas");
         for(let el of document.querySelectorAll(" *[id^='sinpn']")){
             chStatB({target: el}, inps);
         }

@@ -45,7 +45,7 @@ export default function eventsReducer(state = initialState, action) {
     let fd = {...state};
     switch(action.type) {
         case CHANGE_EVENTS:
-            fd.evs = action.payload;
+            fd.evs = action.payload.state;
             return fd;
         case CHANGE_EVENTS_CLEAR:
             fd.evs = {};
@@ -56,7 +56,7 @@ export default function eventsReducer(state = initialState, action) {
                 let evs = Object.getOwnPropertyNames(fd.evs);
                 action.payload.id = evs.length == 0 ? 0 : parseInt(evs[evs.length-1]) + 1;
             }
-            fd.evs[action.payload.id] = action.payload.state;
+            fd.evs[action.payload.id] = action.payload;
             if(action.payload.time.long) fd.time[action.payload.id] = action.payload.time;
             return fd;
         case CHANGE_EVENT_DEL:
@@ -70,13 +70,13 @@ export default function eventsReducer(state = initialState, action) {
             fd.time[action.payload.id].init = action.payload.state;
             return fd;
         case CHANGE_EVENT_TIMER_DEL:
-            delete fd.time[action.payload];
+            delete fd.time[action.payload.state];
             return fd;
         case CHANGE_EVENTS_STEP:
-            fd.steps += action.payload;
+            fd.steps += action.payload.state;
             return fd;
         case CHANGE_EVENTS_RL:
-            fd.right = action.payload;
+            fd.right = action.payload.state;
             return fd;
         default:
             return state;

@@ -242,30 +242,31 @@ export function AnalyticsMain(props) {
     gr.groups = {
         0: {
             nam: "Расписание звонков",
-            linke: props.comp ? "admYO/zvonki" : "zvonki"
+            linke: "zvonki"
         },
         1: {
             nam: (cState.auth && cState.role < 2) ? "Расписание периодов" : "Периоды обучения",
-            linke: props.comp ? "admYO/periods" : "periods"
+            linke: "periods"
         },
         2: {
             nam: (cState.auth && cState.role < 2) ? "Расписание" : "Дисциплины",
-            linke: props.comp ? "admYO/schedule" : "schedule"
+            linke: "schedule"
         },
         ...((cState.auth && cState.role < 2) && {3: {
-                nam: "Журнал",
-                linke: props.comp ? "admYO/journal" : "journal"
-            }}),
+            nam: "Журнал",
+            linke: "journal"
+        }}),
         ...((cState.auth && cState.role < 2) && {4: {
-                nam: "Итоговые оценки",
-                linke: props.comp ? "admYO/marks" : "marks"
-            }})
+            nam: "Итоговые оценки",
+            linke: "marks"
+        }})
     };
     const isFirstUpdate = useRef(true);
     useEffect(() => {
         console.log("I was triggered during componentDidMount AnalyticsMain.jsx");
-        setActived(".panAna");
+        setActived(cState.role == 3 ? 10 : 13);
         return function() {
+            dispatch = undefined;
             console.log("I was triggered during componentWillUnmount AnalyticsMain.jsx");
         }
     }, []);

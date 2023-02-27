@@ -5,11 +5,11 @@ const initialState = {
 };
 
 export default function indicatorReducer(state = initialState, action) {
+    let fd = {...state};
     switch(action.type) {
         case CHANGE_INDICATOR:
-            return {
-                actived : action.payload
-            };
+            fd.actived = action.payload;
+            return fd;
         default:
             return state;
     }

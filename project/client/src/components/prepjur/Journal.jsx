@@ -232,7 +232,6 @@ export function Journal() {
     useEffect(() => {
         console.log("I was triggered during componentDidMount Journal.jsx");
         lty = ltyl;
-        setActived(".panJur");
         let scr = document.querySelector("." + journalCSS.days);
         scr.scrollTo(scr.scrollWidth, 0);
         document.querySelector("." + journalCSS.marks).addEventListener("transitionend", trEnd);
@@ -240,6 +239,7 @@ export function Journal() {
         for(let e of document.querySelectorAll("." + journalCSS.marks + " > ." + journalCSS.nav_i)){
             e.addEventListener("click", cli);
         }
+        setActived(9);
         for(let e of document.querySelectorAll("." + journalCSS.types + "[data-real] > ." + journalCSS.nav_i)){
             e.addEventListener("click", cli1);
         }
@@ -255,6 +255,7 @@ export function Journal() {
         chStatB({target: document.querySelector("." + journalCSS.nav_i + " > [id^='inpnt_']")});
         chStatB({target: document.querySelector("." + journalCSS.nav_i + " > [id^='inpnv_']")});
         return function() {
+            dispatch = undefined;
             console.log("I was triggered during componentWillUnmount Journal.jsx");
         }
     }, []);

@@ -208,8 +208,9 @@ export function ContactMain() {
     const isFirstUpdate = useRef(true);
     useEffect(() => {
         console.log("I was triggered during componentDidMount ContactMain.jsx");
-        setActived(".panCon");
+        setActived(2);
         return function() {
+            dispatch = undefined;
             console.log("I was triggered during componentWillUnmount ContactMain.jsx");
         }
     }, []);

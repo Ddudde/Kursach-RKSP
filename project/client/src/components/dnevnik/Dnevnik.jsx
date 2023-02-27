@@ -101,9 +101,10 @@ export function Dnevnik() {
                 timid = setTimeout(tim,1000);
             }
         };
-        setActived(".panDnev");
         knop();
+        setActived(12);
         return function() {
+            dispatch = undefined;
             window.onwheel = undefined;
             clearTimeout(timid);
             console.log("I was triggered during componentWillUnmount Dnevnik1.jsx");

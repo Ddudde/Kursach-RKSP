@@ -284,8 +284,9 @@ export function NewsMain() {
     const isFirstUpdate = useRef(true);
     useEffect(() => {
         console.log("I was triggered during componentDidMount NewsMain.jsx");
-        setActived(".panNew");
+        setActived(1);
         return function() {
+            dispatch = undefined;
             console.log("I was triggered during componentWillUnmount NewsMain.jsx");
         }
     }, []);

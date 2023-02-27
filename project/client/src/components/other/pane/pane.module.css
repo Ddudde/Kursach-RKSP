@@ -3,19 +3,30 @@
 	-moz-user-select: none;
 	-ms-user-select: none;
 	user-select: none;
-	width: inherit;
-	min-height: 7vh;
+	height: 7vh;
 	display: grid;
 	place-items: center;
 	grid-template: auto/repeat(5,1fr);
 	justify-items: stretch;
-	z-index: 1;
+	/*z-index: 1;*/
+	position: relative;
+	margin-right: 0.5px;
+}
+
+.panel[data-mod="0"]{
+	background-color: var(--bgcV1);
 	-webkit-transition: background-color 1s ease;
 	-o-transition: background-color 1s ease;
 	transition: background-color 1s ease;
+}
+
+.panel[data-mod="1"]{
+	gap: 1vmin;
+}
+
+.panel[data-mod="1"] > .nav_i, .panel[data-mod="1"] > .predBlock > .nav_i{
 	background-color: var(--bgcV1);
-	margin-block: -0.5px;
-	position: relative;
+	border-radius: 5px;
 }
 
 .panel > *{
@@ -27,7 +38,7 @@
 	border: 1px solid var(--bcV1);
 	cursor: pointer;
 	color: var(--cV1);
-	font-size: 1.25vw;
+	font-size: 1.25vmax;
 	font-weight: bold;
 	margin: -1px -0.5px;
 	display: flex;
@@ -84,7 +95,6 @@
 	grid-template: auto auto / auto auto;
 	width: 100%;
 	z-index: 1;
-	margin: -0.5px 0;
 }
 
 .predEl img{

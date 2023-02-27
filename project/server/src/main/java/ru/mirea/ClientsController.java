@@ -47,8 +47,10 @@ public class ClientsController {
         System.out.println(data);
         JsonObject ans, body, bodyAns;
         ans = new JsonObject();
+        ans.addProperty("error", false);
         body = null;
-        if(data.get("body").isJsonObject()) body = data.get("body").getAsJsonObject();
+        if(data.has("body") && data.get("body").isJsonObject()) body = data.get("body").getAsJsonObject();
+        if(!data.has("type")) data.addProperty("type", "default");
         System.out.println(body);
         switch (data.get("type").getAsString()){
             case "auth" -> {
@@ -64,6 +66,34 @@ public class ClientsController {
                         bodyAns.addProperty("role", (Long) user.getRoles().keySet().toArray()[0]);
                         bodyAns.addProperty("ico", user.getIco());
                         bodyAns.addProperty("roles", user.getRoles().size() > 1);
+                        bodyAns.addProperty("secFr", !user.getSecFr().isEmpty());
+                    }
+                }
+                return ans;
+            }
+            case "chRole" -> {
+                bodyAns = new JsonObject();
+                ans.add("body", bodyAns);
+                List<User> users = userRepository.findByLogin(body.get("login").getAsString());
+                if(!users.isEmpty()){
+                    User user = users.get(0);
+                    long curRol = body.get("role").getAsLong();
+                    if(user.getRoles().containsKey(curRol)){
+                        for(long i = (curRol == 4 ? 0 : curRol+1L); i < 5; i++){
+                            if(!user.getRoles().containsKey(i)) continue;
+                            bodyAns.addProperty("role", i);
+                            Role role = user.getRoles().get(i);
+                            if(role.getKids() != null && !role.getKids().isEmpty()){
+                                bodyAns.addProperty("kid", role.getKids().get(0));
+                                JsonObject kids = new JsonObject();
+                                for(Long i1 : role.getKids()){
+                                    User kid = userRepository.findById(i1).orElseThrow(RuntimeException::new);
+                                    kids.addProperty(i1+"", kid.getFio());
+                                }
+                                bodyAns.add("kids", kids);
+                            }
+                            break;
+                        }
                     }
                 }
                 return ans;

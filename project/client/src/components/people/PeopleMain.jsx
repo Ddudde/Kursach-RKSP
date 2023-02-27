@@ -8,6 +8,8 @@ import {setActived} from "../main/Main";
 import {
     CHANGE_ADMINS,
     CHANGE_ADMINS_DEL,
+    CHANGE_CLASSMATES,
+    CHANGE_CLASSMATES_DEL,
     CHANGE_EVENT,
     CHANGE_HTEACHERS,
     CHANGE_HTEACHERS_DEL,
@@ -32,7 +34,7 @@ import copyd from "../../media/copyd.png";
 import copyl from "../../media/copyl.png";
 import yes from "../../media/yes.png";
 
-let gr, cState, ke, dispatch, themeState, types;
+let gr, cState, dispatch, themeState, types;
 gr = {
     group: 0
 };
@@ -40,6 +42,10 @@ types = {
     "hteachers" : {
         del : CHANGE_HTEACHERS_DEL,
         ch: CHANGE_HTEACHERS
+    },
+    "kids" : {
+        del : CHANGE_CLASSMATES_DEL,
+        ch: CHANGE_CLASSMATES
     },
     "hteachers4" : {
         del : CHANGE_HTEACHERS_DEL,
@@ -335,7 +341,7 @@ export function PeopleMain() {
     const isFirstUpdate = useRef(true);
     useEffect(() => {
         console.log("I was triggered during componentDidMount PeopleMain.jsx");
-        setActived(".panPep");
+        setActived(3);
         return function() {
             console.log("I was triggered during componentWillUnmount PeopleMain.jsx");
         }
@@ -349,7 +355,7 @@ export function PeopleMain() {
     });
     return (
         <div className={peopleCSS.AppHeader}>
-            <div style={{width:"inherit", height: "7vh", position: "fixed", zIndex:"1"}} ref={()=>(ke = !ke ? paneInfo.els.length : ke)}>
+            <div style={{width:"inherit", height: "7vh", position: "fixed", zIndex:"1"}}>
                 <Pane gro={gr}/>
             </div>
             <Outlet />

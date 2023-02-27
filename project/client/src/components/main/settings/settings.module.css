@@ -55,42 +55,23 @@
 	padding-block: 0.5vw;
 }
 
-.chPass{
+.link{
 	text-decoration: underline;
 	cursor: pointer;
 	margin-block: 1vw;
-}
-
-.field{
 	display: inline-block;
 	vertical-align: middle;
 	margin-left: 5px;
+}
+
+.nav_iZag[data-mod='0'] > .block, .nav_iZag[data-mod='1'] > .link,
+.block[data-mod='0'] > .frp, .block[data-mod='1'] > .oldp{
 	display: none;
 }
 
-.field[data-act='1']{
-	display: inline-block;
-}
-
-.blockPass[data-act='0']{
-	display: none;
-}
-
-.blockPass[data-act='1']{
-	display: block;
-}
-
-.nPasBlock{
+.pasBlock{
 	display: flex;
 	margin-bottom: 1vw;
-}
-
-.oPasBlock[data-act='0']{
-	display: none;
-}
-
-.oPasBlock[data-act='1']{
-	display: flex;
 }
 
 .inp {
@@ -110,26 +91,10 @@
 	transition: background-color 1s ease;
 	transition-property: background-color, border-color;
 	vertical-align: middle;
-	display: none;
-}
-
-.inp[data-act='1']{
-	display: inline-block;
 }
 
 .inpPass{
-	display: block;
 	margin-bottom: 1vw;
-}
-
-.nPass{
-	margin-bottom: 0;
-}
-
-.tex{
-	pointer-events: none;
-	display: inline-block;
-	align-self: center;
 }
 
 .but{
@@ -141,6 +106,7 @@
 	padding-inline: 1vw;
 	font-weight: normal !important;
 	align-self: center;
+	align-items: center;
 	display: flex;
 }
 

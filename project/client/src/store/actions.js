@@ -2,6 +2,9 @@ export const CHANGE_CHECKBOX = "CHANGE_CHECKBOX";
 
 export const CHANGE_THEME = "CHANGE_THEME";
 
+export const CHANGE_DIALOG = "CHANGE_DIALOG";
+export const CHANGE_DIALOG_DEL = "CHANGE_DIALOG_DEL";
+
 export const CHANGE_STATE = "CHANGE_STATE";
 export const CHANGE_STATE_GL = "CHANGE_STATE_GL";
 
@@ -16,6 +19,7 @@ export const CHANGE_PERIODS_L1 = "CHANGE_PERIODS_L1";
 export const CHANGE_PERIODS_DEL = "CHANGE_PERIODS_DEL";
 
 export const CHANGE_PROFILE = "CHANGE_PROFILE";
+export const CHANGE_PROFILE_GL = "CHANGE_PROFILE_GL";
 export const CHANGE_PROFILE_ROLES = "CHANGE_PROFILE_ROLES";
 
 export const CHANGE_SCHEDULE_PARAM = "CHANGE_SCHEDULE_PARAM";
@@ -79,8 +83,6 @@ export const CHANGE_MARKS = "CHANGE_MARKS";
 export const CHANGE_DNEVNIK = "CHANGE_DNEVNIK";
 export const CHANGE_DNEVNIK_DAY_UP = "CHANGE_DNEVNIK_DAY_UP";
 export const CHANGE_DNEVNIK_DAY_DOWN = "CHANGE_DNEVNIK_DAY_DOWN";
-
-export const CHANGE_CLIENT = "CHANGE_CLIENT";
 
 export const CHANGE_INDICATOR = "CHANGE_INDICATOR";
 
@@ -226,21 +228,13 @@ export function changePjournal(id, state) {
     };
 }
 
-export function changeProfileRoles(roleid, id, state) {
-    return { type: CHANGE_PROFILE_ROLES,
+export function changeProfile(typeR, id, state, roleid) {
+    return {
+        type: typeR,
         payload: {
             Id: id,
-            roleId: roleid,
-            State: state
-        }
-    };
-}
-
-export function changeProfile(id, state) {
-    return { type: CHANGE_PROFILE,
-        payload: {
-            Id: id,
-            State: state
+            State: state,
+            roleId: roleid
         }
     };
 }
@@ -258,37 +252,23 @@ export function changeGroups(type, id, state, gid, block) {
 }
 
 export function changeEvents(type, state, id, title, text, time) {
-    if(title){
-        state = {
+    return {
+        type: type,
+        payload: {
+            id: id,
+            state: state,
+            time: type == CHANGE_EVENT ? {
+                long: time,
+                init: false
+            } : undefined,
             title: title,
-            dtime: new Date().toLocaleString("ru", {
+            dtime: title ? new Date().toLocaleString("ru", {
                 hour: 'numeric',
                 minute: 'numeric',
                 second: 'numeric'
-            }),
+            }) : undefined,
             text: text
         }
-    }
-    let payload = state;
-    if(type == CHANGE_EVENT){
-        payload = {
-            id: id,
-            state: state,
-            time: {
-                long: time,
-                init: false
-            }
-        };
-    }
-    if(type == CHANGE_EVENT_DEL || type == CHANGE_EVENT_TIMER){
-        payload = {
-            id: id,
-            state: state
-        };
-    }
-    return {
-        type: type,
-        payload: payload
     };
 }
 
@@ -320,6 +300,13 @@ export function changeJournal(id, state) {
             jourId: id,
             jourState: state
         }
+    };
+}
+
+export function changeDialog(type, state) {
+    return {
+        type: type,
+        payload: state
     };
 }
 
@@ -395,19 +382,13 @@ export function changeIndNext(indState, res) {
 }
 
 export function changeIndPrev(indState, res) {
-    res();
+    if(res) res();
     let stat = indState - 1;
     if(stat < 0) stat = 3;
     return { type: CHANGE_INDICATOR, payload: stat};
 }
 
 export function changeInd(indState, res) {
-    res();
+    if(res) res();
     return { type: CHANGE_INDICATOR, payload: indState};
-}
-
-export function changeCL(body) {
-    return {
-        type: CHANGE_CLIENT, payload: body
-    };
 }

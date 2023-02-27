@@ -78,22 +78,22 @@ scrolling = false;
 zag = {
     "kid": {
         name: "Обучающимся",
-        link: ".panKid",
+        link: 7,
         role: 0
     },
     "par": {
         name: "Родителям",
-        link: ".panPar",
+        link: 6,
         role: 1
     },
     "tea": {
         name: "Педагогам",
-        link: ".panTea",
+        link: 5,
         role: 2
     },
     "sch": {
         name: "Школам",
-        link: ".panSch",
+        link: 4,
         role: 3
     }
 };
@@ -802,7 +802,6 @@ export function Tutor() {
     const isFirstUpdate = useRef(true);
     useEffect(() => {
         console.log("I was triggered during componentDidMount Tutor.jsx");
-        setActived(zag[type].link);
         window.onwheel = (e) => {
             if(!scrolling) {
                 scrolling = true;
@@ -811,7 +810,9 @@ export function Tutor() {
             }
         };
         knop();
+        setActived(zag[type].link);
         return function() {
+            dispatch = undefined;
             window.onwheel = undefined;
             clearTimeout(timid);
             console.log("I was triggered during componentWillUnmount Tutor.jsx");

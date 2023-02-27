@@ -200,7 +200,7 @@ export function Request() {
         for(let el of document.querySelectorAll("." + requestCSS.ed + " > *[id^='inpn']")){
             chStatB({target: el});
         }
-        setActived(".panReq");
+        setActived(11);
         return function() {
             dispatch = undefined;
             console.log("I was triggered during componentWillUnmount Request.jsx");

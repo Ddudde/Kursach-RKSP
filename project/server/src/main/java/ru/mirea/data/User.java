@@ -28,6 +28,9 @@ public class User {
     @Column(name = "fio")
     private String fio;
 
+    @Column(name = "secFr")
+    private String secFr;
+
     @Column(name = "ico")
     private int ico;
 

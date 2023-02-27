@@ -8,6 +8,7 @@ export const groups = state => state.groups || {};
 export const dnevnik = state => state.dnevnik || {};
 export const periods = state => state.periods || {};
 export const teachers = state => state.teachers || {};
+export const dialog = state => state.dialog || {};
 export const classmates = state => state.classmates || {};
 export const parents = state => state.parents || {};
 export const admins = state => state.admins || {};

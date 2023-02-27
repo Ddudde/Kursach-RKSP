@@ -67,12 +67,10 @@
 
 .g_block{
 	position: relative;
-	opacity: 0;
 	display: none;
 }
 
 .g_block[data-act="1"]{
-	opacity: 1;
 	display: block;
 }
 
@@ -94,6 +92,7 @@
 	left: 0;
 	width: 100%;
 	height: 50vh;
+	pointer-events: none;
 	border-radius: 10px;
 	opacity: 0;
 	transition: opacity ease 1s;
@@ -180,19 +179,6 @@
 	transform: rotateX(90deg);
 }
 
-.dogov{
-	background-color: rgb(245, 246, 247);
-	-webkit-border-radius: 4px;
-	border-radius: 4px;
-	padding-top: 9px;
-	padding-bottom: 9px;
-	padding-right: 12px;
-	width: 50%;
-	height: 75%;
-	display: inline-block;
-	vertical-align: middle;
-}
-
 .v{
 	display: none;
 	-webkit-transition: opacity 1s ease;
@@ -231,34 +217,12 @@
 	text-align: left;
 }
 
-.lic_but_text{
-	padding: 5px;
-	display: inline-block;
-}
-
 .url{
 	cursor: pointer;
 	text-decoration: underline;
 	font-size: 1.1vw;
 	vertical-align: middle;
 	margin-left: 5px;
-}
-
-.over{
-	width: 100%;
-	height: 100%;
-	background: #00000055;
-	position: fixed;
-	text-align: center;
-	display: none;
-	top:0;
-}
-
-.over:before {
-	display: inline-block;
-	height: 100%;
-	vertical-align: middle;
-	content: "";
 }
 
 .login, .pass {
@@ -431,7 +395,8 @@
 }
 
 .butz{
-	padding-block: 1vmax;
+	padding-block: 0.5vmax;
+	margin-right: 1vw;
 }
 
 .inpz{
