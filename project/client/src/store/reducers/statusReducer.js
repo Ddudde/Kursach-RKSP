@@ -1,12 +1,12 @@
 import {CHANGE_STATE, CHANGE_STATE_GL} from '../actions';
 
 const initialState = {
-        auth: true,
-        login: "nm12",
-        ico: 2,
-        role: 0,
-        roles: true,
-        secFr: false,
+        auth: false,
+        // login: "nm12",
+        // ico: 2,
+        // role: 0,
+        // roles: true,
+        // secFr: false,
         // roleDesc: "администратор портала",
         rolesDescrs: ["обучающийся", "родитель", "педагог", "завуч", "администратор портала"],
         // kid: "id1",

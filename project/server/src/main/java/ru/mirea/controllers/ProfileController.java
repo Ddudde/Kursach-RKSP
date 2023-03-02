@@ -1,0 +1,135 @@
+package ru.mirea.controllers;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.ObjectUtils;
+import org.springframework.web.bind.annotation.*;
+import ru.mirea.data.User;
+import ru.mirea.data.UserRepository;
+import ru.mirea.data.json.Role;
+
+import java.util.List;
+import java.util.Objects;
+
+@RestController
+@RequestMapping("/profiles")
+@CrossOrigin(origins = "http://localhost:3000")
+public class ProfileController {
+
+    @Autowired
+    private Gson gson;
+
+    private final UserRepository userRepository;
+
+    public ProfileController(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
+    @RequestMapping(method = RequestMethod.POST)
+    public JsonObject post(@RequestBody JsonObject data) {
+        System.out.println("Post!");
+        System.out.println(data);
+        JsonObject ans, body, bodyAns;
+        ans = new JsonObject();
+        ans.addProperty("error", false);
+        body = null;
+        if(data.has("body") && data.get("body").isJsonObject()) body = data.get("body").getAsJsonObject();
+        if(!data.has("type")) data.addProperty("type", "default");
+        System.out.println(body);
+        switch (data.get("type").getAsString()){
+            case "getProfile" -> {
+                bodyAns = new JsonObject();
+                ans.add("body", bodyAns);
+                List<User> users = userRepository.findByLogin(body.get("login").getAsString());
+                if(!users.isEmpty()){
+                    User user = users.get(0);
+                    bodyAns.addProperty("login", user.getLogin());
+                    bodyAns.addProperty("ico", user.getIco());
+                    if(!ObjectUtils.isEmpty(user.getFio())) bodyAns.addProperty("fio", user.getFio());
+                    if(!ObjectUtils.isEmpty(user.getInfo())) bodyAns.addProperty("more", user.getInfo());
+                    JsonObject roles = new JsonObject();
+                    for(long i = 0; i < 5; i++){
+                        if(!user.getRoles().containsKey(i)) continue;
+                        JsonObject roleO = new JsonObject();
+                        Role role = user.getRoles().get(i);
+                        if(!ObjectUtils.isEmpty(role.getEmail())) roleO.addProperty("email", role.getEmail());
+                        if(!ObjectUtils.isEmpty(role.getYO())) roleO.addProperty("yo", role.getYO());
+                        if(!ObjectUtils.isEmpty(role.getGroup())) roleO.addProperty("group", role.getGroup());
+                        if(!ObjectUtils.isEmpty(role.getLessons())) roleO.add("lessons", gson.toJsonTree(role.getLessons()));
+                        if(!ObjectUtils.isEmpty(role.getKids())){
+                            JsonObject kids = new JsonObject();
+                            for(Long i1 : role.getKids()){
+                                JsonObject kid = new JsonObject();
+                                User kidU = userRepository.findById(i1).orElseThrow(RuntimeException::new);
+                                kid.addProperty("name", kidU.getFio());
+                                kid.addProperty("login", kidU.getLogin());
+                                kids.add(i1+"", kid);
+                            }
+                            roleO.add("kids", kids);
+                        }
+                        if(!ObjectUtils.isEmpty(role.getParents())){
+                            JsonObject parents = new JsonObject();
+                            for(Long i1 : role.getParents()){
+                                JsonObject parent = new JsonObject();
+                                User parentU = userRepository.findById(i1).orElseThrow(RuntimeException::new);
+                                parent.addProperty("name", parentU.getFio());
+                                parent.addProperty("login", parentU.getLogin());
+                                parents.add(i1+"", parent);
+                            }
+                            roleO.add("parents", parents);
+                        }
+                        roles.add(i+"", roleO);
+                    }
+                    bodyAns.add("roles", roles);
+                }
+                return ans;
+            }
+            case "chLogin" -> {
+                bodyAns = new JsonObject();
+                ans.add("body", bodyAns);
+                List<User> users = userRepository.findByLogin(body.get("oLogin").getAsString());
+                List<User> usersN = userRepository.findByLogin(body.get("nLogin").getAsString());
+                if(!users.isEmpty() && usersN.isEmpty()){
+                    User user = users.get(0);
+                    user.setLogin(body.get("nLogin").getAsString());
+                    userRepository.save(user);
+                } else {
+                    ans.addProperty("error", true);
+                }
+                return ans;
+            }
+            case "chInfo" -> {
+                bodyAns = new JsonObject();
+                ans.add("body", bodyAns);
+                List<User> users = userRepository.findByLogin(body.get("login").getAsString());
+                if(!users.isEmpty()){
+                    User user = users.get(0);
+                    user.setInfo(body.get("info").getAsString());
+                    userRepository.save(user);
+                } else {
+                    ans.addProperty("error", true);
+                }
+                return ans;
+            }
+            case "chEmail" -> {
+                bodyAns = new JsonObject();
+                ans.add("body", bodyAns);
+                List<User> users = userRepository.findByLogin(body.get("login").getAsString());
+                if(!users.isEmpty()){
+                    User user = users.get(0);
+                    user.getRoles().get(body.get("role").getAsLong()).setEmail(body.get("email").getAsString());
+                    userRepository.save(user);
+                } else {
+                    ans.addProperty("error", true);
+                }
+                return ans;
+            }
+            default -> {
+                System.out.println("Error Type" + data.get("type"));
+                ans.addProperty("error", true);
+                return ans;
+            }
+        }
+    }
+}

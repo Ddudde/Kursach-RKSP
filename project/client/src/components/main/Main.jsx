@@ -90,7 +90,7 @@ export function send(type, bod, url, fun) {
         };
         sed.body = bod;
     }
-    fetch("http://localhost:8080/cts/"+(url ? url : ""), sed)
+    fetch("http://localhost:8080/"+(url ? url : ""), sed)
         .then((res) => {
             if (!res.ok) {
                 throw new Error(
@@ -120,7 +120,7 @@ function chRoles() {
             dispatch(changeState(CHANGE_STATE_GL, undefined, data.body));
         }
     };
-    send('POST', JSON.stringify(bod), undefined, setRole);
+    send('POST', JSON.stringify(bod), "auth", setRole);
 }
 
 function onExit() {
@@ -164,9 +164,9 @@ function tim() {
     }
 }
 
-export function addEvent(text, time) {
+export function addEvent(text, time, cons) {
     let title = "Внимание!";
-    return dispatch(changeEvents(CHANGE_EVENT, undefined, undefined, title, text, time)).payload.id;
+    return dispatch(changeEvents(CHANGE_EVENT, undefined, undefined, title, text, time, cons)).payload.id;
 }
 
 export function remEvent(id) {
@@ -174,7 +174,7 @@ export function remEvent(id) {
 }
 
 function ping() {
-    const checkVx = (data) => {
+    const checkPing = (data) => {
         if(data.error){
             if(warnErrNet != undefined){
                 remEvent(warnErrNet);
@@ -182,11 +182,11 @@ function ping() {
             }
         } else {
             if(warnErrNet == undefined){
-                warnErrNet = addEvent("Отсутствует подключение к серверу");
+                warnErrNet = addEvent("Отсутствует подключение к серверу", undefined, true);
             }
         }
     };
-    send('POST', "{}", undefined, checkVx);
+    send('POST', "{}", "auth", checkPing);
 }
 
 function onTop(e){

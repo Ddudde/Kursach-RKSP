@@ -4,6 +4,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.context.ConfigurableApplicationContext;
+import ru.mirea.controllers.ClientsController;
 import ru.mirea.data.User;
 import ru.mirea.data.json.RoleMap;
 import ru.mirea.data.json.Role;

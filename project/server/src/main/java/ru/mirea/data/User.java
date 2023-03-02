@@ -38,7 +38,7 @@ public class User {
     @Column(name = "roles")
     private RoleMap roles;
 
-    @Column(name = "dop")
+    @Column(name = "info")
     private String info;
 
     public User(String login, String password, String fio, int ico, RoleMap roles) {

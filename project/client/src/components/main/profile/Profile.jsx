@@ -1,5 +1,5 @@
 import React, {useEffect, useRef} from "react";
-import {useParams} from "react-router-dom"
+import {useNavigate, useParams} from "react-router-dom"
 import {Helmet} from "react-helmet-async";
 import profileCSS from './profile.module.css';
 import {profiles, states, themes} from "../../../store/selector";
@@ -10,17 +10,19 @@ import ed from "../../../media/edit.png";
 import profd from "../../../media/profd.png";
 import profl from "../../../media/profl.png";
 import {
+    CHANGE_EVENTS_CLEAR,
     CHANGE_PROFILE,
     CHANGE_PROFILE_GL,
     CHANGE_PROFILE_ROLES,
     CHANGE_STATE,
+    changeEvents,
     changeProfile,
     changeState
 } from "../../../store/actions";
 import {addEvent, send, setActived} from "../Main";
 import ErrFound from "../../other/error/ErrFound";
 
-let profilesInfo, dispatch, moore, errText;
+let profilesInfo, dispatch, moore, errText, cState, navigate;
 errText = "К сожалению, информация не найдена...";
 
 moore = `/*
@@ -55,8 +57,20 @@ function onFin(e, param) {
     let par = e.target.parentElement, inp = par.querySelector("." + profileCSS.inp);
     if(inp.tagName == "TEXTAREA")
     {
-        dispatch(changeProfile(CHANGE_PROFILE, "more", inp.value));
-        par.setAttribute('data-mod', '0');
+        let bod = {
+            type: "chInfo",
+            body: {
+                login: cState.login,
+                info: inp.value
+            }
+        };
+        const setInfo = (data) => {
+            if(data.error == false){
+                dispatch(changeProfile(CHANGE_PROFILE, "more", inp.value));
+                par.setAttribute('data-mod', '0');
+            }
+        };
+        send('POST', JSON.stringify(bod), "profiles", setInfo);
     } else {
         if ((inp.type == "email" ? inp.validity.typeMismatch : inp.validity.patternMismatch) || inp.value.length == 0) {
             inp.style.animation = "but 1s ease infinite";
@@ -69,26 +83,40 @@ function onFin(e, param) {
             inp.style.outline = "none black";
             // warner.style.display = "none";
             if (inp.type == "email") {
-                dispatch(changeProfile(CHANGE_PROFILE_ROLES, "email", inp.value, param));
-                par.setAttribute('data-mod', '0');
+                let bod = {
+                    type: "chEmail",
+                    body: {
+                        login: cState.login,
+                        email: inp.value,
+                        role: param
+                    }
+                };
+                const setEmail = (data) => {
+                    if(data.error == false){
+                        dispatch(changeProfile(CHANGE_PROFILE_ROLES, "email", inp.value, param));
+                        par.setAttribute('data-mod', '0');
+                    }
+                };
+                send('POST', JSON.stringify(bod), "profiles", setEmail);
             } else {
                 let bod = {
                     type: "chLogin",
                     body: {
-                        oLogin: profilesInfo.login,
+                        oLogin: cState.login,
                         nLogin: inp.value
                     }
                 };
                 const setLog = (data) => {
-                    if(data.error == false && data.body.login){
+                    if(data.error == false){
                         dispatch(changeState(CHANGE_STATE, "login", inp.value));
                         dispatch(changeProfile(CHANGE_PROFILE, "login", inp.value));
                         par.setAttribute('data-mod', '0');
+                        navigate("/profiles");
                     } else {
                         addEvent("Логин занят, попробуйте изменить", 10);
                     }
                 };
-                send('POST', JSON.stringify(bod), undefined, setLog);
+                send('POST', JSON.stringify(bod), "profiles", setLog);
             }
         }
     }
@@ -113,17 +141,18 @@ function setInfo(log) {
         }
     };
     const getProf = (data) => {
-        if(data.error == false && data.body.prof){
-            dispatch(changeProfile(CHANGE_PROFILE_GL, undefined, data.body.prof));
+        if(data.error == false && data.body.login){
+            dispatch(changeProfile(CHANGE_PROFILE_GL, undefined, data.body));
         }
     };
-    send('POST', JSON.stringify(bod), undefined, getProf);
+    send('POST', JSON.stringify(bod), "profiles", getProf);
 }
 
 export function Profile() {
     profilesInfo = useSelector(profiles);
     const { log } = useParams();
-    const cState = useSelector(states);
+    navigate = useNavigate();
+    cState = useSelector(states);
     const themeState = useSelector(themes);
     dispatch = useDispatch();
     const isFirstUpdate = useRef(true);
@@ -133,6 +162,7 @@ export function Profile() {
         console.log("I was triggered during componentDidMount Profile.jsx");
         if(document.querySelector("#loginp")) document.querySelector("#loginp").addEventListener('input', inpchr);
         return function() {
+            dispatch(changeEvents(CHANGE_EVENTS_CLEAR));
             console.log("I was triggered during componentWillUnmount Profile.jsx");
         }
     }, []);
@@ -141,6 +171,7 @@ export function Profile() {
             isFirstUpdate.current = false;
             return;
         }
+        if(log && log != profilesInfo.login) setInfo(log);
         console.log('componentDidUpdate Profile.jsx');
     });
     return (
@@ -161,10 +192,12 @@ export function Profile() {
                                 <div className={profileCSS.field}>
                                     {profilesInfo.login}
                                 </div>
-                                <input className={profileCSS.inp} id="loginp" onChange={chStatB} defaultValue={profilesInfo.login} type="text" pattern="^[a-zA-Z0-9]+$"/>
-                                <img className={profileCSS.imginp+" yes"} src={yes} onClick={onFin} title="Подтвердить изменения" alt=""/>
-                                <img className={profileCSS.imginp} src={no} onClick={onClose} title="Отменить изменения и выйти из режима редактирования" alt=""/>
-                                <img className={profileCSS.imgfield} src={ed} onClick={onEdit} title="Редактировать" alt=""/>
+                                {(!log || log == cState.login) && <>
+                                    <input className={profileCSS.inp} id="loginp" onChange={chStatB} defaultValue={profilesInfo.login} type="text" pattern="^[a-zA-Z0-9]+$"/>
+                                    <img className={profileCSS.imginp+" yes"} src={yes} onClick={onFin} title="Подтвердить изменения" alt=""/>
+                                    <img className={profileCSS.imginp} src={no} onClick={onClose} title="Отменить изменения и выйти из режима редактирования" alt=""/>
+                                    <img className={profileCSS.imgfield} src={ed} onClick={onEdit} title="Редактировать" alt=""/>
+                                </>}
                             </div>
                             <div className={profileCSS.nav_i} id={profileCSS.nav_i}>
                                 ФИО: {profilesInfo.fio}
@@ -176,10 +209,12 @@ export function Profile() {
                                 <pre className={profileCSS.field}>
                                     {profilesInfo.more}
                                 </pre>
-                                <textarea className={profileCSS.inp+" "+profileCSS.inparea} onChange={chStatB} defaultValue={profilesInfo.more ? profilesInfo.more : moore}/>
-                                <img className={profileCSS.imginp+" yes"} src={yes} onClick={onFin} title="Подтвердить изменения" alt=""/>
-                                <img className={profileCSS.imginp} src={no} onClick={onClose} title="Отменить изменения и выйти из режима редактирования" alt=""/>
-                                <img className={profileCSS.imgfield} src={ed} onClick={onEdit} title="Редактировать" alt=""/>
+                                {(!log || log == cState.login) && <>
+                                    <textarea className={profileCSS.inp+" "+profileCSS.inparea} onChange={chStatB} defaultValue={profilesInfo.more ? profilesInfo.more : moore}/>
+                                    <img className={profileCSS.imginp+" yes"} src={yes} onClick={onFin} title="Подтвердить изменения" alt=""/>
+                                    <img className={profileCSS.imginp} src={no} onClick={onClose} title="Отменить изменения и выйти из режима редактирования" alt=""/>
+                                    <img className={profileCSS.imgfield} src={ed} onClick={onEdit} title="Редактировать" alt=""/>
+                                </>}
                             </div>
                             {profilesInfo.roles && Object.getOwnPropertyNames(profilesInfo.roles).map((param, i, x, role = profilesInfo.roles[param]) =>
                                 <div className={profileCSS.nav_iZag} key={param}>
@@ -196,10 +231,12 @@ export function Profile() {
                                         <div className={profileCSS.field}>
                                             {role.email}
                                         </div>
-                                        <input className={profileCSS.inp} onChange={chStatB} defaultValue={role.email} type="email"/>
-                                        <img className={profileCSS.imginp+" yes"} src={yes} onClick={e => onFin(e, param)} title="Подтвердить изменения" alt=""/>
-                                        <img className={profileCSS.imginp} src={no} onClick={onClose} title="Отменить изменения и выйти из режима редактирования" alt=""/>
-                                        <img className={profileCSS.imgfield} src={ed} onClick={onEdit} title="Редактировать" alt=""/>
+                                        {(!log || log == cState.login) && <>
+                                            <input className={profileCSS.inp} onChange={chStatB} defaultValue={role.email} type="email"/>
+                                            <img className={profileCSS.imginp+" yes"} src={yes} onClick={e => onFin(e, param)} title="Подтвердить изменения" alt=""/>
+                                            <img className={profileCSS.imginp} src={no} onClick={onClose} title="Отменить изменения и выйти из режима редактирования" alt=""/>
+                                            <img className={profileCSS.imgfield} src={ed} onClick={onEdit} title="Редактировать" alt=""/>
+                                        </>}
                                     </div>
                                     {role.group && <div className={profileCSS.nav_i} id={profileCSS.nav_i}>
                                         Класс: {role.group}
@@ -211,9 +248,9 @@ export function Profile() {
                                         <div className={profileCSS.nav_iZag}>
                                             {Object.getOwnPropertyNames(role.parents).map(param1 => <div key={param1}>
                                                 <div className={profileCSS.nav_i+" "+profileCSS.preinf} id={profileCSS.nav_i}>
-                                                    {role.parents[param1]}
+                                                    {role.parents[param1].name}
                                                 </div>
-                                                <img className={profileCSS.proImg} src={themeState.theme_ch ? profd : profl} title="Перейти в профиль" alt=""/>
+                                                <img className={profileCSS.proImg} src={themeState.theme_ch ? profd : profl} onClick={e=>navigate("/profiles/" + role.parents[param1].login)} title="Перейти в профиль" alt=""/>
                                             </div>)}
                                         </div>
                                     </>}
@@ -224,9 +261,9 @@ export function Profile() {
                                         <div className={profileCSS.nav_iZag}>
                                             {Object.getOwnPropertyNames(role.kids).map(param1 => <div key={param1}>
                                                 <div className={profileCSS.nav_i+" "+profileCSS.preinf} id={profileCSS.nav_i}>
-                                                    {role.kids[param1]}
+                                                    {role.kids[param1].name}
                                                 </div>
-                                                <img className={profileCSS.proImg} src={themeState.theme_ch ? profd : profl} title="Перейти в профиль" alt=""/>
+                                                <img className={profileCSS.proImg} src={themeState.theme_ch ? profd : profl} onClick={e=>navigate("/profiles/" + role.kids[param1].login)} title="Перейти в профиль" alt=""/>
                                             </div>)}
                                         </div>
                                     </>}

@@ -38,7 +38,8 @@ const initialState = {
         //     long: 5,
         //     init: false
         // }
-    }
+    },
+    cons: {}
 };
 
 export default function eventsReducer(state = initialState, action) {
@@ -48,7 +49,11 @@ export default function eventsReducer(state = initialState, action) {
             fd.evs = action.payload.state;
             return fd;
         case CHANGE_EVENTS_CLEAR:
-            fd.evs = {};
+            let mas = {};
+            for(let el of Object.getOwnPropertyNames(fd.cons)){
+                mas[el] = fd.evs[el];
+            }
+            fd.evs = mas;
             fd.time = {};
             return fd;
         case CHANGE_EVENT:
@@ -58,6 +63,10 @@ export default function eventsReducer(state = initialState, action) {
             }
             fd.evs[action.payload.id] = action.payload;
             if(action.payload.time.long) fd.time[action.payload.id] = action.payload.time;
+            if(action.payload.cons) {
+                fd.cons[action.payload.id] = true;
+                delete action.payload.cons;
+            }
             return fd;
         case CHANGE_EVENT_DEL:
             if(action.payload.state && !fd.time[action.payload.id]){
@@ -65,6 +74,7 @@ export default function eventsReducer(state = initialState, action) {
             }
             delete fd.evs[action.payload.id];
             if(fd.time[action.payload.id]) delete fd.time[action.payload.id];
+            if(fd.cons[action.payload.id]) delete fd.cons[action.payload.id];
             return fd;
         case CHANGE_EVENT_TIMER:
             fd.time[action.payload.id].init = action.payload.state;

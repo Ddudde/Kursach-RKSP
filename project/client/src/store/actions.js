@@ -251,7 +251,7 @@ export function changeGroups(type, id, state, gid, block) {
     };
 }
 
-export function changeEvents(type, state, id, title, text, time) {
+export function changeEvents(type, state, id, title, text, time, cons) {
     return {
         type: type,
         payload: {
@@ -267,7 +267,8 @@ export function changeEvents(type, state, id, title, text, time) {
                 minute: 'numeric',
                 second: 'numeric'
             }) : undefined,
-            text: text
+            text: text,
+            cons: cons
         }
     };
 }

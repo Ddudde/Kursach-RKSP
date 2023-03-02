@@ -3,18 +3,19 @@ import {Helmet} from "react-helmet-async";
 import settingsCSS from './settings.module.css';
 import {checkbox, states} from "../../../store/selector";
 import {useDispatch, useSelector} from "react-redux";
-import {CHANGE_STATE, changeState} from "../../../store/actions";
+import {CHANGE_EVENTS_CLEAR, CHANGE_STATE, changeEvents, changeState} from "../../../store/actions";
 import ran from "../../../media/random.png";
 import button from "../../button.module.css";
 import CheckBox from "../../other/checkBox/CheckBox";
 import ls1 from "../../../media/ls-icon1.png";
 import ls2 from "../../../media/ls-icon2.png";
 import ls3 from "../../../media/ls-icon3.png";
-import {addEvent, setActived} from "../Main";
+import {addEvent, remEvent, send, setActived} from "../Main";
 
-let dispatch, warner, npasinp, powpasinp, zambut, zambut1, oldPasSt, b, els;
+let dispatch, elem, cState, oldPasSt, b, els;
 oldPasSt = true;
-b = [false, false, false, false];
+b = [undefined, undefined, undefined, undefined];
+elem = {npasinp : undefined, powpasinp : undefined, zambut : undefined, zambut1 : undefined, oldinp : undefined, secinp : undefined};
 els = {"ch1": 1, "ch2": 2, "ch3": 3, "oldinp": 0, "secinp": 1, "npasinp": 2, "powpasinp": 3};
 
 function inpchr(event) {
@@ -38,7 +39,23 @@ function onEditPass(e) {
 function onChSt(e) {
     let par = e.target.parentElement.parentElement;
     oldPasSt = !oldPasSt;
-    chStatB({target:par.querySelector(oldPasSt ? "#oldinp":"#secinp")});
+    chStatB({target:oldPasSt ? elem.oldinp:elem.secinp});
+    if(!oldPasSt && !cState.secFr){
+        if (els.warnUnsetSecFr == undefined) {
+            els.warnUnsetSecFr = addEvent("Секретная фраза не установлена");
+        }
+    } else if(els.warnUnsetSecFr != undefined) {
+        remEvent(els.warnUnsetSecFr);
+        els.warnUnsetSecFr = undefined;
+    }
+    if(els.warnErrSecFr != undefined) {
+        remEvent(els.warnErrSecFr);
+        els.warnErrSecFr = undefined;
+    }
+    if(els.warnErrPar != undefined) {
+        remEvent(els.warnErrPar);
+        els.warnErrPar = undefined;
+    }
     par.setAttribute('data-mod', oldPasSt ? '0' : '1');
 }
 
@@ -47,20 +64,106 @@ function onClosePas(e) {
     par.setAttribute('data-mod', '0');
 }
 
+function onChSF(e) {
+    let par, inp;
+    par = e.target.parentElement.parentElement;
+    inp = par.querySelector("input");
+    let bod = {
+        type: "chSecFR",
+        body: {
+            login: cState.login,
+            secFR: inp.value
+        }
+    };
+    const setSecFr = (data) => {
+        if(data.error == false){
+            onClosePas(e);
+            inp.value = "";
+            dispatch(changeState(CHANGE_STATE, "secFr", true));
+            if(els.warnUnsetSecFr != undefined) {
+                remEvent(els.warnUnsetSecFr);
+                els.warnUnsetSecFr = undefined;
+            }
+            chStatB({target:oldPasSt ? elem.oldinp:elem.secinp});
+        }
+    };
+    send('POST', JSON.stringify(bod), "settings", setSecFr);
+}
+
 function chStatB(e) {
-    let el = e.target;
-    b[els[el.id]] = (el.pattern ? !el.validity.patternMismatch : true) && el.value.length != 0;
-    zambut.setAttribute("data-enable", +(((oldPasSt ? b[0] : b[1]) & b[2] & b[3]) || false));
+    let el = e.target, bool;
+    b[els[el.id]] = ((el.pattern ? !el.validity.patternMismatch : true) && el.value.length != 0) ? el.value : undefined;
+    bool = (((oldPasSt ? b[0] != undefined : (b[1] != undefined & cState.secFr)) & b[2] != undefined & b[3] != undefined & (b[2] == b[3])) || false);
+    elem.zambut.setAttribute("data-enable", +bool);
+    if(b[2] == b[3]) {
+        if(els.warnPow != undefined) {
+            remEvent(els.warnPow);
+            els.warnPow = undefined;
+        }
+    } else if (els.warnPow == undefined) {
+        els.warnPow = addEvent("Повторите новый пароль верно");
+    }
 }
 
 function chStatAv(e) {
-    e.target.firstChild.checked = true;
-    dispatch(changeState(CHANGE_STATE, "ico", els[e.target.firstChild.id]));
+    let bod = {
+        type: "chIco",
+        body: {
+            login: cState.login,
+            ico: els[e.target.firstChild.id]
+        }
+    };
+    const setIco = (data) => {
+        if(data.error == false){
+            e.target.firstChild.checked = true;
+            dispatch(changeState(CHANGE_STATE, "ico", els[e.target.firstChild.id]));
+        }
+    };
+    send('POST', JSON.stringify(bod), "settings", setIco);
+}
+
+function onCloseChPar(e) {
+    if(els.warnPow != undefined) {
+        remEvent(els.warnPow);
+        els.warnPow = undefined;
+    }
+    onClosePas(e);
+}
+
+function onFinChPar(e) {
+    let bod = {
+        type: "chPass",
+        body: {
+            login: cState.login,
+            oPar: oldPasSt ? b[0] : undefined,
+            secFr: oldPasSt ? undefined : b[1],
+            nPar : b[2]
+        }
+    };
+    const chPass = (data) => {
+        console.log(data);
+        if(data.error == false){
+            onClosePas(e);
+            if(els.warnErrSecFr != undefined) {
+                remEvent(els.warnErrSecFr);
+                els.warnErrSecFr = undefined;
+            }
+            if(els.warnErrPar != undefined) {
+                remEvent(els.warnErrPar);
+                els.warnErrPar = undefined;
+            }
+        } else if(data.error == 2 && els.warnErrPar == undefined){
+            els.warnErrPar = addEvent("Старый пароль неверен, попробуйте воспользоваться секретной фразой");
+        } else if(data.error == 3 && els.warnErrSecFr == undefined){
+            els.warnErrSecFr = addEvent("Секретная фраза неверна, попробуйте воспользоваться старым паролем");
+        }
+    };
+    send('POST', JSON.stringify(bod), "settings", chPass);
 }
 
 function chStatSb1(e) {
     let el = e.target;
-    zambut1.setAttribute("data-enable", +(el ? el.value.length != 0 : false));
+    elem.zambut1.setAttribute("data-enable", +(el ? el.value.length != 0 : false));
 }
 
 export function gen_pas(){
@@ -69,30 +172,30 @@ export function gen_pas(){
     for (var i = 0; i < 15; i++){
         password += symbols.charAt(Math.floor(Math.random() * symbols.length));
     }
-    npasinp.value = password;
-    powpasinp.value = password;
+    elem.npasinp.value = password;
+    elem.powpasinp.value = password;
     navigator.clipboard.writeText(password);
     addEvent(`Сгенерирован пароль: ${password}. Он скопирован в буфер обмена`, 10);
+    if(els.warnPow != undefined) {
+        remEvent(els.warnPow);
+        els.warnPow = undefined;
+    }
 }
 
 export function Settings() {
     const checkBoxInfo = useSelector(checkbox);
     dispatch = useDispatch();
-    const cState = useSelector(states);
+    cState = useSelector(states);
     const isFirstUpdate = useRef(true);
     useEffect(() => {
         setActived(".panSet");
         console.log("I was triggered during componentDidMount Settings.jsx");
-        warner = document.getElementsByClassName("warner")[0];
-        npasinp = document.querySelector("#npasinp");
-        powpasinp = document.querySelector("#powpasinp");
-        document.querySelector("#oldinp").addEventListener('input', inpchr);
-        npasinp.addEventListener('input', inpchr);
-        powpasinp.addEventListener('input', inpchr);
-        zambut = document.getElementsByClassName(settingsCSS.butL)[0];
-        zambut1 = document.getElementsByClassName(settingsCSS.butL)[1];
+        elem.oldinp.addEventListener('input', inpchr);
+        elem.npasinp.addEventListener('input', inpchr);
+        elem.powpasinp.addEventListener('input', inpchr);
         document.querySelector("#ch" + cState.ico).checked = true;
         return function() {
+            dispatch(changeEvents(CHANGE_EVENTS_CLEAR));
             console.log("I was triggered during componentWillUnmount Settings.jsx");
         }
     }, []);
@@ -115,19 +218,19 @@ export function Settings() {
                     </div>
                     <div className={settingsCSS.nav_iZag+" "+settingsCSS.blockNotif} data-act={(checkBoxInfo.checkbox_notify || false) ? '1' : '0'}>
                         {(cState.role < 3) && <div className={settingsCSS.nav_i} id={settingsCSS.nav_i}>
-                            <CheckBox text={"Уведомления о изменении в расписании"} checkbox_id={"checkbox_notify_sched"}/>
+                            <CheckBox state={+true} text={"Уведомления о изменении в расписании"} checkbox_id={"checkbox_notify_sched"}/>
                         </div>}
                         {(cState.role < 2) && <div className={settingsCSS.nav_i} id={settingsCSS.nav_i}>
-                            <CheckBox text={"Уведомления о новых оценках"} checkbox_id={"checkbox_notify_marks"}/>
+                            <CheckBox state={+true} text={"Уведомления о новых оценках"} checkbox_id={"checkbox_notify_marks"}/>
                         </div>}
                         {(cState.role < 3) && <div className={settingsCSS.nav_i} id={settingsCSS.nav_i}>
-                            <CheckBox text={"Присылать новые объявления учебного центра"} checkbox_id={"checkbox_notify_yo"}/>
+                            <CheckBox state={+true} text={"Присылать новые объявления учебного центра"} checkbox_id={"checkbox_notify_yo"}/>
                         </div>}
                         {(cState.role < 4) && <div className={settingsCSS.nav_i} id={settingsCSS.nav_i}>
-                            <CheckBox text={"Присылать новые объявления портала"} checkbox_id={"checkbox_notify_por"}/>
+                            <CheckBox state={+true} text={"Присылать новые объявления портала"} checkbox_id={"checkbox_notify_por"}/>
                         </div>}
                         {(cState.role == 4) && <div className={settingsCSS.nav_i} id={settingsCSS.nav_i}>
-                            <CheckBox text={"Присылать уведомления о новых заявках школ"} checkbox_id={"checkbox_notify_new_sch"}/>
+                            <CheckBox state={+true} text={"Присылать уведомления о новых заявках школ"} checkbox_id={"checkbox_notify_new_sch"}/>
                         </div>}
                     </div>
                     <div className={settingsCSS.nav_iZag} data-mod="0">
@@ -136,30 +239,30 @@ export function Settings() {
                         </div>
                         <div className={settingsCSS.block} data-mod='0'>
                             <div className={settingsCSS.pasBlock+" "+settingsCSS.oldp}>
-                                <input className={settingsCSS.inp} onChange={chStatB} id="oldinp" placeholder="Старый пароль" type="password" pattern="^[a-zA-Z0-9]+$"/>
+                                <input className={settingsCSS.inp} onChange={chStatB} ref={el=>elem.oldinp = el} id="oldinp" placeholder="Старый пароль" type="password" pattern="^[a-zA-Z0-9]+$"/>
                                 <div className={settingsCSS.but+' '+button.button} onClick={onChSt}>
                                     Забыл пароль?
                                 </div>
                             </div>
                             <div className={settingsCSS.pasBlock+" "+settingsCSS.frp}>
-                                <input className={settingsCSS.inp} onChange={chStatB} id="secinp" placeholder="Секретная фраза" type="password" pattern="^[a-zA-Z0-9]+$"/>
+                                <input className={settingsCSS.inp} onChange={chStatB} ref={el=>elem.secinp = el} id="secinp" placeholder="Секретная фраза" type="password" pattern="^[a-zA-Z0-9]+$"/>
                                 <div className={settingsCSS.but+' '+button.button} onClick={onChSt}>
                                     Вспомнил пароль
                                 </div>
                             </div>
                             <div className={settingsCSS.pasBlock}>
-                                <input className={settingsCSS.inp} onChange={chStatB} id="npasinp" placeholder="Новый пароль" type="password" autoComplete="new-password" pattern="^[a-zA-Z0-9]+$"/>
+                                <input className={settingsCSS.inp} ref={el=>elem.npasinp = el} onChange={chStatB} id="npasinp" placeholder="Новый пароль" type="password" autoComplete="new-password" pattern="^[a-zA-Z0-9]+$"/>
                                 <div className={settingsCSS.but+' '+button.button} onClick={gen_pas}>
                                     <img src={ran} className={settingsCSS.randimg} alt=""/>
                                     Случайный пароль
                                 </div>
                             </div>
-                            <input className={settingsCSS.inp+" "+settingsCSS.inpPass} id="powpasinp" onChange={chStatB} placeholder="Повторите пароль" type="password" autoComplete="new-password" pattern="^[a-zA-Z0-9]+$"/>
+                            <input className={settingsCSS.inp+" "+settingsCSS.inpPass} ref={el=>elem.powpasinp = el} id="powpasinp" onChange={chStatB} placeholder="Повторите пароль" type="password" autoComplete="new-password" pattern="^[a-zA-Z0-9]+$"/>
                             <div className={settingsCSS.blockKnops}>
-                                <div className={settingsCSS.but+' '+button.button+' '+settingsCSS.butL} data-enable={"0"} onClick={onClosePas}>
+                                <div className={settingsCSS.but+' '+button.button+' '+settingsCSS.butL} ref={el=>elem.zambut = el} data-enable={"0"} onClick={onFinChPar}>
                                     Замена!
                                 </div>
-                                <div className={settingsCSS.but+' '+button.button+' '+settingsCSS.butR} onClick={onClosePas}>
+                                <div className={settingsCSS.but+' '+button.button+' '+settingsCSS.butR} onClick={onCloseChPar}>
                                     Отменить
                                 </div>
                             </div>
@@ -197,7 +300,7 @@ export function Settings() {
                         <div className={settingsCSS.block}>
                             <input className={settingsCSS.inp+" "+settingsCSS.inpPass} onChange={chStatSb1} placeholder="Секретная фраза" type="password" pattern="^[a-zA-Z0-9]+$"/>
                             <div className={settingsCSS.blockKnops}>
-                                <div className={settingsCSS.but+' '+button.button+' '+settingsCSS.butL} data-enable={"0"} onClick={onClosePas}>
+                                <div className={settingsCSS.but+' '+button.button+' '+settingsCSS.butL} ref={el=>elem.zambut1 = el} data-enable={"0"} onClick={onChSF}>
                                     Подтвердить
                                 </div>
                                 <div className={settingsCSS.but+' '+button.button+' '+settingsCSS.butR} onClick={onClosePas}>
