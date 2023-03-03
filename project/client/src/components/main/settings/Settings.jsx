@@ -12,21 +12,18 @@ import ls2 from "../../../media/ls-icon2.png";
 import ls3 from "../../../media/ls-icon3.png";
 import {addEvent, remEvent, send, setActived} from "../Main";
 
-let dispatch, elem, cState, oldPasSt, b, els;
+let dispatch, elem, cState, oldPasSt, els;
 oldPasSt = true;
-b = [undefined, undefined, undefined, undefined];
 elem = {npasinp : undefined, powpasinp : undefined, zambut : undefined, zambut1 : undefined, oldinp : undefined, secinp : undefined};
-els = {"ch1": 1, "ch2": 2, "ch3": 3, "oldinp": 0, "secinp": 1, "npasinp": 2, "powpasinp": 3};
+els = {oldinp: undefined, secinp: undefined, npasinp: undefined, powpasinp: undefined};
 
 function inpchr(event) {
-    var dat = event.target;
-    if (dat.validity.patternMismatch || dat.value.length == 0) {
-        dat.style.animation = "but 1s ease infinite";
-        setTimeout(function () {dat.style.animation = "none"}, 1000)
-        dat.style.outline = "solid red";
+    var el = event.target;
+    if (el.validity.patternMismatch || el.value.length == 0) {
+        el.setAttribute("data-mod", '1');
         // warner.style.display = "inline";
     } else {
-        dat.style.outline = "none black";
+        el.setAttribute("data-mod", '0');
         // warner.style.display = "none";
     }
 }
@@ -92,10 +89,10 @@ function onChSF(e) {
 
 function chStatB(e) {
     let el = e.target, bool;
-    b[els[el.id]] = ((el.pattern ? !el.validity.patternMismatch : true) && el.value.length != 0) ? el.value : undefined;
-    bool = (((oldPasSt ? b[0] != undefined : (b[1] != undefined & cState.secFr)) & b[2] != undefined & b[3] != undefined & (b[2] == b[3])) || false);
+    els[el.id] = (!el.validity.patternMismatch && el.value.length != 0) ? el.value : undefined;
+    bool = ((oldPasSt ? els.oldinp != undefined : (els.secinp != undefined & cState.secFr)) & els.npasinp != undefined & els.powpasinp != undefined & (els.npasinp == els.powpasinp));
     elem.zambut.setAttribute("data-enable", +bool);
-    if(b[2] == b[3]) {
+    if(els.npasinp == els.powpasinp) {
         if(els.warnPow != undefined) {
             remEvent(els.warnPow);
             els.warnPow = undefined;
@@ -110,13 +107,13 @@ function chStatAv(e) {
         type: "chIco",
         body: {
             login: cState.login,
-            ico: els[e.target.firstChild.id]
+            ico: e.target.firstChild.value
         }
     };
     const setIco = (data) => {
         if(data.error == false){
             e.target.firstChild.checked = true;
-            dispatch(changeState(CHANGE_STATE, "ico", els[e.target.firstChild.id]));
+            dispatch(changeState(CHANGE_STATE, "ico", e.target.firstChild.value));
         }
     };
     send('POST', JSON.stringify(bod), "settings", setIco);
@@ -135,13 +132,12 @@ function onFinChPar(e) {
         type: "chPass",
         body: {
             login: cState.login,
-            oPar: oldPasSt ? b[0] : undefined,
-            secFr: oldPasSt ? undefined : b[1],
-            nPar : b[2]
+            oPar: oldPasSt ? els.oldinp : undefined,
+            secFr: oldPasSt ? undefined : els.secinp,
+            nPar : els.npasinp
         }
     };
     const chPass = (data) => {
-        console.log(data);
         if(data.error == false){
             onClosePas(e);
             if(els.warnErrSecFr != undefined) {
@@ -166,20 +162,20 @@ function chStatSb1(e) {
     elem.zambut1.setAttribute("data-enable", +(el ? el.value.length != 0 : false));
 }
 
-export function gen_pas(){
-    var password = "";
-    var symbols = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+export function gen_pas(e){
+    let password, symbols;
+    password = "";
+    symbols = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     for (var i = 0; i < 15; i++){
         password += symbols.charAt(Math.floor(Math.random() * symbols.length));
     }
-    elem.npasinp.value = password;
-    elem.powpasinp.value = password;
+    for(let el of [elem.npasinp, elem.powpasinp]){
+        el.value = password;
+        inpchr({target:el});
+        chStatB({target:el});
+    }
     navigator.clipboard.writeText(password);
     addEvent(`Сгенерирован пароль: ${password}. Он скопирован в буфер обмена`, 10);
-    if(els.warnPow != undefined) {
-        remEvent(els.warnPow);
-        els.warnPow = undefined;
-    }
 }
 
 export function Settings() {
@@ -190,9 +186,6 @@ export function Settings() {
     useEffect(() => {
         setActived(".panSet");
         console.log("I was triggered during componentDidMount Settings.jsx");
-        elem.oldinp.addEventListener('input', inpchr);
-        elem.npasinp.addEventListener('input', inpchr);
-        elem.powpasinp.addEventListener('input', inpchr);
         document.querySelector("#ch" + cState.ico).checked = true;
         return function() {
             dispatch(changeEvents(CHANGE_EVENTS_CLEAR));
@@ -239,30 +232,30 @@ export function Settings() {
                         </div>
                         <div className={settingsCSS.block} data-mod='0'>
                             <div className={settingsCSS.pasBlock+" "+settingsCSS.oldp}>
-                                <input className={settingsCSS.inp} onChange={chStatB} ref={el=>elem.oldinp = el} id="oldinp" placeholder="Старый пароль" type="password" pattern="^[a-zA-Z0-9]+$"/>
-                                <div className={settingsCSS.but+' '+button.button} onClick={onChSt}>
+                                <input className={settingsCSS.inp} onChange={chStatB} onInput={inpchr} ref={el=>elem.oldinp = el} id="oldinp" placeholder="Старый пароль" type="password" pattern="^[a-zA-Z0-9]+$"/>
+                                <div className={button.button+" "+settingsCSS.marg} data-mod="2" onClick={onChSt}>
                                     Забыл пароль?
                                 </div>
                             </div>
                             <div className={settingsCSS.pasBlock+" "+settingsCSS.frp}>
-                                <input className={settingsCSS.inp} onChange={chStatB} ref={el=>elem.secinp = el} id="secinp" placeholder="Секретная фраза" type="password" pattern="^[a-zA-Z0-9]+$"/>
-                                <div className={settingsCSS.but+' '+button.button} onClick={onChSt}>
+                                <input className={settingsCSS.inp} onChange={chStatB} onInput={inpchr} ref={el=>elem.secinp = el} id="secinp" placeholder="Секретная фраза" type="password" pattern="^[a-zA-Z0-9]+$"/>
+                                <div className={button.button+" "+settingsCSS.marg} data-mod="2" onClick={onChSt}>
                                     Вспомнил пароль
                                 </div>
                             </div>
                             <div className={settingsCSS.pasBlock}>
-                                <input className={settingsCSS.inp} ref={el=>elem.npasinp = el} onChange={chStatB} id="npasinp" placeholder="Новый пароль" type="password" autoComplete="new-password" pattern="^[a-zA-Z0-9]+$"/>
-                                <div className={settingsCSS.but+' '+button.button} onClick={gen_pas}>
+                                <input className={settingsCSS.inp} ref={el=>elem.npasinp = el} onChange={chStatB} onInput={inpchr} id="npasinp" placeholder="Новый пароль" type="password" autoComplete="new-password" pattern="^[a-zA-Z0-9]+$"/>
+                                <div className={button.button+" "+settingsCSS.marg} data-mod="2" onClick={gen_pas}>
                                     <img src={ran} className={settingsCSS.randimg} alt=""/>
                                     Случайный пароль
                                 </div>
                             </div>
-                            <input className={settingsCSS.inp+" "+settingsCSS.inpPass} ref={el=>elem.powpasinp = el} id="powpasinp" onChange={chStatB} placeholder="Повторите пароль" type="password" autoComplete="new-password" pattern="^[a-zA-Z0-9]+$"/>
+                            <input className={settingsCSS.inp+" "+settingsCSS.inpPass} ref={el=>elem.powpasinp = el} id="powpasinp" onChange={chStatB} onInput={inpchr} placeholder="Повторите пароль" type="password" autoComplete="new-password" pattern="^[a-zA-Z0-9]+$"/>
                             <div className={settingsCSS.blockKnops}>
-                                <div className={settingsCSS.but+' '+button.button+' '+settingsCSS.butL} ref={el=>elem.zambut = el} data-enable={"0"} onClick={onFinChPar}>
+                                <div className={button.button} ref={el=>elem.zambut = el} data-mod="2" data-enable="0" onClick={onFinChPar}>
                                     Замена!
                                 </div>
-                                <div className={settingsCSS.but+' '+button.button+' '+settingsCSS.butR} onClick={onCloseChPar}>
+                                <div className={button.button} data-mod="2" onClick={onCloseChPar}>
                                     Отменить
                                 </div>
                             </div>
@@ -288,7 +281,7 @@ export function Settings() {
                                     <img className={settingsCSS.logoi} src={ls3} alt=""/>
                                 </div>
                             </div>
-                            <div className={settingsCSS.but+' '+button.button + ' clA'} style={{width:"fit-content"}} onClick={onClosePas}>
+                            <div className={button.button+' clA '+settingsCSS.marg} data-mod="2" style={{width:"fit-content"}} onClick={onClosePas}>
                                 Закрыть меню выбора
                             </div>
                         </div>
@@ -298,12 +291,12 @@ export function Settings() {
                             {cState.secFr? "Изменить" : "Добавить"} секретную фразу
                         </div>
                         <div className={settingsCSS.block}>
-                            <input className={settingsCSS.inp+" "+settingsCSS.inpPass} onChange={chStatSb1} placeholder="Секретная фраза" type="password" pattern="^[a-zA-Z0-9]+$"/>
+                            <input className={settingsCSS.inp+" "+settingsCSS.inpPass} onChange={chStatSb1} onInput={inpchr} placeholder="Секретная фраза" type="password" pattern="^[a-zA-Z0-9]+$"/>
                             <div className={settingsCSS.blockKnops}>
-                                <div className={settingsCSS.but+' '+button.button+' '+settingsCSS.butL} ref={el=>elem.zambut1 = el} data-enable={"0"} onClick={onChSF}>
+                                <div className={button.button} data-mod="2" ref={el=>elem.zambut1 = el} data-enable="0" onClick={onChSF}>
                                     Подтвердить
                                 </div>
-                                <div className={settingsCSS.but+' '+button.button+' '+settingsCSS.butR} onClick={onClosePas}>
+                                <div className={button.button} data-mod="2" onClick={onClosePas}>
                                     Отменить
                                 </div>
                             </div>

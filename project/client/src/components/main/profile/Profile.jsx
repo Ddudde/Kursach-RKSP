@@ -36,16 +36,15 @@ moore = `/*
 */`;
 
 function inpchr(event){
-    var dat = event.target;
-    if (dat.validity.patternMismatch || dat.value.length == 0) {
-        dat.style.animation = "but 1s ease infinite";
-        setTimeout(function () {dat.style.animation = "none"}, 1000)
-        dat.style.outline = "solid red";
+    var el = event.target;
+    if (el.validity.patternMismatch || el.validity.typeMismatch || el.value.length == 0) {
+        el.setAttribute("data-mod", '1');
         // warner.style.display = "inline";
     } else {
-        dat.style.outline = "none black";
+        el.setAttribute("data-mod", '0');
         // warner.style.display = "none";
     }
+    el.parentElement.querySelector(".yes").setAttribute("data-enable", +(!el.validity.typeMismatch && !el.validity.patternMismatch && el.value.length != 0));
 }
 
 function onEdit(e) {
@@ -54,7 +53,9 @@ function onEdit(e) {
 }
 
 function onFin(e, param) {
-    let par = e.target.parentElement, inp = par.querySelector("." + profileCSS.inp);
+    let par, inp;
+    par = e.target.parentElement;
+    inp = par.querySelector("." + profileCSS.inp);
     if(inp.tagName == "TEXTAREA")
     {
         let bod = {
@@ -71,53 +72,47 @@ function onFin(e, param) {
             }
         };
         send('POST', JSON.stringify(bod), "profiles", setInfo);
+    } else if (inp.validity.typeMismatch || inp.validity.patternMismatch || inp.value.length == 0) {
+        inp.setAttribute("data-mod", '1');
+        // warner.style.display = "inline";
     } else {
-        if ((inp.type == "email" ? inp.validity.typeMismatch : inp.validity.patternMismatch) || inp.value.length == 0) {
-            inp.style.animation = "but 1s ease infinite";
-            setTimeout(function () {
-                inp.style.animation = "none"
-            }, 1000)
-            inp.style.outline = "solid red";
-            // warner.style.display = "inline";
+        inp.setAttribute("data-mod", '0');
+        // warner.style.display = "none";
+        if (inp.type == "email") {
+            let bod = {
+                type: "chEmail",
+                body: {
+                    login: cState.login,
+                    email: inp.value,
+                    role: param
+                }
+            };
+            const setEmail = (data) => {
+                if(data.error == false){
+                    dispatch(changeProfile(CHANGE_PROFILE_ROLES, "email", inp.value, param));
+                    par.setAttribute('data-mod', '0');
+                }
+            };
+            send('POST', JSON.stringify(bod), "profiles", setEmail);
         } else {
-            inp.style.outline = "none black";
-            // warner.style.display = "none";
-            if (inp.type == "email") {
-                let bod = {
-                    type: "chEmail",
-                    body: {
-                        login: cState.login,
-                        email: inp.value,
-                        role: param
-                    }
-                };
-                const setEmail = (data) => {
-                    if(data.error == false){
-                        dispatch(changeProfile(CHANGE_PROFILE_ROLES, "email", inp.value, param));
-                        par.setAttribute('data-mod', '0');
-                    }
-                };
-                send('POST', JSON.stringify(bod), "profiles", setEmail);
-            } else {
-                let bod = {
-                    type: "chLogin",
-                    body: {
-                        oLogin: cState.login,
-                        nLogin: inp.value
-                    }
-                };
-                const setLog = (data) => {
-                    if(data.error == false){
-                        dispatch(changeState(CHANGE_STATE, "login", inp.value));
-                        dispatch(changeProfile(CHANGE_PROFILE, "login", inp.value));
-                        par.setAttribute('data-mod', '0');
-                        navigate("/profiles");
-                    } else {
-                        addEvent("Логин занят, попробуйте изменить", 10);
-                    }
-                };
-                send('POST', JSON.stringify(bod), "profiles", setLog);
-            }
+            let bod = {
+                type: "chLogin",
+                body: {
+                    oLogin: cState.login,
+                    nLogin: inp.value
+                }
+            };
+            const setLog = (data) => {
+                if(data.error == false){
+                    dispatch(changeState(CHANGE_STATE, "login", inp.value));
+                    dispatch(changeProfile(CHANGE_PROFILE, "login", inp.value));
+                    par.setAttribute('data-mod', '0');
+                    navigate("/profiles");
+                } else {
+                    addEvent("Логин занят, попробуйте изменить", 10);
+                }
+            };
+            send('POST', JSON.stringify(bod), "profiles", setLog);
         }
     }
 }
@@ -126,11 +121,6 @@ function onClose(e) {
     let par = e.target.parentElement;
     par.setAttribute('data-mod', '0');
     // warner.style.display = "none";
-}
-
-function chStatB(e) {
-    let el = e.target, b = el.tagName == "TEXTAREA" ? true : (el.tagName == "TEXTAREA" ? true : (el.type == "email" ? !el.validity.typeMismatch : !el.validity.patternMismatch));
-    el.parentElement.querySelector(".yes").setAttribute("data-enable", +(el ? b && el.value.length != 0 : false));
 }
 
 function setInfo(log) {
@@ -158,9 +148,8 @@ export function Profile() {
     const isFirstUpdate = useRef(true);
     useEffect(() => {
         setActived(".panPro");
-        setInfo(log ? log : cState.login);
         console.log("I was triggered during componentDidMount Profile.jsx");
-        if(document.querySelector("#loginp")) document.querySelector("#loginp").addEventListener('input', inpchr);
+        setInfo(log ? log : cState.login);
         return function() {
             dispatch(changeEvents(CHANGE_EVENTS_CLEAR));
             console.log("I was triggered during componentWillUnmount Profile.jsx");
@@ -193,7 +182,7 @@ export function Profile() {
                                     {profilesInfo.login}
                                 </div>
                                 {(!log || log == cState.login) && <>
-                                    <input className={profileCSS.inp} id="loginp" onChange={chStatB} defaultValue={profilesInfo.login} type="text" pattern="^[a-zA-Z0-9]+$"/>
+                                    <input className={profileCSS.inp} id="loginp" placeholder="nickname" onInput={inpchr} defaultValue={profilesInfo.login} type="text" pattern="^[a-zA-Z0-9]+$"/>
                                     <img className={profileCSS.imginp+" yes"} src={yes} onClick={onFin} title="Подтвердить изменения" alt=""/>
                                     <img className={profileCSS.imginp} src={no} onClick={onClose} title="Отменить изменения и выйти из режима редактирования" alt=""/>
                                     <img className={profileCSS.imgfield} src={ed} onClick={onEdit} title="Редактировать" alt=""/>
@@ -210,7 +199,7 @@ export function Profile() {
                                     {profilesInfo.more}
                                 </pre>
                                 {(!log || log == cState.login) && <>
-                                    <textarea className={profileCSS.inp+" "+profileCSS.inparea} onChange={chStatB} defaultValue={profilesInfo.more ? profilesInfo.more : moore}/>
+                                    <textarea className={profileCSS.inp+" "+profileCSS.inparea} placeholder="Информация о вас" onInput={inpchr} defaultValue={profilesInfo.more ? profilesInfo.more : moore}/>
                                     <img className={profileCSS.imginp+" yes"} src={yes} onClick={onFin} title="Подтвердить изменения" alt=""/>
                                     <img className={profileCSS.imginp} src={no} onClick={onClose} title="Отменить изменения и выйти из режима редактирования" alt=""/>
                                     <img className={profileCSS.imgfield} src={ed} onClick={onEdit} title="Редактировать" alt=""/>
@@ -232,7 +221,7 @@ export function Profile() {
                                             {role.email}
                                         </div>
                                         {(!log || log == cState.login) && <>
-                                            <input className={profileCSS.inp} onChange={chStatB} defaultValue={role.email} type="email"/>
+                                            <input className={profileCSS.inp} onInput={inpchr} placeholder="ex@gmail.com" defaultValue={role.email} type="email"/>
                                             <img className={profileCSS.imginp+" yes"} src={yes} onClick={e => onFin(e, param)} title="Подтвердить изменения" alt=""/>
                                             <img className={profileCSS.imginp} src={no} onClick={onClose} title="Отменить изменения и выйти из режима редактирования" alt=""/>
                                             <img className={profileCSS.imgfield} src={ed} onClick={onEdit} title="Редактировать" alt=""/>

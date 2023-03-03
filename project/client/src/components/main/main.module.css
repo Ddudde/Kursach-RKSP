@@ -91,12 +91,13 @@
 	align-items: center;
 	justify-content: center;
 	align-self: stretch;
-	-webkit-transition: color 1s ease;
-	-o-transition: color 1s ease;
 	transition: color 1s ease;
 	transition-property: color, text-shadow, border-color, background-color;
 	background-color: var(--bgcV1);
 	border-radius: 5px;
+	text-shadow: 1px 1px 3px var(--shdV1);
+	backface-visibility: hidden;
+	perspective: 1000px;
 }
 
 #nav_i:hover, #nav_i:hover *{

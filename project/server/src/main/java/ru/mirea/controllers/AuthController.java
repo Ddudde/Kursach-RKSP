@@ -3,6 +3,7 @@ package ru.mirea.controllers;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 import ru.mirea.data.User;
@@ -48,11 +49,36 @@ public class AuthController {
                     if(Objects.equals(user.getPassword(), body.get("password").getAsString())) {
                         bodyAns.addProperty("auth", true);
                         bodyAns.addProperty("login", user.getLogin());
-                        bodyAns.addProperty("role", (Long) user.getRoles().keySet().toArray()[0]);
+                        bodyAns.addProperty("role", ObjectUtils.isEmpty(user.getRoles()) ? 0 : ((Long) user.getRoles().keySet().toArray()[0]));
                         bodyAns.addProperty("ico", user.getIco());
-                        bodyAns.addProperty("roles", user.getRoles().size() > 1);
+                        bodyAns.addProperty("roles", !ObjectUtils.isEmpty(user.getRoles()) && user.getRoles().size() > 1);
                         bodyAns.addProperty("secFr", !ObjectUtils.isEmpty(user.getSecFr()));
                     }
+                }
+                return ans;
+            }
+            case "reg" -> {
+                bodyAns = new JsonObject();
+                ans.add("body", bodyAns);
+                List<User> users = userRepository.findByLogin(body.get("login").getAsString());
+                if(users.isEmpty()){
+                    User user = new User(body.get("login").getAsString(), body.get("par").getAsString(), body.get("ico").getAsInt());
+                    userRepository.save(user);
+                } else {
+                    ans.addProperty("error", true);
+                }
+                return ans;
+            }
+            case "chPass" -> {
+                bodyAns = new JsonObject();
+                ans.add("body", bodyAns);
+                List<User> users = userRepository.findByLogin(body.get("login").getAsString());
+                if(!users.isEmpty() && Objects.equals(users.get(0).getSecFr(), body.get("secFr").getAsString())){
+                    User user = users.get(0);
+                    user.setPassword(body.get("par").getAsString());
+                    userRepository.save(user);
+                } else {
+                    ans.addProperty("error", true);
                 }
                 return ans;
             }

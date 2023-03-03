@@ -8,15 +8,12 @@
 	place-items: center;
 	grid-template: auto/repeat(5,1fr);
 	justify-items: stretch;
-	/*z-index: 1;*/
 	position: relative;
 	margin-right: 0.5px;
 }
 
 .panel[data-mod="0"]{
 	background-color: var(--bgcV1);
-	-webkit-transition: background-color 1s ease;
-	-o-transition: background-color 1s ease;
 	transition: background-color 1s ease;
 }
 
@@ -45,12 +42,13 @@
 	align-items: center;
 	justify-content: center;
 	align-self: stretch;
-	-webkit-transition: color 1s ease;
-	-o-transition: color 1s ease;
 	transition: color 1s ease;
 	transition-property: color, text-shadow, border-color, background-color;
 	background-color: var(--bgcV1);
 	border-radius: 5px;
+	text-shadow: 1px 1px 3px var(--shdV1);
+	backface-visibility: hidden;
+	perspective: 1000px;
 }
 
 #nav_i:hover{

@@ -41,6 +41,12 @@ public class User {
     @Column(name = "info")
     private String info;
 
+    public User(String login, String password, int ico) {
+        this.login = login;
+        this.password = password;
+        this.ico = ico;
+    }
+
     public User(String login, String password, String fio, int ico, RoleMap roles) {
         this.login = login;
         this.fio = fio;

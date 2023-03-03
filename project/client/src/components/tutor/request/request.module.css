@@ -14,11 +14,9 @@
 }
 
 .inp {
-    -webkit-border-radius: 0.5vmax;
     border-radius: 0.5vmax;
     background-color: #4d4d4d;
     user-select: none;
-    -webkit-box-shadow: 0 1px #FFFFFFAA, inset 0 2px 2px #000000AA;
     box-shadow: 0 1px #FFFFFFAA, inset 0 2px 2px #000000AA;
     border: 1px solid var(--bcV2);
     position: relative;

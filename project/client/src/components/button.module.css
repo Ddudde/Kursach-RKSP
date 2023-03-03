@@ -13,7 +13,7 @@
     padding: 1.5vmax 1.5vmax;
     align-items: center;
     display: flex;
-    margin-top: 9px;
+    /*margin-top: 9px;*/
 }
 
 .button:hover {

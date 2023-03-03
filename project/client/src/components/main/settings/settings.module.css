@@ -35,10 +35,11 @@
 	font-size: 1.25vw;
 	font-weight: 500;
 	margin-block: 0.2vw;
-	-webkit-transition: color 1s ease;
-	-o-transition: color 1s ease;
 	transition: color 1s ease;
 	transition-property: color, text-shadow, border-color;
+	text-shadow: 1px 1px 3px var(--shdV1);
+	backface-visibility: hidden;
+	perspective: 1000px;
 }
 
 #nav_i:hover{
@@ -72,15 +73,18 @@
 .pasBlock{
 	display: flex;
 	margin-bottom: 1vw;
+	align-items: center;
+}
+
+.marg{
+	margin-left: 9px;
 }
 
 .inp {
-	-webkit-border-radius: 0.5vmax;
 	border-radius: 0.5vmax;
 	background-color: #4d4d4d;
 	user-select: none;
-	-webkit-box-shadow: 0 1px white, inset 0 2px 2px rgba(0, 0, 0, 0.1);
-	box-shadow: 0 1px white, inset 0 2px 2px rgba(0, 0, 0, 0.1);
+	box-shadow: 0 1px #FFFFFFAA, inset 0 2px 2px #000000AA;
 	border: 1px solid var(--bcV2);
 	font-size: 2.2vmax;
 	height: 7vh;
@@ -93,62 +97,32 @@
 	vertical-align: middle;
 }
 
+.inp[data-mod='1']{
+	animation: but ease 1s;
+	outline: solid red;
+}
+
+@keyframes but {
+	0%{transform: rotateZ(-2deg);}
+	50%{transform: rotateZ(2deg);}
+	100%{transform: rotateZ(0deg);}
+}
+
 .inpPass{
 	margin-bottom: 1vw;
-}
-
-.but{
-	-webkit-border-radius: 5px;
-	border-radius: 5px !important;
-	margin-left: 9px;
-	font-size: 2vmin !important;
-	height: 5vh;
-	padding-inline: 1vw;
-	font-weight: normal !important;
-	align-self: center;
-	align-items: center;
-	display: flex;
-}
-
-.but:hover {
-	text-shadow: none;
-	-webkit-box-shadow: 0 0 5px 5px #B8860B, inset 0 -50px 2px #FFFFFF33;
-	box-shadow: 0 0 5px 5px #B8860B, inset 0 -50px 2px #FFFFFF33;
-}
-
-.but:active {
-	text-shadow: none;
-	-webkit-box-shadow: 0 0 10px 10px #B8860B, inset 0 -50px 2px #00000033;
-	box-shadow: 0 0 10px 10px #B8860B, inset 0 -50px 2px #00000033;
 }
 
 .randimg{
 	width: 4vmin;
 	height: 4vmin;
-	align-self: center;
 	pointer-events: none;
 }
 
 .blockKnops{
 	margin-left: 1.5vmax;
 	width: 21.5vw;
-	position: relative;
-}
-
-.butL {
-	width: fit-content;
-	margin-left: 0;
-}
-
-.butL[data-enable="0"] {
-	pointer-events: none;
-	opacity: 0.4;
-}
-
-.butR{
-	position: absolute;
-	right: 0;
-	top: 0;
+	display: flex;
+	justify-content: space-between;
 }
 
 .logo{
@@ -159,7 +133,7 @@
 	color: var(--cV1);
 	font-size: 3vw;
 	font-weight: bolder;
-	margin-left: 12px;
+	margin-left: 9px;
 	margin-bottom: 9px;
 	transition: color 1s ease;
 }

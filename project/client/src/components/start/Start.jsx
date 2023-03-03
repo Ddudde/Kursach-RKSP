@@ -15,28 +15,28 @@ import button from "../button.module.css";
 import {Helmet} from "react-helmet-async";
 import CheckBox from "../other/checkBox/CheckBox";
 import {useDispatch, useSelector} from "react-redux";
-import {checkbox, indicators} from "../../store/selector";
+import {checkbox, indicators, states} from "../../store/selector";
 import {
     CHANGE_DIALOG,
+    CHANGE_EVENTS_CLEAR,
     CHANGE_STATE_GL,
     changeDialog,
+    changeEvents,
     changeInd,
     changeIndNext,
     changeIndPrev,
     changeState
 } from "../../store/actions";
 import {addEvent, remEvent, send, setActived} from "../main/Main";
-import {Link, useParams} from "react-router-dom"
+import {Link, useNavigate, useParams} from "react-router-dom"
 import ErrFound from "../other/error/ErrFound";
 
-let dispatch, timer, indicInfo, checkBoxInfo, elem, rb, vb, zb, els, textYesInv, textNoInv, blocks, licField;
-rb = [false, false];
-vb = [false, false];
-zb = [false, false, false, false];
+let dispatch, warns, timer, indicInfo, cState, navigate, checkBoxInfo, elem, els, textYesInv, textNoInv, blocks, licField;
 elem = {regbut: undefined, vxbut: undefined, g_id: undefined, logv: undefined, pasv: undefined, logz: undefined};
 textNoInv = "Приглашение неверно или недействительно.";
 textYesInv = "К действующему аккаунту была добавлена новая роль.";
-els = {"logz": 0, "secz": 1, "pasnz": 2, "paspz": 3, "logv": 0, "pasv": 1, "logr": 0, "pasr": 1};
+els = {logz: 0, secz: 0, pasnz: 0, paspz: 0, logv: 0, pasv: 0, logr: 0, pasr: 0, ppasr: 0};
+warns = {pat: undefined, empt: undefined, pow: undefined};
 blocks = [
     {
         name: "Завучам",
@@ -75,28 +75,48 @@ licField = {
 }
 
 function gen_pas(e){
-    let par, pasr;
+    let par, password, symbols;
     par = e.target.parentElement.parentElement;
-    pasr = par.getElementsByClassName(start.login);
-    var password = "";
-    var symbols = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    password = "";
+    symbols = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     for (var i = 0; i < 15; i++){
         password += symbols.charAt(Math.floor(Math.random() * symbols.length));
     }
-    pasr.value = password;
+    for(let el of par.querySelectorAll("." + start.pass+"[pattern]")){
+        el.value = password;
+        inpchr({target:el});
+        par.classList.contains(start.reg) ? chStatRb({target:el}) : chStatZb({target:el});
+    }
     navigator.clipboard.writeText(password);
     addEvent(`Сгенерирован пароль: ${password}. Он скопирован в буфер обмена`, 10);
 }
 
 function rego(e){
-    let par, pasr, logr, ch;
+    let par, ch;
     par = e.target.parentElement.parentElement;
-    pasr = par.getElementsByClassName(start.login);
-    logr = par.getElementsByClassName(start.pass);
     ch = par.querySelector("input[checked]");
-    if(pasr.value && logr.value){
-        // window.location.hash = `login=${logr.value};pas=${pasr.value};ch=${ch}`;
-        onvxod();
+    if(els.pasr && els.logr){
+        let bod = {
+            type: "reg",
+            body: {
+                login: els.logr,
+                par: els.pasr,
+                ico: ch.value
+            }
+        };
+        const reg = (data) => {
+            if(data.error == false){
+                onvxod({target: e.target.parentElement});
+                navigate("/");
+                if(warns.logR != undefined) {
+                    remEvent(warns.logR);
+                    warns.logR = undefined;
+                }
+            } else if(warns.logR == undefined){
+                warns.logR = addEvent("Логин занят, попробуйте изменить");
+            }
+        };
+        send('POST', JSON.stringify(bod), "auth", reg);
     }
 }
 
@@ -119,35 +139,33 @@ function vxo(){
 }
 
 function inpchr(e){
-    var dat = e.target;
+    var el = e.target;
     if(!e.inputType) return;
-    if (dat.validity.patternMismatch || dat.value.length == 0) {
-        dat.setAttribute("data-mod", '1');
-        if(dat.value.length == 0){
-            if(els.warnEmpId == undefined) {
-                els.warnEmpId = addEvent("Необходимо заполнить поле");
-                if(els.warnId != undefined) {
-                    remEvent(els.warnId);
-                    els.warnId = undefined;
+    if (el.validity.patternMismatch || el.value.length == 0) {
+        el.setAttribute("data-mod", '1');
+        if(el.value.length == 0){
+            if(warns.empt == undefined) {
+                warns.empt = addEvent("Необходимо заполнить поле");
+                if(warns.pat != undefined) {
+                    remEvent(warns.pat);
+                    warns.pat = undefined;
                 }
             }
-        } else {
-            if(els.warnId == undefined) {
-                els.warnId = addEvent("Допустимы только латиница или цифры");
-                if(els.warnEmpId != undefined) {
-                    remEvent(els.warnEmpId);
-                    els.warnEmpId = undefined;
-                }
+        } else if(warns.pat == undefined) {
+            warns.pat = addEvent("Допустимы только латиница или цифры");
+            if(warns.empt != undefined) {
+                remEvent(warns.empt);
+                warns.empt = undefined;
             }
         }
     } else {
-        dat.setAttribute("data-mod", '0');
-        if(els.warnId != undefined) {
-            remEvent(els.warnId);
-            els.warnId = undefined;
-        } else if(els.warnEmpId != undefined) {
-            remEvent(els.warnEmpId);
-            els.warnEmpId = undefined;
+        el.setAttribute("data-mod", '0');
+        if(warns.pat != undefined) {
+            remEvent(warns.pat);
+            warns.pat = undefined;
+        } else if(warns.empt != undefined) {
+            remEvent(warns.empt);
+            warns.empt = undefined;
         }
     }
 }
@@ -164,6 +182,8 @@ function onvxod(e){
     par.setAttribute('data-mod', 0);
     par = par.parentElement;
     par.setAttribute('data-mod', 0);
+    dispatch(changeEvents(CHANGE_EVENTS_CLEAR));
+    warns = {};
 }
 
 function onreg(e){
@@ -171,6 +191,8 @@ function onreg(e){
     par.setAttribute('data-mod', 1);
     par = par.parentElement;
     par.setAttribute('data-mod', 1);
+    dispatch(changeEvents(CHANGE_EVENTS_CLEAR));
+    warns = {};
 }
 
 function reset_timer() {
@@ -179,21 +201,51 @@ function reset_timer() {
 }
 
 function chStatRb(e) {
-    let el, regb;
-    el = e.target;
-    rb[els[el.id]] = (el ? !el.validity.patternMismatch && el.value.length != 0 : false);
-    regb = (checkBoxInfo.checkbox_lic & rb[0] & rb[1]) || false;
-    elem.regbut.setAttribute("data-enable", +regb);
+    let el = e.target;
+    els[el.id] = el.validity.patternMismatch ? false : el.value;
+    els.regb = (checkBoxInfo.checkbox_lic && els.logr && els.pasr && els.ppasr && (els.pasr == els.ppasr)) || false;
+    elem.regbut.setAttribute("data-enable", +els.regb);
+    if(els.pasr == els.ppasr) {
+        if(warns.pow != undefined) {
+            remEvent(warns.pow);
+            warns.pow = undefined;
+        }
+    } else if (warns.pow == undefined) {
+        warns.pow = addEvent("Повторите новый пароль верно");
+    }
 }
 
 function chStatVb(e, x) {
     let el = e.target;
-    vb[els[el.id]] = x ? true : (el ? !el.validity.patternMismatch && el.value.length != 0 : false);
-    elem.vxbut.setAttribute("data-enable", +((vb[0] & vb[1]) || false));
+    els[el.id] = x ? true : (el ? !el.validity.patternMismatch && el.value.length != 0 : false);
+    elem.vxbut.setAttribute("data-enable", +((els.logv & els.pasv) || false));
 }
 
 function chStatAv(e) {
     e.target.firstChild.checked = true;
+}
+
+function onRec(e) {
+    let bod = {
+        type: "chPass",
+        body: {
+            login: els.logz,
+            secFr: els.secz,
+            par : els.pasnz
+        }
+    };
+    const chPass = (data) => {
+        if(data.error == false){
+            onSmvz(e);
+            if(warns.chPass != undefined) {
+                remEvent(warns.chPass);
+                warns.chPass = undefined;
+            }
+        } else if(warns.chPass == undefined){
+            warns.chPass = addEvent("Неверен логин или секретная фраза");
+        }
+    };
+    send('POST', JSON.stringify(bod), "auth", chPass);
 }
 
 function onSmvz(e) {
@@ -201,12 +253,24 @@ function onSmvz(e) {
     par = e.target.parentElement.parentElement.parentElement;
     mod = par.getAttribute('data-mod') == '1';
     par.setAttribute("data-mod", mod ? "0" : "1");
+    if(mod && warns.pow != undefined) {
+        remEvent(warns.pow);
+        warns.pow = undefined;
+    }
 }
 
 function chStatZb(e) {
     let el = e.target;
-    zb[els[el.id]] = (el ? (els[el.id] != 1 ? !el.validity.patternMismatch : true) && el.value.length != 0 : false);
-    document.querySelector("#butL").setAttribute("data-enable", +((zb[0] & zb[1] & zb[2] & zb[3]) || false));
+    els[el.id] = el.validity.patternMismatch ? false : el.value;
+    document.querySelector("#butL").setAttribute("data-enable", +((els.logz && els.secz && els.pasnz && els.paspz && (els.pasnz == els.paspz)) || false));
+    if(els.pasnz == els.paspz) {
+        if(warns.pow != undefined) {
+            remEvent(warns.pow);
+            warns.pow = undefined;
+        }
+    } else if (warns.pow == undefined) {
+        warns.pow = addEvent("Повторите новый пароль верно");
+    }
 }
 
 function unsetText(e) {
@@ -224,8 +288,11 @@ function onsetText(e) {
 export function Start() {
     checkBoxInfo = useSelector(checkbox);
     const { inv } = useParams();
+    navigate = useNavigate();
+    cState = useSelector(states);
     indicInfo = useSelector(indicators);
     const isFirstUpdate = useRef(true);
+    els.regb = (checkBoxInfo.checkbox_lic && els.logr && els.pasr && els.ppasr && (els.pasr == els.ppasr)) || false;
     dispatch = useDispatch();
     useEffect(() => {
         console.log("I was triggered during componentDidMount Start.jsx")
@@ -243,13 +310,8 @@ export function Start() {
         return function() {
             clearInterval(timer);
             console.log("I was triggered during componentWillUnmount Start.jsx");
-            if(els.warnId != undefined) {
-                remEvent(els.warnId);
-                els.warnId = undefined;
-            } else if(els.warnEmpId != undefined) {
-                remEvent(els.warnEmpId);
-                els.warnEmpId = undefined;
-            }
+            dispatch(changeEvents(CHANGE_EVENTS_CLEAR));
+            warns = {};
             dispatch = undefined;
         }
     }, []);
@@ -301,14 +363,14 @@ export function Start() {
             </div>
             <div className={start.block}>
                 <div className={start.posit} data-mod="0">
-                    {inv && <div className={start.help} data-mod="0">
+                    <div className={start.help} data-enable={inv ? '1' : '0'} data-mod="0">
                         <div className={start.r}>
                             Нет аккаунта? <span className={start.helpa} onClick={onreg}>Регистрация!</span>
                         </div>
                         <div className={start.v}>
                             Есть аккаунт? <span className={start.helpa} onClick={onvxod}>Вход!</span>
                         </div>
-                    </div>}
+                    </div>
                     <form className={start.vxod} data-mod="0">
                         <div className={start.vxo}>
                             <input className={start.login} type="login" onChange={chStatVb} ref={el=>elem.logv=el} placeholder="Логин" id="logv" autoComplete="username" required pattern="^[a-zA-Z0-9]+$"/>
@@ -329,17 +391,23 @@ export function Start() {
                         <div className={start.zab}>
                             <input className={start.login+' '+start.inpz} ref={el=>elem.logz=el} type="text" onChange={chStatZb} placeholder="Логин" id="logz" autoComplete="username" required pattern="^[a-zA-Z0-9]+$"/>
                             <input className={start.pass+' '+start.inpz} type="password" onChange={chStatZb} placeholder="Секретная фраза" id="secz"/>
-                            <input className={start.pass+' '+start.inpz} type="password" onChange={chStatZb} placeholder="Новый пароль" id="pasnz" autoComplete="new-password" required pattern="^[a-zA-Z0-9]+$"/>
+                            <div className={start.blockPas}>
+                                <input className={start.pass+' '+start.inpz} type="password" onChange={chStatZb} placeholder="Новый пароль" id="pasnz" autoComplete="new-password" required pattern="^[a-zA-Z0-9]+$"/>
+                                <div className={button.button+' '+start.marg} data-mod='2' onClick={gen_pas}>
+                                    <img src={ran} className={start.randimg} alt=""/>
+                                    Случайный пароль
+                                </div>
+                            </div>
                             <div className={start.grid_cont_l}>
                                 <input className={start.pass+' '+start.inpz} type="password" onChange={chStatZb} placeholder="Подтвердите пароль" id="paspz" autoComplete="new-password" required pattern="^[a-zA-Z0-9]+$"/>
                                 <span className={start.warn+' '+start.marg} id="warncz">
                                     <img src={warn} className={start.warnimg} alt=""/>
                                     Включён Caps Lock!
                                 </span>
-                                <div className={button.button+' '+start.butZab} id="butL" data-mod="1" onClick={vxo}>
+                                <div className={button.button+' '+start.butZab} id="butL" data-mod="1" onClick={onRec}>
                                     Подтвердить
                                 </div>
-                                <div className={button.button+' '+start.butZab} id="butR" data-mod="1" onClick={onSmvz}>
+                                <div className={button.button+' '+start.butZab+' '+start.marg} id="butR" data-mod="1" onClick={onSmvz}>
                                     Вспомнил пароль
                                 </div>
                             </div>
@@ -362,8 +430,9 @@ export function Start() {
                             </div>
                         </div>
                         <input className={start.login} type="text" placeholder="Логин" onChange={chStatRb} id="logr" autoComplete="username" required pattern="^[a-zA-Z0-9]+$"/>
+                        <input className={start.pass} type="password" placeholder="Пароль" onChange={chStatRb} id="pasr" autoComplete="new-password" required pattern="^[a-zA-Z0-9]+$"/>
                         <div className={start.grid_cont_r}>
-                            <input className={start.pass} type="password" placeholder="Пароль" onChange={chStatRb} id="pasr" autoComplete="new-password" required pattern="^[a-zA-Z0-9]+$"/>
+                            <input className={start.pass} type="password" placeholder="Повторите пароль" onChange={chStatRb} id="ppasr" autoComplete="new-password" required pattern="^[a-zA-Z0-9]+$"/>
                             <div className={button.button+' '+start.marg} data-mod='2' onClick={gen_pas}>
                                 <img src={ran} className={start.randimg} alt=""/>
                                 Случайный пароль
@@ -378,7 +447,7 @@ export function Start() {
                                     Включён Caps Lock!
                                 </div>
                             </div>
-                            <div data-enable='0' className={button.button+' '+start.marg} ref={el=>elem.regbut=el} onClick={rego}>
+                            <div data-enable={+els.regb} className={button.button+' '+start.marg} ref={el=>elem.regbut=el} onClick={rego}>
                                 ЗАРЕГИСТРИРОВАТЬСЯ!
                             </div>
                         </div>
