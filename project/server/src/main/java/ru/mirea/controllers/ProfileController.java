@@ -2,6 +2,7 @@ package ru.mirea.controllers;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +15,7 @@ import java.util.Objects;
 
 @RestController
 @RequestMapping("/profiles")
+@AllArgsConstructor
 @CrossOrigin(origins = "http://localhost:3000")
 public class ProfileController {
 
@@ -22,28 +24,19 @@ public class ProfileController {
 
     private final UserRepository userRepository;
 
-    public ProfileController(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
-
-    @RequestMapping(method = RequestMethod.POST)
+    @PostMapping
     public JsonObject post(@RequestBody JsonObject data) {
-        System.out.println("Post!");
-        System.out.println(data);
-        JsonObject ans, body, bodyAns;
-        ans = new JsonObject();
+        System.out.println("Post! " + data);
+        JsonObject ans = new JsonObject(), body = null, bodyAns;
         ans.addProperty("error", false);
-        body = null;
         if(data.has("body") && data.get("body").isJsonObject()) body = data.get("body").getAsJsonObject();
         if(!data.has("type")) data.addProperty("type", "default");
-        System.out.println(body);
         switch (data.get("type").getAsString()){
             case "getProfile" -> {
                 bodyAns = new JsonObject();
                 ans.add("body", bodyAns);
-                List<User> users = userRepository.findByLogin(body.get("login").getAsString());
-                if(!users.isEmpty()){
-                    User user = users.get(0);
+                User user = userRepository.findByLogin(body.get("login").getAsString());
+                if(user != null) {
                     bodyAns.addProperty("login", user.getLogin());
                     bodyAns.addProperty("ico", user.getIco());
                     if(!ObjectUtils.isEmpty(user.getFio())) bodyAns.addProperty("fio", user.getFio());
@@ -88,10 +81,9 @@ public class ProfileController {
             case "chLogin" -> {
                 bodyAns = new JsonObject();
                 ans.add("body", bodyAns);
-                List<User> users = userRepository.findByLogin(body.get("oLogin").getAsString());
-                List<User> usersN = userRepository.findByLogin(body.get("nLogin").getAsString());
-                if(!users.isEmpty() && usersN.isEmpty()){
-                    User user = users.get(0);
+                User user = userRepository.findByLogin(body.get("oLogin").getAsString());
+                User userN = userRepository.findByLogin(body.get("nLogin").getAsString());
+                if(user != null && userN == null){
                     user.setLogin(body.get("nLogin").getAsString());
                     userRepository.save(user);
                 } else {
@@ -102,9 +94,8 @@ public class ProfileController {
             case "chInfo" -> {
                 bodyAns = new JsonObject();
                 ans.add("body", bodyAns);
-                List<User> users = userRepository.findByLogin(body.get("login").getAsString());
-                if(!users.isEmpty()){
-                    User user = users.get(0);
+                User user = userRepository.findByLogin(body.get("login").getAsString());
+                if(user != null) {
                     user.setInfo(body.get("info").getAsString());
                     userRepository.save(user);
                 } else {
@@ -115,9 +106,8 @@ public class ProfileController {
             case "chEmail" -> {
                 bodyAns = new JsonObject();
                 ans.add("body", bodyAns);
-                List<User> users = userRepository.findByLogin(body.get("login").getAsString());
-                if(!users.isEmpty()){
-                    User user = users.get(0);
+                User user = userRepository.findByLogin(body.get("login").getAsString());
+                if(user != null) {
                     user.getRoles().get(body.get("role").getAsLong()).setEmail(body.get("email").getAsString());
                     userRepository.save(user);
                 } else {

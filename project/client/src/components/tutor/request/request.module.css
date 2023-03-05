@@ -29,32 +29,13 @@
     margin-left: 1vw;
 }
 
-.tex{
-    pointer-events: none;
-    display: inline-block;
-    align-self: center;
+.inp[data-mod='1']{
+    animation: but ease 1s;
+    outline: solid red;
 }
 
-.but{
-    -webkit-border-radius: 5px;
-    border-radius: 5px !important;
-    font-size: 2vmin !important;
-    height: 5vh;
-    width: fit-content;
-    padding-inline: 1vw;
-    font-weight: normal !important;
-    align-self: center;
-    display: flex;
-}
-
-.but:hover {
-    text-shadow: none;
-    -webkit-box-shadow: 0 0 5px 5px #B8860B, inset 0 -50px 2px #FFFFFF33;
-    box-shadow: 0 0 5px 5px #B8860B, inset 0 -50px 2px #FFFFFF33;
-}
-
-.but:active {
-    text-shadow: none;
-    -webkit-box-shadow: 0 0 10px 10px #B8860B, inset 0 -50px 2px #00000033;
-    box-shadow: 0 0 10px 10px #B8860B, inset 0 -50px 2px #00000033;
+@keyframes but {
+    0%{transform: rotateZ(-2deg);}
+    50%{transform: rotateZ(2deg);}
+    100%{transform: rotateZ(0deg);}
 }

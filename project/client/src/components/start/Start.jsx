@@ -96,46 +96,38 @@ function rego(e){
     par = e.target.parentElement.parentElement;
     ch = par.querySelector("input[checked]");
     if(els.pasr && els.logr){
-        let bod = {
-            type: "reg",
-            body: {
-                login: els.logr,
-                par: els.pasr,
-                ico: ch.value
-            }
-        };
-        const reg = (data) => {
-            if(data.error == false){
-                onvxod({target: e.target.parentElement});
-                navigate("/");
-                if(warns.logR != undefined) {
-                    remEvent(warns.logR);
-                    warns.logR = undefined;
+        send({
+            login: els.logr,
+            par: els.pasr,
+            ico: ch.value
+        }, 'POST', "auth", "reg")
+            .then(data => {
+                if(data.error == false){
+                    onvxod({target: e.target.parentElement});
+                    navigate("/");
+                    if(warns.logR != undefined) {
+                        remEvent(warns.logR);
+                        warns.logR = undefined;
+                    }
+                } else if(warns.logR == undefined){
+                    warns.logR = addEvent("Логин занят, попробуйте изменить");
                 }
-            } else if(warns.logR == undefined){
-                warns.logR = addEvent("Логин занят, попробуйте изменить");
-            }
-        };
-        send('POST', JSON.stringify(bod), "auth", reg);
+            });
     }
 }
 
 function vxo(){
-    let bod = {
-        type: "auth",
-        body: {
-            login: elem.logv.value,
-            password: elem.pasv.value
-        }
-    };
-    const checkVx = (data) => {
-        if(data.error == false && data.body.auth){
-            dispatch(changeState(CHANGE_STATE_GL, undefined, data.body));
-        } else {
-            addEvent("Неверный логин или пароль", 10);
-        }
-    };
-    send('POST', JSON.stringify(bod), "auth", checkVx);
+    send({
+        login: elem.logv.value,
+        password: elem.pasv.value
+    }, 'POST', "auth", "auth")
+        .then(data => {
+            if(data.error == false && data.body.auth){
+                dispatch(changeState(CHANGE_STATE_GL, undefined, data.body));
+            } else {
+                addEvent("Неверный логин или пароль", 10);
+            }
+        });
 }
 
 function inpchr(e){
@@ -226,26 +218,22 @@ function chStatAv(e) {
 }
 
 function onRec(e) {
-    let bod = {
-        type: "chPass",
-        body: {
-            login: els.logz,
-            secFr: els.secz,
-            par : els.pasnz
-        }
-    };
-    const chPass = (data) => {
-        if(data.error == false){
-            onSmvz(e);
-            if(warns.chPass != undefined) {
-                remEvent(warns.chPass);
-                warns.chPass = undefined;
+    send({
+        login: els.logz,
+        secFr: els.secz,
+        par : els.pasnz
+    }, 'POST', "auth", "chPass")
+        .then(data => {
+            if(data.error == false){
+                onSmvz(e);
+                if(warns.chPass != undefined) {
+                    remEvent(warns.chPass);
+                    warns.chPass = undefined;
+                }
+            } else if(warns.chPass == undefined){
+                warns.chPass = addEvent("Неверен логин или секретная фраза");
             }
-        } else if(warns.chPass == undefined){
-            warns.chPass = addEvent("Неверен логин или секретная фраза");
-        }
-    };
-    send('POST', JSON.stringify(bod), "auth", chPass);
+        });
 }
 
 function onSmvz(e) {

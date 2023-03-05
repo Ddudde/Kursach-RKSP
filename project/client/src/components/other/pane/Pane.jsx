@@ -332,8 +332,9 @@ export function Pane(props) {
             {ele(0, "elems")}
             {getAdd("Добавить группу", "Add")}
             {info && Object.getOwnPropertyNames(info.groups).map(param =>
+                info.groups[param] && <>{
                 panJs.gr[param] = getPan(info.groups[param], param, info.groups[param].linke, undefined, () => setGroup(param))
-            )}
+            }</>)}
             {panJs.mor}
             {!props.main && <div className={paneCSS.lin} data-id={"1"} style={{width: (100 / panJs.pari.elems) + "%"}} id="lin" ref={(ele)=>(panJs.refes.lin = ele)}/>}
         </nav>

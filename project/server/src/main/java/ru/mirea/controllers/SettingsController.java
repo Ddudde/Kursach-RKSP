@@ -25,24 +25,19 @@ public class SettingsController {
         this.userRepository = userRepository;
     }
 
-    @RequestMapping(method = RequestMethod.POST)
+    @PostMapping
     public JsonObject post(@RequestBody JsonObject data) {
-        System.out.println("Post!");
-        System.out.println(data);
-        JsonObject ans, body, bodyAns;
-        ans = new JsonObject();
+        System.out.println("Post! " + data);
+        JsonObject ans = new JsonObject(), body = null, bodyAns;
         ans.addProperty("error", false);
-        body = null;
         if(data.has("body") && data.get("body").isJsonObject()) body = data.get("body").getAsJsonObject();
         if(!data.has("type")) data.addProperty("type", "default");
-        System.out.println(body);
         switch (data.get("type").getAsString()){
             case "chIco" -> {
                 bodyAns = new JsonObject();
                 ans.add("body", bodyAns);
-                List<User> users = userRepository.findByLogin(body.get("login").getAsString());
-                if(!users.isEmpty()){
-                    User user = users.get(0);
+                User user = userRepository.findByLogin(body.get("login").getAsString());
+                if(user != null) {
                     user.setIco(body.get("ico").getAsInt());
                     userRepository.save(user);
                 } else {
@@ -53,9 +48,8 @@ public class SettingsController {
             case "chSecFR" -> {
                 bodyAns = new JsonObject();
                 ans.add("body", bodyAns);
-                List<User> users = userRepository.findByLogin(body.get("login").getAsString());
-                if(!users.isEmpty()){
-                    User user = users.get(0);
+                User user = userRepository.findByLogin(body.get("login").getAsString());
+                if(user != null) {
                     user.setSecFr(body.get("secFR").getAsString());
                     userRepository.save(user);
                 } else {
@@ -66,9 +60,8 @@ public class SettingsController {
             case "chPass" -> {
                 bodyAns = new JsonObject();
                 ans.add("body", bodyAns);
-                List<User> users = userRepository.findByLogin(body.get("login").getAsString());
-                if(!users.isEmpty() && (body.has("secFr") || body.has("oPar"))){
-                    User user = users.get(0);
+                User user = userRepository.findByLogin(body.get("login").getAsString());
+                if(user != null && (body.has("secFr") || body.has("oPar"))) {
                     if(body.has("secFr") && !Objects.equals(user.getSecFr(), body.get("secFr").getAsString())){
                         ans.addProperty("error", 3);
                         return ans;

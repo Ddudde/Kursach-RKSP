@@ -72,7 +72,7 @@ function App() {
                   {(cState.auth && (cState.role == 0 || cState.role == 3)) && <Route path="parents" element={<Parents/>} />}
                   <Route path="admins" element={<Admins/>} />
               </Route>
-              {cState.role < 4 && <Route path="tutor/:typ" element={<Tutor/>} />}
+              {(!cState.auth || cState.role < 4) && <Route path="tutor/:typ" element={<Tutor/>} />}
               {cState.auth && <Route path="profiles" element={<Profile/>} />}
               {(cState.auth && cState.role == 2) && <Route path="journal" element={<Journal/>} />}
               <Route path="profiles/:log" element={<Profile/>} />

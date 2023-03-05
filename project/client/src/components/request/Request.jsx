@@ -7,12 +7,18 @@ import no from "../../media/no.png";
 import ed from "../../media/edit.png";
 import ErrFound from "../other/error/ErrFound";
 import {requests, states} from "../../store/selector";
-import {CHANGE_REQUEST, CHANGE_REQUEST_DEL, CHANGE_REQUEST_PARAM, changeReq} from "../../store/actions";
-import {setActived} from "../main/Main";
+import {
+    CHANGE_REQUEST,
+    CHANGE_REQUEST_DEL,
+    CHANGE_REQUEST_GL,
+    CHANGE_REQUEST_PARAM,
+    changeReq
+} from "../../store/actions";
+import {eventSource, send, setActived} from "../main/Main";
 
 let dispatch, requestInfo, inps, cState, errText;
 inps = {inpntt : "Текст", inpnzt : "Заголовок", inpndt: new Date().toLocaleString("ru", {day:"2-digit", month: "2-digit", year:"numeric"})};
-errText = "Заявок нет..."
+errText = "Заявок нет...";
 
 let [_, forceUpdate] = [];
 
@@ -32,7 +38,7 @@ function getEdField(edFi, titleEd, x, inf, inp, info, placeholder, pattern) {
                 <input className={requestCSS.inp} id={inp} placeholder={placeholder} pattern={pattern} defaultValue={inf} data-id={x} onChange={chStatB}/>
             }
             {ele(false, inp)}
-            <img className={requestCSS.imginp+" yes "} src={yes} onClick={(e)=>onFin(e, info)} title="Подтвердить" alt=""/>
+            <img className={requestCSS.imginp+" yes "} src={yes} onClick={onFin} title="Подтвердить" alt=""/>
             <img className={requestCSS.imginp} style={{marginRight: "1vw"}} src={no} onClick={onClose} title="Отменить изменения и выйти из режима редактирования" alt=""/>
         </div>
     </>)
@@ -40,15 +46,15 @@ function getEdField(edFi, titleEd, x, inf, inp, info, placeholder, pattern) {
 
 function getAdd(info, x) {
     let edFi, dat, datFi, zag, zagFi, tex, texFi;
-    zag = x ? info[x].title : inps.inpnzt;
+    zag = info[x].title;
     zagFi = <h2 className={requestCSS.zag}>
         {zag}
     </h2>;
-    dat = x ? info[x].date : inps.inpndt;
+    dat = info[x].date;
     datFi = <span className={requestCSS.date}>
         {dat}
     </span>;
-    tex = x ? info[x].text : inps.inpntt;
+    tex = info[x].text;
     texFi = <pre className={requestCSS.field}>
         {tex}
     </pre>;
@@ -64,25 +70,17 @@ function getAdd(info, x) {
                 {getEdField(texFi, "Текст:", x, tex, "inpntt_" + (x?x:""), info)}
             </div>
             <div className={requestCSS.upr} data-id={x}>
-                {!x && <img className={requestCSS.imginp+" yes "} src={yes} onClick={(e)=>onFin(e, info)} title="Подтвердить" alt=""/>}
-                <img className={requestCSS.imginp+" "} style={{marginRight: "1vw"}} src={no} onClick={onClose} title={x ? "Удалить новость" : "Отменить изменения и выйти из режима редактирования"} alt=""/>
+                <img className={requestCSS.imginp+" "} style={{marginRight: "1vw"}} src={no} onClick={onDel} title="Удалить заявку" alt=""/>
             </div>
         </div>
     );
-    return x ? (edFi) : (
-        <div className={requestCSS.news_line} data-st="0">
-            <div className={requestCSS.nav_i+" "+requestCSS.link} id={requestCSS.nav_i} onClick={onEdit}>
-                Добавить новость
-            </div>
-            {edFi}
-        </div>
-    )
+    return edFi
 }
 
 function onEdit(e) {
     let par;
     par = e.target.parentElement;
-    if(par.classList.contains(requestCSS.news_line)){
+    if(par.classList.contains(requestCSS.line)){
         par.setAttribute('data-st', '1');
     }
     if(par.parentElement.classList.contains(requestCSS.te) || par.parentElement.classList.contains(requestCSS.da) || par.parentElement.classList.contains(requestCSS.za)){
@@ -95,58 +93,72 @@ function onEdit(e) {
     }
 }
 
-function onFin(e, info) {
+function onFin(e) {
     let par, inp, bul;
     par = e.target.parentElement;
     bul = par.parentElement.classList.contains(requestCSS.te);
     inp = par.querySelector(bul ? "textarea" : "input");
-    if(par.classList.contains(requestCSS.upr)){
-        let news, obj;
-        news = Object.getOwnPropertyNames(info);
-        obj = {
-            title: inps.inpnzt,
-            date: inps.inpndt,
-            text: inps.inpntt
-        }
-        dispatch(changeReq(CHANGE_REQUEST, news.length == 0 ? 0 : parseInt(news[news.length-1]) + 1, obj));
-        return;
-    }
     if (inps[inp.id]) {
-        inp.style.outline = "none black";
+        inp.setAttribute("data-mod", '0');
         if(bul) {
             par = par.parentElement;
-            if(inp.hasAttribute("data-id")){
-                dispatch(changeReq(CHANGE_REQUEST_PARAM, inp.getAttribute("data-id"), inp.value,"text"));
-            }else {
-                inps.inpntt = inp.value;
-                forceUpdate();
-            }
+            send({
+                login: cState.login,
+                id: inp.getAttribute("data-id"),
+                text: inp.value
+            }, 'POST', "requests", "chText")
+                .then(data => {
+                    if(data.error == false){
+                        dispatch(changeReq(CHANGE_REQUEST_PARAM, inp.getAttribute("data-id"), inp.value,"text"));
+                    }
+                });
         }
         if(par.parentElement.classList.contains(requestCSS.da)){
             par = par.parentElement;
-            if(inp.hasAttribute("data-id")){
-                dispatch(changeReq(CHANGE_REQUEST_PARAM, inp.getAttribute("data-id"), inp.value,"date"));
-            }else {
-                inps.inpndt = inp.value;
-                forceUpdate();
-            }
+            send({
+                login: cState.login,
+                id: inp.getAttribute("data-id"),
+                date: inp.value
+            }, 'POST', "requests", "chDate")
+                .then(data => {
+                    if(data.error == false){
+                        dispatch(changeReq(CHANGE_REQUEST_PARAM, inp.getAttribute("data-id"), inp.value,"date"));
+                    }
+                });
         }
         if(par.parentElement.classList.contains(requestCSS.za)){
             par = par.parentElement;
-            if(inp.hasAttribute("data-id")){
-                dispatch(changeReq(CHANGE_REQUEST_PARAM, inp.getAttribute("data-id"), inp.value,"title"));
-            }else{
-                inps.inpnzt = inp.value;
-                forceUpdate();
-            }
+            send({
+                login: cState.login,
+                id: inp.getAttribute("data-id"),
+                title: inp.value
+            }, 'POST', "requests", "chTitle")
+                .then(data => {
+                    if(data.error == false){
+                        dispatch(changeReq(CHANGE_REQUEST_PARAM, inp.getAttribute("data-id"), inp.value,"title"));
+                    }
+                });
         }
         par.setAttribute('data-st', '0');
     } else {
-        inp.style.animation = "but 1s ease infinite";
-        setTimeout(function () {
-            inp.style.animation = "none"
-        }, 1000);
-        inp.style.outline = "solid red";
+        inp.setAttribute("data-mod", '1');
+    }
+}
+
+function onDel(e) {
+    let par = e.target.parentElement;
+    if(par.classList.contains(requestCSS.upr)){
+        if (par.hasAttribute("data-id")) {
+            send({
+                login: cState.login,
+                id: par.getAttribute("data-id")
+            }, 'POST', "requests", "delReq")
+                .then(data => {
+                    if(data.error == false){
+                        dispatch(changeReq(CHANGE_REQUEST_DEL, par.getAttribute("data-id")));
+                    }
+                });
+        }
     }
 }
 
@@ -157,31 +169,61 @@ function onClose(e) {
         par.setAttribute('data-st', '0');
     }
     if(par.classList.contains(requestCSS.upr)){
-        if (par.hasAttribute("data-id")) {
-            dispatch(changeReq(CHANGE_REQUEST_DEL, par.getAttribute("data-id")));
-        }else {
-            par = par.parentElement.parentElement;
-            par.setAttribute('data-st', '0');
-        }
+        par = par.parentElement.parentElement;
+        par.setAttribute('data-st', '0');
     }
+}
+
+function setInfo() {
+    send({
+        login: cState.login
+    }, 'POST', "requests", "getRequests")
+        .then(data => {
+            if(data.error == false){
+                dispatch(changeReq(CHANGE_REQUEST_GL, undefined, data.body));
+                for(let el of document.querySelectorAll("." + requestCSS.ed + " > *[id^='inpn']")){
+                    chStatB({target: el});
+                }
+            }
+        });
+}
+
+function addReq(e) {
+    const msg = JSON.parse(e.data);
+    dispatch(changeReq(CHANGE_REQUEST, msg.id, msg.body));
+}
+
+function chText(e) {
+    const msg = JSON.parse(e.data);
+    dispatch(changeReq(CHANGE_REQUEST_PARAM, msg.id, msg.text,"text"));
+}
+
+function chDate(e) {
+    const msg = JSON.parse(e.data);
+    dispatch(changeReq(CHANGE_REQUEST_PARAM, msg.id, msg.date,"date"));
+}
+
+function chTitle(e) {
+    const msg = JSON.parse(e.data);
+    dispatch(changeReq(CHANGE_REQUEST_PARAM, msg.id, msg.title,"title"));
+}
+
+function delReq(e) {
+    const msg = JSON.parse(e.data);
+    dispatch(changeReq(CHANGE_REQUEST_DEL, msg.id));
+}
+
+function onCon(e) {
+    send({
+        type: "REQUESTS",
+        uuid: cState.uuid
+    }, 'POST', "auth", "infCon");
 }
 
 function chStatB(e) {
     let el = e.target;
-    if(el.pattern) {
-        inps[el.id] = !el.validity.patternMismatch && el.value.length != 0;
-    } else {
-        inps[el.id] = el.value.length != 0;
-    }
-    if (inps[el.id]) {
-        el.style.outline = "none black";
-    } else {
-        el.style.animation = "but 1s ease infinite";
-        setTimeout(function () {
-            el.style.animation = "none"
-        }, 1000);
-        el.style.outline = "solid red";
-    }
+    inps[el.id] = !el.validity.patternMismatch && el.value.length != 0;
+    el.setAttribute("data-mod", inps[el.id] ? '0' : '1');
     el.parentElement.querySelector(".yes").setAttribute("data-enable", +inps[el.id]);
 }
 
@@ -197,12 +239,22 @@ export function Request() {
     const isFirstUpdate = useRef(true);
     useEffect(() => {
         console.log("I was triggered during componentDidMount Request.jsx");
-        for(let el of document.querySelectorAll("." + requestCSS.ed + " > *[id^='inpn']")){
-            chStatB({target: el});
-        }
+        setInfo();
         setActived(11);
+        eventSource.addEventListener('addReq', addReq, false);
+        eventSource.addEventListener('chText', chText, false);
+        eventSource.addEventListener('chDate', chDate, false);
+        eventSource.addEventListener('chTitle', chTitle, false);
+        eventSource.addEventListener('delReq', delReq, false);
+        eventSource.addEventListener('connect', onCon, false);
         return function() {
             dispatch = undefined;
+            eventSource.removeEventListener('addReq', addReq);
+            eventSource.removeEventListener('chText', chText);
+            eventSource.removeEventListener('chDate', chDate);
+            eventSource.removeEventListener('chTitle', chTitle);
+            eventSource.removeEventListener('delReq', delReq);
+            eventSource.removeEventListener('connect', onCon);
             console.log("I was triggered during componentWillUnmount Request.jsx");
         }
     }, []);
@@ -224,7 +276,7 @@ export function Request() {
                     <div className={requestCSS.block}>
                         <section className={requestCSS.center_colum}>
                             {Object.getOwnPropertyNames(requestInfo).reverse().map(param =>
-                                <div className={requestCSS.news_line} data-st="1" key={param}>
+                                <div className={requestCSS.line} data-st="1" key={param}>
                                     {getAdd(requestInfo, param)}
                                 </div>
                             )}

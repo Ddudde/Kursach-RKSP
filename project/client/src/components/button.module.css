@@ -13,6 +13,7 @@
     padding: 1.5vmax 1.5vmax;
     align-items: center;
     display: flex;
+    width: fit-content;
     /*margin-top: 9px;*/
 }
 

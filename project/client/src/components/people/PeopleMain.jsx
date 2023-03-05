@@ -317,22 +317,22 @@ export function PeopleMain() {
     themeState = useSelector(themes);
     dispatch = useDispatch();
     gr.groups = {
-        ...((cState.auth && (cState.role < 2 || cState.role == 3)) && {0: {
+        0: cState.auth && (cState.role < 2 || cState.role == 3) ? {
             nam: "Педагоги",
             linke: "teachers"
-        }}),
-        ...(cState.auth && {1: {
+        } : undefined,
+        1: cState.auth ? {
             nam: "Завучи",
             linke: "hteachers"
-        }}),
-        ...((cState.auth && (cState.role == 0 || cState.role == 3)) && {2: {
+        } : undefined,
+        2: cState.auth && (cState.role == 0 || cState.role == 3) ? {
             nam: cState.role == 3 ? "Обучающиеся" : "Одноклассники",
             linke: "class"
-        }}),
-        ...((cState.auth && (cState.role == 0 || cState.role == 3)) && {3: {
+        } : undefined,
+        3: cState.auth && (cState.role == 0 || cState.role == 3) ? {
             nam: "Родители",
             linke: "parents"
-        }}),
+        } : undefined,
         4: {
             nam: "Администраторы портала",
             linke: "admins"

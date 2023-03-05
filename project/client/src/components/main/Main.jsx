@@ -29,6 +29,8 @@ gr = {
     group: 4
 };
 
+export let eventSource;
+
 function getPan(name, namecl, link, dopClass, fun) {
     let cl = "pan" + namecl;
     return fun ?
@@ -80,18 +82,17 @@ function getKids() {
         </div>
 }
 
-export function send(type, bod, url, fun) {
-    let sed = {
-        method: type//'PUT', 'GET', 'DELETE', 'POST'
-    };
+export function send(bod, typeC, url, type) {
+    let sed = {method: typeC};
     if(bod){
-        sed.headers = {
-            'Content-Type': 'application/json'
-        };
-        sed.body = bod;
+        sed.headers = {'Content-Type': 'application/json'};
+        sed.body = JSON.stringify({
+            type: type,
+            body: bod
+        });
     }
-    fetch("http://localhost:8080/"+(url ? url : ""), sed)
-        .then((res) => {
+    return fetch("http://192.168.1.66:8080/"+(url ? url : ""), sed)
+        .then(res => {
             if (!res.ok) {
                 throw new Error(
                     `This is an HTTP error: The status is ${res.status}`
@@ -99,11 +100,8 @@ export function send(type, bod, url, fun) {
             }
             return res.json();
         })
-        .then((data) => {
-            if(fun) fun(data);
-        })
-        .catch((data) => {
-            if(fun) fun(data);
+        .catch(data => {
+            return data;
         });
 }
 
@@ -173,20 +171,65 @@ export function remEvent(id) {
     dispatch(changeEvents(CHANGE_EVENT_DEL, undefined, id));
 }
 
-function ping() {
-    const checkPing = (data) => {
-        if(data.error){
-            if(warnErrNet != undefined){
-                remEvent(warnErrNet);
-                warnErrNet = undefined;
-            }
-        } else {
-            if(warnErrNet == undefined){
-                warnErrNet = addEvent("Отсутствует подключение к серверу", undefined, true);
-            }
+function badPing() {
+    if(warnErrNet == undefined){
+        warnErrNet = addEvent("Отсутствует подключение к серверу", undefined, true);
+    }
+}
+
+function iniNet() {
+    eventSource = new EventSource('http://192.168.1.66:8080/auth/open-stream');
+    eventSource.onopen = e => console.log('open');
+    eventSource.onerror = e => {
+        if (e.readyState == EventSource.CLOSED) {
+            console.log('close');
+            closeStream();
+        }
+        else {
+            console.log('try to reconnect...');
         }
     };
-    send('POST', "{}", "auth", checkPing);
+    eventSource.addEventListener('connect', e => {
+        const msg = JSON.parse(e.data);
+        console.log(msg);
+        dispatch(changeState(CHANGE_STATE, "uuid", msg));
+        if(cState.login){
+            send({
+                login: cState.login,
+                uuid: msg
+            }, 'POST', "auth", "infCon");
+        }
+    }, false);
+    eventSource.addEventListener('ping', e => {
+        if(warnErrNet != undefined){
+            remEvent(warnErrNet);
+            warnErrNet = undefined;
+        }
+        clearTimeout(timidP);
+        timidP = setTimeout(badPing,15000);
+    }, false);
+}
+
+function closeStream() {
+    if(!eventSource) return;
+    if(eventSource.readyState != EventSource.CLOSED) send({
+        uuid: cState.uuid
+    }, 'POST', "auth", "remCon")
+        .then(data => {
+            if(data.error == false){
+                dispatch(changeState(CHANGE_STATE, "uuid", undefined));
+            }
+        });
+    eventSource.close();
+}
+
+function openStream() {
+    if (eventSource != undefined && eventSource.readyState != EventSource.CLOSED) {
+        console.log("stream already opened");
+        return;
+    }
+
+    iniNet();
 }
 
 function onTop(e){
@@ -198,15 +241,25 @@ function onTop(e){
 }
 
 export function Main() {
+    dispatch = useDispatch();
+    if(!themeInfo) openStream();
     themeInfo = useSelector(themes);
     cState = useSelector(states);
     paneInfo = useSelector(pane);
     const isFirstUpdate = useRef(true);
+    const unMount = () => {
+        window.onwheel = undefined;
+        closeStream();
+        clearTimeout(timid);
+        themeInfo = undefined;
+        clearInterval(timidP);
+        console.log("I was triggered during componentWillUnmount Main.jsx")
+    };
     gr.groups = {
-        ...(!cState.auth && {0: {
+        0: !cState.auth ? {
             nam: "Главная",
             linke: "/"
-        }}),
+        } : undefined,
         1: {
             nam: "Объявления",
             linke: "news"
@@ -219,48 +272,47 @@ export function Main() {
             nam: "Люди",
             linke: "people"
         },
-        ...((!cState.auth || (cState.auth && cState.role == 3)) && {4: {
+        4: !cState.auth || (cState.auth && cState.role == 3) ? {
             nam: "Школам",
             linke: "tutor/sch"
-        }}),
-        ...((!cState.auth || (cState.auth && cState.role == 2)) && {5: {
+        } : undefined,
+        5: !cState.auth || (cState.auth && cState.role == 2) ? {
             nam: "Педагогам",
             linke: "tutor/tea"
-        }}),
-        ...((!cState.auth || (cState.auth && cState.role == 1)) && {6: {
+        } : undefined,
+        6: !cState.auth || (cState.auth && cState.role == 1) ? {
             nam: "Родителям",
             linke: "tutor/par"
-        }}),
-        ...((!cState.auth || (cState.auth && cState.role == 0)) && {7: {
+        } : undefined,
+        7: !cState.auth || (cState.auth && cState.role == 0) ? {
             nam: "Обучающимся",
             linke: "tutor/kid"
-        }}),
-        ...((cState.auth && cState.role == 2) && {8: {
+        } : undefined,
+        8: cState.auth && cState.role == 2 ? {
             nam: "Расписание",
             linke: "/"
-        }}),
-        ...((cState.auth && cState.role == 2) && {9: {
+        } : undefined,
+        9: cState.auth && cState.role == 2 ? {
             nam: "Журнал",
             linke: "journal"
-        }}),
-        ...((cState.auth && cState.role == 3) && {10: {
+        } : undefined,
+        10: cState.auth && cState.role == 3 ? {
             nam: "Администрирование УО",
             linke: "admYO"
-        }}),
-        ...((cState.auth && cState.role == 4) && {11: {
+        } : undefined,
+        11: cState.auth && cState.role == 4 ? {
             nam: "Заявки",
             linke: "request"
-        }}),
-        ...((cState.auth && cState.role < 2) && {12: {
+        } : undefined,
+        12: cState.auth && cState.role < 2 ? {
             nam: "Дневник",
             linke: "/"
-        }}),
-        ...((cState.auth && cState.role < 2) && {13: {
+        } : undefined,
+        13: cState.auth && cState.role < 2 ? {
             nam: "Аналитика",
             linke: "analytics"
-        }})
+        } : undefined
     };
-    dispatch = useDispatch();
     useEffect(() => {
         console.log("I was triggered during componentDidMount Main.jsx");
         scr();
@@ -271,14 +323,10 @@ export function Main() {
                 timid = setTimeout(tim,300);
             }
         };
-        ping();
-        timidP = setInterval(ping,5000);
-        return function() {
-            window.onwheel = undefined;
-            clearTimeout(timid);
-            clearInterval(timidP);
-            console.log("I was triggered during componentWillUnmount Main.jsx")
-        }
+        timidP = setTimeout(badPing,15000);
+        window.onpagehide = unMount;
+        window.onbeforeunload = unMount;
+        return unMount;
     }, []);
     useEffect(() => {
         if (isFirstUpdate.current) {

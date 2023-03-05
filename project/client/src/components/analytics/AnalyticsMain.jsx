@@ -252,14 +252,14 @@ export function AnalyticsMain(props) {
             nam: (cState.auth && cState.role < 2) ? "Расписание" : "Дисциплины",
             linke: "schedule"
         },
-        ...((cState.auth && cState.role < 2) && {3: {
+        3: cState.auth && cState.role < 2 ? {
             nam: "Журнал",
             linke: "journal"
-        }}),
-        ...((cState.auth && cState.role < 2) && {4: {
+        } : undefined,
+        4: cState.auth && cState.role < 2 ? {
             nam: "Итоговые оценки",
             linke: "marks"
-        }})
+        } : undefined
     };
     const isFirstUpdate = useRef(true);
     useEffect(() => {

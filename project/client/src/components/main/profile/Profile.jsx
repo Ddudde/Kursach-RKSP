@@ -58,20 +58,16 @@ function onFin(e, param) {
     inp = par.querySelector("." + profileCSS.inp);
     if(inp.tagName == "TEXTAREA")
     {
-        let bod = {
-            type: "chInfo",
-            body: {
-                login: cState.login,
-                info: inp.value
-            }
-        };
-        const setInfo = (data) => {
-            if(data.error == false){
-                dispatch(changeProfile(CHANGE_PROFILE, "more", inp.value));
-                par.setAttribute('data-mod', '0');
-            }
-        };
-        send('POST', JSON.stringify(bod), "profiles", setInfo);
+        send({
+            login: cState.login,
+            info: inp.value
+        }, 'POST', "profiles", "chInfo")
+            .then(data => {
+                if(data.error == false){
+                    dispatch(changeProfile(CHANGE_PROFILE, "more", inp.value));
+                    par.setAttribute('data-mod', '0');
+                }
+            });
     } else if (inp.validity.typeMismatch || inp.validity.patternMismatch || inp.value.length == 0) {
         inp.setAttribute("data-mod", '1');
         // warner.style.display = "inline";
@@ -79,40 +75,32 @@ function onFin(e, param) {
         inp.setAttribute("data-mod", '0');
         // warner.style.display = "none";
         if (inp.type == "email") {
-            let bod = {
-                type: "chEmail",
-                body: {
-                    login: cState.login,
-                    email: inp.value,
-                    role: param
-                }
-            };
-            const setEmail = (data) => {
-                if(data.error == false){
-                    dispatch(changeProfile(CHANGE_PROFILE_ROLES, "email", inp.value, param));
-                    par.setAttribute('data-mod', '0');
-                }
-            };
-            send('POST', JSON.stringify(bod), "profiles", setEmail);
+            send({
+                login: cState.login,
+                email: inp.value,
+                role: param
+            }, 'POST', "profiles", "chEmail")
+                .then(data => {
+                    if(data.error == false){
+                        dispatch(changeProfile(CHANGE_PROFILE_ROLES, "email", inp.value, param));
+                        par.setAttribute('data-mod', '0');
+                    }
+                });
         } else {
-            let bod = {
-                type: "chLogin",
-                body: {
-                    oLogin: cState.login,
-                    nLogin: inp.value
-                }
-            };
-            const setLog = (data) => {
-                if(data.error == false){
-                    dispatch(changeState(CHANGE_STATE, "login", inp.value));
-                    dispatch(changeProfile(CHANGE_PROFILE, "login", inp.value));
-                    par.setAttribute('data-mod', '0');
-                    navigate("/profiles");
-                } else {
-                    addEvent("Логин занят, попробуйте изменить", 10);
-                }
-            };
-            send('POST', JSON.stringify(bod), "profiles", setLog);
+            send({
+                oLogin: cState.login,
+                nLogin: inp.value
+            }, 'POST', "profiles", "chLogin")
+                .then(data => {
+                    if(data.error == false){
+                        dispatch(changeState(CHANGE_STATE, "login", inp.value));
+                        dispatch(changeProfile(CHANGE_PROFILE, "login", inp.value));
+                        par.setAttribute('data-mod', '0');
+                        navigate("/profiles");
+                    } else {
+                        addEvent("Логин занят, попробуйте изменить", 10);
+                    }
+                });
         }
     }
 }
@@ -124,18 +112,14 @@ function onClose(e) {
 }
 
 function setInfo(log) {
-    let bod = {
-        type: "getProfile",
-        body: {
-            login: log
-        }
-    };
-    const getProf = (data) => {
-        if(data.error == false && data.body.login){
-            dispatch(changeProfile(CHANGE_PROFILE_GL, undefined, data.body));
-        }
-    };
-    send('POST', JSON.stringify(bod), "profiles", getProf);
+    send({
+        login: log
+    }, 'POST', "profiles", "getProfile")
+        .then(data => {
+            if(data.error == false && data.body.login){
+                dispatch(changeProfile(CHANGE_PROFILE_GL, undefined, data.body));
+            }
+        });
 }
 
 export function Profile() {

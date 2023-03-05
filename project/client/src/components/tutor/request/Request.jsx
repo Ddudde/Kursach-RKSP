@@ -5,36 +5,36 @@ import {useDispatch, useSelector} from "react-redux";
 import {states, themes} from "../../../store/selector";
 import button from "../../button.module.css";
 import {CHANGE_EVENT, changeEvents} from "../../../store/actions";
+import {send} from "../../main/Main";
 
 let dispatch, cState, inps;
 inps = {};
 
-function send(e) {
-    let title, text;
-    title = "Внимание!";
-    text = "Данные отправлены. В течении дня мы с вами свяжемся. До связи:3";
-    dispatch(changeEvents(CHANGE_EVENT, undefined, undefined, title, text, 10));
+function addReq(e) {
+    send({
+        text: inps.inpnnt_,
+        title: inps.inpnet_,
+        dat: new Date().toLocaleString("ru", {day:"2-digit", month: "2-digit", year:"numeric"})
+    }, 'POST', "requests", "addReq")
+        .then(data => {
+            if(data.error == false){
+                let title, text;
+                title = "Внимание!";
+                text = "Данные отправлены. В течении дня мы с вами свяжемся. До связи:3";
+                dispatch(changeEvents(CHANGE_EVENT, undefined, undefined, title, text, 10));
+            }
+        });
 }
 
 function chStatB(e) {
     let el = e.target;
-    if(el.pattern) {
-        inps[el.id] = !el.validity.patternMismatch ? el.value : false;
-    }else if(el.type != "text") {
-        inps[el.id] = !el.validity.typeMismatch ? el.value : false;
-    } else {
-        inps[el.id] = el.value;
-    }
+    inps[el.id] = !el.validity.patternMismatch || !el.validity.typeMismatch ? el.value : false;
     if (inps[el.id]) {
-        el.style.outline = "none black";
+        el.setAttribute("data-mod", '0');
     } else {
-        el.style.animation = "but 1s ease infinite";
-        setTimeout(function () {
-            el.style.animation = "none"
-        }, 1000);
-        el.style.outline = "solid red";
+        el.setAttribute("data-mod", '1');
     }
-    let but = el.parentElement.parentElement.querySelector("."+requestCSS.but);
+    let but = el.parentElement.parentElement.querySelector("."+button.button);
     if(but) {
         but.setAttribute("data-enable", +(inps.inpnnt_ && inps.inpnet_));
     }
@@ -88,8 +88,8 @@ export function Request() {
                     <input className={requestCSS.inp} id={"inpnet_"} placeholder={"example@gmail.com"} onChange={chStatB} type="email"/>
                     {ele(false, "inpnet_")}
                 </div>
-                <div className={requestCSS.but+' '+button.button} onClick={send}>
-                    <div className={requestCSS.tex}>Отправить!</div>
+                <div className={button.button} data-mod="2" onClick={addReq}>
+                    Отправить!
                 </div>
             </div>
         </div>

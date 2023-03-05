@@ -65,26 +65,22 @@ function onChSF(e) {
     let par, inp;
     par = e.target.parentElement.parentElement;
     inp = par.querySelector("input");
-    let bod = {
-        type: "chSecFR",
-        body: {
-            login: cState.login,
-            secFR: inp.value
-        }
-    };
-    const setSecFr = (data) => {
-        if(data.error == false){
-            onClosePas(e);
-            inp.value = "";
-            dispatch(changeState(CHANGE_STATE, "secFr", true));
-            if(els.warnUnsetSecFr != undefined) {
-                remEvent(els.warnUnsetSecFr);
-                els.warnUnsetSecFr = undefined;
+    send({
+        login: cState.login,
+        secFR: inp.value
+    }, 'POST', "settings", "chSecFR")
+        .then(data => {
+            if(data.error == false){
+                onClosePas(e);
+                inp.value = "";
+                dispatch(changeState(CHANGE_STATE, "secFr", true));
+                if(els.warnUnsetSecFr != undefined) {
+                    remEvent(els.warnUnsetSecFr);
+                    els.warnUnsetSecFr = undefined;
+                }
+                chStatB({target:oldPasSt ? elem.oldinp:elem.secinp});
             }
-            chStatB({target:oldPasSt ? elem.oldinp:elem.secinp});
-        }
-    };
-    send('POST', JSON.stringify(bod), "settings", setSecFr);
+        });
 }
 
 function chStatB(e) {
@@ -103,20 +99,16 @@ function chStatB(e) {
 }
 
 function chStatAv(e) {
-    let bod = {
-        type: "chIco",
-        body: {
-            login: cState.login,
-            ico: e.target.firstChild.value
-        }
-    };
-    const setIco = (data) => {
-        if(data.error == false){
-            e.target.firstChild.checked = true;
-            dispatch(changeState(CHANGE_STATE, "ico", e.target.firstChild.value));
-        }
-    };
-    send('POST', JSON.stringify(bod), "settings", setIco);
+    send({
+        login: cState.login,
+        ico: e.target.firstChild.value
+    }, 'POST', "settings", "chIco")
+        .then(data => {
+            if(data.error == false){
+                e.target.firstChild.checked = true;
+                dispatch(changeState(CHANGE_STATE, "ico", e.target.firstChild.value));
+            }
+        });
 }
 
 function onCloseChPar(e) {
@@ -128,33 +120,29 @@ function onCloseChPar(e) {
 }
 
 function onFinChPar(e) {
-    let bod = {
-        type: "chPass",
-        body: {
-            login: cState.login,
-            oPar: oldPasSt ? els.oldinp : undefined,
-            secFr: oldPasSt ? undefined : els.secinp,
-            nPar : els.npasinp
-        }
-    };
-    const chPass = (data) => {
-        if(data.error == false){
-            onClosePas(e);
-            if(els.warnErrSecFr != undefined) {
-                remEvent(els.warnErrSecFr);
-                els.warnErrSecFr = undefined;
+    send({
+        login: cState.login,
+        oPar: oldPasSt ? els.oldinp : undefined,
+        secFr: oldPasSt ? undefined : els.secinp,
+        nPar : els.npasinp
+    }, 'POST', "settings", "chPass")
+        .then(data => {
+            if(data.error == false){
+                onClosePas(e);
+                if(els.warnErrSecFr != undefined) {
+                    remEvent(els.warnErrSecFr);
+                    els.warnErrSecFr = undefined;
+                }
+                if(els.warnErrPar != undefined) {
+                    remEvent(els.warnErrPar);
+                    els.warnErrPar = undefined;
+                }
+            } else if(data.error == 2 && els.warnErrPar == undefined){
+                els.warnErrPar = addEvent("Старый пароль неверен, попробуйте воспользоваться секретной фразой");
+            } else if(data.error == 3 && els.warnErrSecFr == undefined){
+                els.warnErrSecFr = addEvent("Секретная фраза неверна, попробуйте воспользоваться старым паролем");
             }
-            if(els.warnErrPar != undefined) {
-                remEvent(els.warnErrPar);
-                els.warnErrPar = undefined;
-            }
-        } else if(data.error == 2 && els.warnErrPar == undefined){
-            els.warnErrPar = addEvent("Старый пароль неверен, попробуйте воспользоваться секретной фразой");
-        } else if(data.error == 3 && els.warnErrSecFr == undefined){
-            els.warnErrSecFr = addEvent("Секретная фраза неверна, попробуйте воспользоваться старым паролем");
-        }
-    };
-    send('POST', JSON.stringify(bod), "settings", chPass);
+        });
 }
 
 function chStatSb1(e) {
