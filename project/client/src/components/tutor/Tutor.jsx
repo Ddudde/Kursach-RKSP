@@ -69,7 +69,7 @@ import hizo33 from "../../media/tutor/hteachers/izo33.png";
 import hizo34 from "../../media/tutor/hteachers/izo34.png";
 import hizo35 from "../../media/tutor/hteachers/izo35.png";
 import hizo36 from "../../media/tutor/hteachers/izo36.png";
-import {setActived} from "../main/Main";
+import {eventSource, send, setActived} from "../main/Main";
 import knopka from "../../media/dnevnik/knopka.png";
 import Request from "./request/Request";
 
@@ -776,6 +776,13 @@ function getZag(text, link, b) {
     )
 }
 
+function onCon(e) {
+    send({
+        type: "TUTOR",
+        uuid: cState.uuid
+    }, 'POST', "auth", "infCon");
+}
+
 function goTo(id) {
     document.querySelector("." + id).scrollIntoView(true);
     let sinc = window.scrollY - Math.round(window.innerHeight / 100) * 7;
@@ -811,10 +818,12 @@ export function Tutor() {
         };
         knop();
         setActived(zag[type].link);
+        eventSource.addEventListener('connect', onCon, false);
         return function() {
             dispatch = undefined;
             window.onwheel = undefined;
             clearTimeout(timid);
+            eventSource.removeEventListener('connect', onCon);
             console.log("I was triggered during componentWillUnmount Tutor.jsx");
         }
     }, []);

@@ -4,14 +4,10 @@ import lombok.*;
 
 import javax.persistence.*;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
+@Getter @Setter
+@NoArgsConstructor @AllArgsConstructor
 @ToString
-@Entity
-@Table(name = "request")
-public class Request {
+@Entity public class Request {
 
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)

@@ -10,7 +10,7 @@ import CheckBox from "../../other/checkBox/CheckBox";
 import ls1 from "../../../media/ls-icon1.png";
 import ls2 from "../../../media/ls-icon2.png";
 import ls3 from "../../../media/ls-icon3.png";
-import {addEvent, remEvent, send, setActived} from "../Main";
+import {addEvent, eventSource, remEvent, send, setActived} from "../Main";
 
 let dispatch, elem, cState, oldPasSt, els;
 oldPasSt = true;
@@ -150,6 +150,13 @@ function chStatSb1(e) {
     elem.zambut1.setAttribute("data-enable", +(el ? el.value.length != 0 : false));
 }
 
+function onCon(e) {
+    send({
+        type: "SETTINGS",
+        uuid: cState.uuid
+    }, 'POST', "auth", "infCon");
+}
+
 export function gen_pas(e){
     let password, symbols;
     password = "";
@@ -175,8 +182,10 @@ export function Settings() {
         setActived(".panSet");
         console.log("I was triggered during componentDidMount Settings.jsx");
         document.querySelector("#ch" + cState.ico).checked = true;
+        eventSource.addEventListener('connect', onCon, false);
         return function() {
             dispatch(changeEvents(CHANGE_EVENTS_CLEAR));
+            eventSource.removeEventListener('connect', onCon);
             console.log("I was triggered during componentWillUnmount Settings.jsx");
         }
     }, []);

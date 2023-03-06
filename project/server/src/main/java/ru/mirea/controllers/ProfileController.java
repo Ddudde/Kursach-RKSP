@@ -6,23 +6,23 @@ import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
+import ru.mirea.data.SSE.TypesConnect;
 import ru.mirea.data.User;
-import ru.mirea.data.UserRepository;
+import ru.mirea.data.reps.UserRepository;
 import ru.mirea.data.json.Role;
-
-import java.util.List;
-import java.util.Objects;
 
 @RestController
 @RequestMapping("/profiles")
 @AllArgsConstructor
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = {"http://localhost:3000", "http://192.168.1.66:3000"})
 public class ProfileController {
 
     @Autowired
     private Gson gson;
 
     private final UserRepository userRepository;
+
+    private final AuthController authController;
 
     @PostMapping
     public JsonObject post(@RequestBody JsonObject data) {
@@ -86,6 +86,10 @@ public class ProfileController {
                 if(user != null && userN == null){
                     user.setLogin(body.get("nLogin").getAsString());
                     userRepository.save(user);
+
+                    JsonObject ansToCl = new JsonObject();
+                    ansToCl.addProperty("login", user.getLogin());
+                    authController.sendMessageForAll("chLogin", ansToCl, TypesConnect.PROFILES, user.getLogin());
                 } else {
                     ans.addProperty("error", true);
                 }
@@ -98,6 +102,10 @@ public class ProfileController {
                 if(user != null) {
                     user.setInfo(body.get("info").getAsString());
                     userRepository.save(user);
+
+                    JsonObject ansToCl = new JsonObject();
+                    ansToCl.addProperty("more", user.getInfo());
+                    authController.sendMessageForAll("chInfo", ansToCl, TypesConnect.PROFILES, user.getLogin());
                 } else {
                     ans.addProperty("error", true);
                 }
@@ -110,6 +118,11 @@ public class ProfileController {
                 if(user != null) {
                     user.getRoles().get(body.get("role").getAsLong()).setEmail(body.get("email").getAsString());
                     userRepository.save(user);
+
+                    JsonObject ansToCl = new JsonObject();
+                    ansToCl.addProperty("email", body.get("email").getAsString());
+                    ansToCl.addProperty("role", body.get("role").getAsLong());
+                    authController.sendMessageForAll("chEmail", ansToCl, TypesConnect.PROFILES, user.getLogin());
                 } else {
                     ans.addProperty("error", true);
                 }

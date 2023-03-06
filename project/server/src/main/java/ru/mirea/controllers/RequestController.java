@@ -6,6 +6,9 @@ import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.mirea.data.*;
+import ru.mirea.data.SSE.TypesConnect;
+import ru.mirea.data.reps.RequestRepository;
+import ru.mirea.data.reps.UserRepository;
 
 import java.util.List;
 
@@ -71,7 +74,7 @@ public class RequestController {
                     JsonObject ansToCl = new JsonObject();
                     ansToCl.addProperty("id", request.getId());
                     ansToCl.addProperty("text", request.getText());
-                    authController.sendMessageForAll("chText", ansToCl, TypesConnect.REQUESTS);
+                    authController.sendMessageForAll("chText", ansToCl, TypesConnect.REQUESTS, "main");
                 } else {
                     ans.addProperty("error", true);
                 }
@@ -89,7 +92,7 @@ public class RequestController {
                     JsonObject ansToCl = new JsonObject();
                     ansToCl.addProperty("id", request.getId());
                     ansToCl.addProperty("date", request.getDate());
-                    authController.sendMessageForAll("chDate", ansToCl, TypesConnect.REQUESTS);
+                    authController.sendMessageForAll("chDate", ansToCl, TypesConnect.REQUESTS, "main");
                 } else {
                     ans.addProperty("error", true);
                 }
@@ -107,7 +110,7 @@ public class RequestController {
                     JsonObject ansToCl = new JsonObject();
                     ansToCl.addProperty("id", request.getId());
                     ansToCl.addProperty("title", request.getEmail());
-                    authController.sendMessageForAll("chTitle", ansToCl, TypesConnect.REQUESTS);
+                    authController.sendMessageForAll("chTitle", ansToCl, TypesConnect.REQUESTS, "main");
                 } else {
                     ans.addProperty("error", true);
                 }
@@ -123,7 +126,7 @@ public class RequestController {
 
                     JsonObject ansToCl = new JsonObject();
                     ansToCl.addProperty("id", request.getId());
-                    authController.sendMessageForAll("delReq", ansToCl, TypesConnect.REQUESTS);
+                    authController.sendMessageForAll("delReq", ansToCl, TypesConnect.REQUESTS, "main");
                 } else {
                     ans.addProperty("error", true);
                 }
@@ -141,7 +144,7 @@ public class RequestController {
                     bodyAns.addProperty("title", request.getEmail());
                     bodyAns.addProperty("date", request.getDate());
                     bodyAns.addProperty("text", request.getText());
-                    authController.sendMessageForAll("addReq", ansToCl, TypesConnect.REQUESTS);
+                    authController.sendMessageForAll("addReq", ansToCl, TypesConnect.REQUESTS, "main");
                 } else {
                     ans.addProperty("error", true);
                 }

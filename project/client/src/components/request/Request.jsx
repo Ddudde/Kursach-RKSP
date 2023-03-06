@@ -8,10 +8,12 @@ import ed from "../../media/edit.png";
 import ErrFound from "../other/error/ErrFound";
 import {requests, states} from "../../store/selector";
 import {
+    CHANGE_EVENTS_CLEAR,
     CHANGE_REQUEST,
     CHANGE_REQUEST_DEL,
     CHANGE_REQUEST_GL,
     CHANGE_REQUEST_PARAM,
+    changeEvents,
     changeReq
 } from "../../store/actions";
 import {eventSource, send, setActived} from "../main/Main";
@@ -176,6 +178,10 @@ function onClose(e) {
 
 function setInfo() {
     send({
+        type: "REQUESTS",
+        uuid: cState.uuid
+    }, 'POST', "auth", "infCon");
+    send({
         login: cState.login
     }, 'POST', "requests", "getRequests")
         .then(data => {
@@ -214,10 +220,7 @@ function delReq(e) {
 }
 
 function onCon(e) {
-    send({
-        type: "REQUESTS",
-        uuid: cState.uuid
-    }, 'POST', "auth", "infCon");
+    setInfo();
 }
 
 function chStatB(e) {
@@ -239,8 +242,8 @@ export function Request() {
     const isFirstUpdate = useRef(true);
     useEffect(() => {
         console.log("I was triggered during componentDidMount Request.jsx");
-        setInfo();
         setActived(11);
+        setInfo();
         eventSource.addEventListener('addReq', addReq, false);
         eventSource.addEventListener('chText', chText, false);
         eventSource.addEventListener('chDate', chDate, false);
@@ -248,6 +251,7 @@ export function Request() {
         eventSource.addEventListener('delReq', delReq, false);
         eventSource.addEventListener('connect', onCon, false);
         return function() {
+            dispatch(changeEvents(CHANGE_EVENTS_CLEAR));
             dispatch = undefined;
             eventSource.removeEventListener('addReq', addReq);
             eventSource.removeEventListener('chText', chText);

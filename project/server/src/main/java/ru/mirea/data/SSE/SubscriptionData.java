@@ -1,4 +1,4 @@
-package ru.mirea.data;
+package ru.mirea.data.SSE;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,6 +16,8 @@ public class SubscriptionData {
     private String login;
 
     private TypesConnect type;
+
+    private String podType;
 
     private FluxSink<ServerSentEvent> fluxSink;
 

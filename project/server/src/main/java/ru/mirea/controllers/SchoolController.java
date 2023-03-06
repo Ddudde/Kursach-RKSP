@@ -4,22 +4,40 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
+import ru.mirea.data.SSE.TypesConnect;
+import ru.mirea.data.School;
 import ru.mirea.data.User;
+import ru.mirea.data.json.Role;
+import ru.mirea.data.reps.SchoolRepository;
 import ru.mirea.data.reps.UserRepository;
 
-import java.util.Objects;
+import java.util.List;
 
 @RestController
-@RequestMapping("/settings")
+@RequestMapping("/schools")
 @AllArgsConstructor
 @CrossOrigin(origins = {"http://localhost:3000", "http://192.168.1.66:3000"})
-public class SettingsController {
+public class SchoolController {
 
     @Autowired
     private Gson gson;
 
     private final UserRepository userRepository;
+
+    private final AuthController authController;
+
+    private final SchoolRepository schoolRepository;
+
+    public void createSchool(School school) {
+        School savedSchool = schoolRepository.save(school);
+        System.out.println(savedSchool);
+    }
+
+    public List<School> getSchools() {
+        return schoolRepository.findAll();
+    }
 
     @PostMapping
     public JsonObject post(@RequestBody JsonObject data) {
@@ -29,45 +47,29 @@ public class SettingsController {
         if(data.has("body") && data.get("body").isJsonObject()) body = data.get("body").getAsJsonObject();
         if(!data.has("type")) data.addProperty("type", "default");
         switch (data.get("type").getAsString()){
-            case "chIco" -> {
+            case "getSchools" -> {
                 bodyAns = new JsonObject();
                 ans.add("body", bodyAns);
                 User user = userRepository.findByLogin(body.get("login").getAsString());
-                if(user != null) {
-                    user.setIco(body.get("ico").getAsInt());
-                    userRepository.save(user);
+                if(user != null && user.getRoles().containsKey(4L)) {
+                    for(School el : getSchools()){
+                        JsonObject schools = new JsonObject();
+                        schools.addProperty("name", el.getName());
+                        bodyAns.add(el.getId()+"", schools);
+                    }
                 } else {
                     ans.addProperty("error", true);
                 }
                 return ans;
             }
-            case "chSecFR" -> {
+            case "addSchools" -> {
                 bodyAns = new JsonObject();
                 ans.add("body", bodyAns);
                 User user = userRepository.findByLogin(body.get("login").getAsString());
-                if(user != null) {
-                    user.setSecFr(body.get("secFR").getAsString());
-                    userRepository.save(user);
-                } else {
-                    ans.addProperty("error", true);
-                }
-                return ans;
-            }
-            case "chPass" -> {
-                bodyAns = new JsonObject();
-                ans.add("body", bodyAns);
-                User user = userRepository.findByLogin(body.get("login").getAsString());
-                if(user != null && (body.has("secFr") || body.has("oPar"))) {
-                    if(body.has("secFr") && !Objects.equals(user.getSecFr(), body.get("secFr").getAsString())){
-                        ans.addProperty("error", 3);
-                        return ans;
-                    }
-                    if(body.has("oPar") && !Objects.equals(user.getPassword(), body.get("oPar").getAsString())){
-                        ans.addProperty("error", 2);
-                        return ans;
-                    }
-                    user.setPassword(body.get("nPar").getAsString());
-                    userRepository.save(user);
+                if(user != null && user.getRoles().containsKey(4L)) {
+                    School school = new School(body.get("name").getAsString());
+                    schoolRepository.save(school);
+                    bodyAns.addProperty("id", school.getId());
                 } else {
                     ans.addProperty("error", true);
                 }

@@ -1,24 +1,16 @@
 package ru.mirea.controllers;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import ru.mirea.data.User;
-import ru.mirea.data.UserRepository;
-import ru.mirea.data.json.Role;
+import ru.mirea.data.reps.UserRepository;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 
 @RestController
 @RequestMapping("/cts")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = {"http://localhost:3000", "http://192.168.1.66:3000"})
 public class ClientsController {
 
     @Autowired

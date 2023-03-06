@@ -63,7 +63,7 @@ types = {
 
 export let sit = "http://localhost:3000";
 
-export function getPep(addTit, typ, inps, forceUpdate, x, info, x1) {
+export function getPep(addTit, typ, inps, forceUpdate, x, info, x1, net) {
     let edFi, b;
     b = (x && typ != "hteachers4L2") || (x && x1);
     edFi = <div className={peopleCSS.pepl} key={x1 ? x1 : x} data-st="0">
@@ -88,7 +88,7 @@ export function getPep(addTit, typ, inps, forceUpdate, x, info, x1) {
                 </div>
                 {typ != "hteachers4" && <img className={peopleCSS.profIm} src={themeState.theme_ch ? profd : profl} title="Так будет выглядеть иконка перехода в профиль" alt=""/>}
                 <img className={peopleCSS.imgfield} src={ed} onClick={onEdit} title="Редактировать" alt=""/>
-                <img className={peopleCSS.imginp+" yes "} data-id1={typ == "hteachers4L2" ? x : undefined} src={yes} onClick={(e)=>onFin(e, inps, forceUpdate, types[typ].ch)} title="Подтвердить" alt=""/>
+                <img className={peopleCSS.imginp+" yes "} data-id1={typ == "hteachers4L2" ? x : undefined} src={yes} onClick={(e)=>onFin(e, inps, forceUpdate, types[typ].ch, undefined, net)} title="Подтвердить" alt=""/>
                 <img className={peopleCSS.imginp} style={{marginRight: "1vw"}} src={no} onClick={onClose} title="Отменить изменения и выйти из режима редактирования" alt=""/>
             </div>
         }
@@ -195,7 +195,7 @@ export function onEdit(e) {
     }
 }
 
-export function onFin(e, inps, forceUpdate, type, info) {
+export function onFin(e, inps, forceUpdate, type, info, net) {
     let par, inp;
     par = e.target.parentElement;
     if (par.classList.contains(parentsCSS.upr)) {
@@ -209,8 +209,7 @@ export function onFin(e, inps, forceUpdate, type, info) {
     if (par.classList.contains(peopleCSS.fi)){
         par = par.parentElement;
         let grop, id, inp;
-        if(type == CHANGE_PARENTS)
-        {
+        if(type == CHANGE_PARENTS) {
             inp = par.querySelector("input");
             par = par.parentElement;
             if(inp.hasAttribute("data-id1")) {
@@ -231,14 +230,18 @@ export function onFin(e, inps, forceUpdate, type, info) {
             }
         } else {
             par = par.parentElement;
-            dispatch(changePeople(type, 2, "id8", undefined, inps.inpnpt));
+            if(net) {
+                net(type, inps.inpnpt);
+            } else {
+                dispatch(changePeople(type, 2, "id8", undefined, inps.inpnpt));
+            }
         }
         par.setAttribute('data-st', '0');
         return;
     }
     inp = par.querySelector("input");
     if (inps[inp.id]) {
-        inp.style.outline = "none black";
+        inp.setAttribute("data-mod", '1');
         if(par.parentElement.classList.contains(peopleCSS.pepl)) {
             par = par.parentElement;
             if(type){
@@ -264,11 +267,7 @@ export function onFin(e, inps, forceUpdate, type, info) {
         }
         par.setAttribute('data-st', '0');
     } else {
-        inp.style.animation = "but 1s ease infinite";
-        setTimeout(function () {
-            inp.style.animation = "none"
-        }, 1000);
-        inp.style.outline = "solid red";
+        inp.setAttribute("data-mod", '0');
     }
 }
 
@@ -286,19 +285,11 @@ export function onClose(e, type) {
 
 export function chStatB(e, inps) {
     let el = e.target;
-    if(el.pattern) {
-        inps[el.id] = !el.validity.patternMismatch && el.value.length != 0;
-    } else {
-        inps[el.id] = el.value.length != 0;
-    }
+    inps[el.id] = !el.validity.patternMismatch && el.value.length != 0;
     if (inps[el.id]) {
-        el.style.outline = "none black";
+        el.setAttribute("data-mod", '0');
     } else {
-        el.style.animation = "but 1s ease infinite";
-        setTimeout(function () {
-            el.style.animation = "none"
-        }, 1000);
-        el.style.outline = "solid red";
+        el.setAttribute("data-mod", '1');
     }
     el.parentElement.querySelector(".yes").setAttribute("data-enable", +inps[el.id]);
 }

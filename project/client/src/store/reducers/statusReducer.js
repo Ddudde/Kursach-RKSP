@@ -1,4 +1,4 @@
-import {CHANGE_STATE, CHANGE_STATE_GL} from '../actions';
+import {CHANGE_STATE, CHANGE_STATE_GL, CHANGE_STATE_RESET} from '../actions';
 
 const initialState = {
         auth: true,
@@ -36,6 +36,12 @@ export default function statusReducer(state = initialState, action) {
                 }
             }
             return fd;
+        case CHANGE_STATE_RESET:
+            return {
+                auth: false,
+                uuid: fd.uuid,
+                rolesDescrs: ["обучающийся", "родитель", "педагог", "завуч", "администратор портала"],
+            };
         default:
             return state;
     }

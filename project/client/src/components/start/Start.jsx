@@ -27,7 +27,7 @@ import {
     changeIndPrev,
     changeState
 } from "../../store/actions";
-import {addEvent, remEvent, send, setActived} from "../main/Main";
+import {addEvent, eventSource, remEvent, send, setActived} from "../main/Main";
 import {Link, useNavigate, useParams} from "react-router-dom"
 import ErrFound from "../other/error/ErrFound";
 
@@ -273,6 +273,13 @@ function onsetText(e) {
     }
 }
 
+function onCon(e) {
+    send({
+        type: "AUTH",
+        uuid: cState.uuid
+    }, 'POST', "auth", "infCon");
+}
+
 export function Start() {
     checkBoxInfo = useSelector(checkbox);
     const { inv } = useParams();
@@ -295,11 +302,13 @@ export function Start() {
         for(let el of document.querySelectorAll("input[placeholder]")){
             el.addEventListener('input', inpchr);
         }
+        eventSource.addEventListener('connect', onCon, false);
         return function() {
             clearInterval(timer);
             console.log("I was triggered during componentWillUnmount Start.jsx");
             dispatch(changeEvents(CHANGE_EVENTS_CLEAR));
             warns = {};
+            eventSource.removeEventListener('connect', onCon);
             dispatch = undefined;
         }
     }, []);

@@ -9,6 +9,7 @@ import {
     CHANGE_PANE_GR,
     CHANGE_STATE,
     CHANGE_STATE_GL,
+    CHANGE_STATE_RESET,
     changeEvents,
     changeGroups,
     changeState,
@@ -122,7 +123,7 @@ function chRoles() {
 }
 
 function onExit() {
-    dispatch(changeState(CHANGE_STATE, "auth", !cState.auth));
+    dispatch(changeState(CHANGE_STATE_RESET));
 }
 
 export function setActived(name) {

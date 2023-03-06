@@ -19,7 +19,7 @@ import {
     changeProfile,
     changeState
 } from "../../../store/actions";
-import {addEvent, send, setActived} from "../Main";
+import {addEvent, eventSource, send, setActived} from "../Main";
 import ErrFound from "../../other/error/ErrFound";
 
 let profilesInfo, dispatch, moore, errText, cState, navigate;
@@ -111,7 +111,31 @@ function onClose(e) {
     // warner.style.display = "none";
 }
 
+function chInfo(e) {
+    const msg = JSON.parse(e.data);
+    dispatch(changeProfile(CHANGE_PROFILE, "more", msg.more));
+}
+
+function chLogin(e) {
+    const msg = JSON.parse(e.data);
+    dispatch(changeProfile(CHANGE_PROFILE, "login", msg.login));
+}
+
+function chEmail(e) {
+    const msg = JSON.parse(e.data);
+    dispatch(changeProfile(CHANGE_PROFILE_ROLES, "email", msg.email, msg.role));
+}
+
+function onCon(e, log) {
+    setInfo(log ? log : cState.login);
+}
+
 function setInfo(log) {
+    send({
+        type: "PROFILES",
+        uuid: cState.uuid,
+        podType: log
+    }, 'POST', "auth", "infCon");
     send({
         login: log
     }, 'POST', "profiles", "getProfile")
@@ -132,10 +156,17 @@ export function Profile() {
     const isFirstUpdate = useRef(true);
     useEffect(() => {
         setActived(".panPro");
-        console.log("I was triggered during componentDidMount Profile.jsx");
         setInfo(log ? log : cState.login);
+        console.log("I was triggered during1 componentDidMount Profile.jsx");
+        eventSource.addEventListener('connect', e=>onCon(e, log), false);
+        eventSource.addEventListener('chEmail', chEmail, false);
+        eventSource.addEventListener('chLogin', chLogin, false);
+        eventSource.addEventListener('chInfo', chInfo, false);
         return function() {
             dispatch(changeEvents(CHANGE_EVENTS_CLEAR));
+            eventSource.removeEventListener('connect', e=>onCon(e, log));
+            eventSource.removeEventListener('chLogin', chLogin);
+            eventSource.removeEventListener('chInfo', chInfo);
             console.log("I was triggered during componentWillUnmount Profile.jsx");
         }
     }, []);
