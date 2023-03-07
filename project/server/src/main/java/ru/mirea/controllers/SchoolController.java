@@ -6,10 +6,12 @@ import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
+import ru.mirea.data.Invite;
 import ru.mirea.data.SSE.TypesConnect;
 import ru.mirea.data.School;
 import ru.mirea.data.User;
 import ru.mirea.data.json.Role;
+import ru.mirea.data.reps.InviteRepository;
 import ru.mirea.data.reps.SchoolRepository;
 import ru.mirea.data.reps.UserRepository;
 
@@ -29,6 +31,8 @@ public class SchoolController {
     private final AuthController authController;
 
     private final SchoolRepository schoolRepository;
+
+    private final InviteRepository inviteRepository;
 
     public void createSchool(School school) {
         School savedSchool = schoolRepository.save(school);
@@ -55,6 +59,25 @@ public class SchoolController {
                     for(School el : getSchools()){
                         JsonObject schools = new JsonObject();
                         schools.addProperty("name", el.getName());
+                        JsonObject pep = new JsonObject();
+                        schools.add("pep", pep);
+                        if(!ObjectUtils.isEmpty(el.getHteachers())){
+                            for(Long i1 : el.getHteachers()){
+                                JsonObject htO = new JsonObject();
+                                User htU = userRepository.findById(i1).orElseThrow(RuntimeException::new);
+                                htO.addProperty("name", htU.getFio());
+                                htO.addProperty("login", htU.getLogin());
+                                pep.add(i1+"", htO);
+                            }
+                        }
+                        if(!ObjectUtils.isEmpty(el.getHteachersInv())){
+                            for(Long i1 : el.getHteachersInv()){
+                                JsonObject htO = new JsonObject();
+                                Invite htI = inviteRepository.findById(i1).orElseThrow(RuntimeException::new);
+                                htO.addProperty("name", htI.getFio());
+                                pep.add(i1+"", htO);
+                            }
+                        }
                         bodyAns.add(el.getId()+"", schools);
                     }
                 } else {
@@ -62,7 +85,7 @@ public class SchoolController {
                 }
                 return ans;
             }
-            case "addSchools" -> {
+            case "addSch" -> {
                 bodyAns = new JsonObject();
                 ans.add("body", bodyAns);
                 User user = userRepository.findByLogin(body.get("login").getAsString());
@@ -70,6 +93,27 @@ public class SchoolController {
                     School school = new School(body.get("name").getAsString());
                     schoolRepository.save(school);
                     bodyAns.addProperty("id", school.getId());
+                } else {
+                    ans.addProperty("error", true);
+                }
+                return ans;
+            }
+            case "remSch" -> {
+                User user = userRepository.findByLogin(body.get("login").getAsString());
+                School school = schoolRepository.findById(body.get("id").getAsLong()).orElseThrow(RuntimeException::new);
+                if(user != null && user.getRoles().containsKey(4L) && school != null) {
+                    schoolRepository.delete(school);
+                } else {
+                    ans.addProperty("error", true);
+                }
+                return ans;
+            }
+            case "chSch" -> {
+                User user = userRepository.findByLogin(body.get("login").getAsString());
+                School school = schoolRepository.findById(body.get("id").getAsLong()).orElseThrow(RuntimeException::new);
+                if(user != null && user.getRoles().containsKey(4L) && school != null) {
+                    school.setName(body.get("name").getAsString());
+                    schoolRepository.save(school);
                 } else {
                     ans.addProperty("error", true);
                 }

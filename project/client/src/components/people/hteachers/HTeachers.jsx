@@ -1,35 +1,267 @@
 import React, {useEffect, useReducer, useRef} from "react";
 import {Helmet} from "react-helmet-async";
+import {useNavigate} from "react-router-dom"
 import peopleCSS from '../peopleMain.module.css';
 import {hteachers, states, themes} from "../../../store/selector";
 import {useDispatch, useSelector} from "react-redux";
-import {chStatB, getPep, setActNew} from "../PeopleMain";
+import {ele, gen_cod, setActNew, sit} from "../PeopleMain";
 import profl from "../../../media/profl.png";
 import profd from "../../../media/profd.png";
 import ErrFound from "../../other/error/ErrFound";
+import ed from "../../../media/edit.png";
+import yes from "../../../media/yes.png";
+import no from "../../../media/no.png";
+import {
+    CHANGE_EVENT,
+    CHANGE_EVENTS_CLEAR,
+    CHANGE_HTEACHERS,
+    CHANGE_HTEACHERS_DEL,
+    CHANGE_HTEACHERS_DEL_L2,
+    CHANGE_HTEACHERS_GL,
+    CHANGE_HTEACHERS_L2,
+    changeEvents,
+    changePeople
+} from "../../../store/actions";
+import refreshCd from "../../../media/refreshCd.png";
+import refreshCl from "../../../media/refreshCl.png";
+import copyd from "../../../media/copyd.png";
+import copyl from "../../../media/copyl.png";
 import {eventSource, send} from "../../main/Main";
-import {CHANGE_EVENTS_CLEAR, CHANGE_HTEACHERS_GL, changeEvents, changePeople} from "../../../store/actions";
 
-let dispatch, errText, cState, inps, typ;
+let dispatch, errText, cState, inps, navigate, hteachersInfo, themeState, types;
 errText = "К сожалению, информация не найдена... Можете попробовать попросить завуча заполнить информацию.";
-typ = "hteachers";
 inps = {inpnpt : "Поле для ввода"};
+types = {
+    "ht" : {
+        del : CHANGE_HTEACHERS_DEL,
+        ch: CHANGE_HTEACHERS
+    },
+    "ht4" : {
+        del : CHANGE_HTEACHERS_DEL,
+        ch: CHANGE_HTEACHERS
+    },
+    "ht4L2" : {
+        del : CHANGE_HTEACHERS_DEL_L2,
+        ch: CHANGE_HTEACHERS_L2
+    }
+};
 let [_, forceUpdate] = [];
+
+function copyLink(e, link, name) {
+    let title, text;
+    title = "Внимание!";
+    text = "Ссылка-приглашение для " + name + " успешно скопирована в буфер обмена.";
+    navigator.clipboard.writeText(link);
+    dispatch(changeEvents(CHANGE_EVENT, undefined, undefined, title, text, 10));
+}
+
+function refreshLink(e, type) {
+    let inp, id, title, text;
+    title = "Внимание!";
+    text = "Ссылка успешно обновлена"
+    inp = e.target.parentElement.querySelector("input");
+    if (inp.hasAttribute("data-id")) {
+        id = inp.getAttribute("data-id").split("_");
+        dispatch(changePeople(type, 0, id[0], id[1], sit + "/invite/" + gen_cod(), "link"));
+        dispatch(changeEvents(CHANGE_EVENT, undefined, undefined, title, text, 10));
+    } else if (inp.hasAttribute("data-id1")) {
+        id = inp.getAttribute("data-id1");
+        dispatch(changePeople(type, 2, id, undefined, sit + "/invite/" + gen_cod(), "link"));
+        dispatch(changeEvents(CHANGE_EVENT, undefined, undefined, title, text, 10));
+    }
+}
+
+function onDel(e, type) {
+    let par, inp, id;
+    par = e.target.parentElement.parentElement;
+    if(par.classList.contains(peopleCSS.pepl)){
+        inp = par.querySelector("input:not([readOnly])");
+        if (inp.hasAttribute("data-id")) {
+            id = inp.getAttribute("data-id").split("_");
+            // dispatch(changePeople(type, 0, id[0], id[1]));
+            remInv(type, id[0], id[1], id[2]);
+        } else if(inp.hasAttribute("data-id1")){
+            let id = inp.getAttribute("data-id1");
+            // dispatch(changePeople(type, 2, id));
+            remSch(type, id);
+        }
+    }
+}
+
+function onEdit(e) {
+    let par;
+    par = e.target.parentElement;
+    if(par.classList.contains(peopleCSS.add)){
+        par.setAttribute('data-st', '1');
+    }
+    if(par.parentElement.classList.contains(peopleCSS.pepl)){
+        par = par.parentElement;
+        par.setAttribute('data-st', '1');
+    }
+}
+
+function onFin(e, type) {
+    let par, inp;
+    par = e.target.parentElement;
+    if (par.classList.contains(peopleCSS.fi)){
+        par = par.parentElement;
+        if(type == CHANGE_HTEACHERS_L2){
+            par = par.parentElement;
+            if(e.target.hasAttribute("data-id1")){
+                let id = e.target.getAttribute("data-id1");
+                addInv(type, id, inps.inpnpt);
+                // dispatch(changePeople(type, 2, id, "id8", inps.inpnpt));
+            }
+        } else {
+            par = par.parentElement;
+            addSch(type, inps.inpnpt);
+        }
+        par.setAttribute('data-st', '0');
+        return;
+    }
+    inp = par.querySelector("input");
+    if (inps[inp.id]) {
+        inp.setAttribute("data-mod", '1');
+        if(par.parentElement.classList.contains(peopleCSS.pepl)) {
+            par = par.parentElement;
+            if(type){
+                if(inp.hasAttribute("data-id")){
+                    let id = inp.getAttribute("data-id").split("_");
+                    changeInv(type, id[0], id[1], id[2], inp.value);
+                    // dispatch(changePeople(type, 0, id[0], id[1], inp.value));
+                } else if(inp.hasAttribute("data-id1")){
+                    let id = inp.getAttribute("data-id1");
+                    chSch(type, id, inp.value);
+                }
+            } else {
+                inps.inpnpt = inp.value;
+                forceUpdate();
+            }
+        }
+        par.setAttribute('data-st', '0');
+    } else {
+        inp.setAttribute("data-mod", '0');
+    }
+}
+
+function onClose(e) {
+    let par = e.target.parentElement;
+    if(par.parentElement.classList.contains(peopleCSS.pepl)){
+        if(par.classList.contains(peopleCSS.fi)) {
+            par = par.parentElement.parentElement;
+        } else {
+            par = par.parentElement;
+        }
+        par.setAttribute('data-st', '0');
+    }
+}
+
+function chStatB(e) {
+    let el = e.target;
+    inps[el.id] = !el.validity.patternMismatch && el.value.length != 0;
+    if (inps[el.id]) {
+        el.setAttribute("data-mod", '0');
+    } else {
+        el.setAttribute("data-mod", '1');
+    }
+    el.parentElement.querySelector(".yes").setAttribute("data-enable", +inps[el.id]);
+}
 
 function onCon(e) {
     setInfo();
 }
 
-function addSchool (type, inp) {
-    console.log("addSchool");
+function addSch (type, inp) {
+    console.log("addSch");
     send({
         login: cState.login,
         name: inp
-    }, 'POST', "schools", "addSchools")
+    }, 'POST', "schools", "addSch")
         .then(data => {
             console.log(data);
             if(data.error == false){
-                dispatch(changePeople(type, 2, data.body.id, undefined, inp));
+                dispatch(changePeople(type, undefined, data.body.id, undefined, inp));
+            }
+        });
+}
+
+function goToProf(log) {
+    if(log) navigate("/profiles/" + log);
+}
+
+function remSch (type, id) {
+    console.log("remSch");
+    send({
+        login: cState.login,
+        id: id
+    }, 'POST', "schools", "remSch")
+        .then(data => {
+            console.log(data);
+            if(data.error == false){
+                dispatch(changePeople(type, 2, id));
+            }
+        });
+}
+
+function chSch (type, id, inp) {
+    console.log("chSch");
+    send({
+        login: cState.login,
+        id: id,
+        name: inp
+    }, 'POST', "schools", "chSch")
+        .then(data => {
+            console.log(data);
+            if(data.error == false){
+                dispatch(changePeople(type, 2, id, undefined, inp));
+            }
+        });
+}
+
+function remInv (type, id, id1, id2) {
+    console.log("remInv");
+    send({
+        login: cState.login,
+        id: id,
+        id1: id1,
+        id2: id2
+    }, 'POST', "auth", "remInv")
+        .then(data => {
+            console.log(data);
+            if(data.error == false){
+                dispatch(changePeople(type, 0, id1, id2));
+            }
+        });
+}
+
+function changeInv (type, id, id1, id2, inp) {
+    console.log("changeInv");
+    send({
+        login: cState.login,
+        id: id,
+        id1: id2,
+        name: inp
+    }, 'POST', "auth", "changeInv")
+        .then(data => {
+            console.log(data);
+            if(data.error == false){
+                dispatch(changePeople(type, 0, id1, id2, inp));
+            }
+        });
+}
+
+function addInv (type, id, inp) {
+    console.log("addInv");
+    send({
+        login: cState.login,
+        yo: id,
+        name: inp,
+        role: 3
+    }, 'POST', "auth", "addInv")
+        .then(data => {
+            console.log(data);
+            if(data.error == false){
+                dispatch(changePeople(type, 2, id, data.body.id, inp));
             }
         });
 }
@@ -44,16 +276,63 @@ function setInfo() {
         login: cState.login
     }, 'POST', "schools", "getSchools")
         .then(data => {
-            console.log(data);
             if(data.error == false){
                 dispatch(changePeople(CHANGE_HTEACHERS_GL, undefined, undefined, undefined, data.body));
             }
         });
 }
 
+function getBlock(title, typ, x, b, info, x1) {
+    let edFi;
+    edFi = <div className={peopleCSS.pepl} style={{marginLeft: typ == "ht4L2" ? "2vw" : undefined}} key={x1 ? x1 : x} data-st="0">
+        {b ?
+            <div className={peopleCSS.fi}>
+                <div className={peopleCSS.nav_i+" "+peopleCSS.nav_iZag2} id={peopleCSS.nav_i}>
+                    {info.name}
+                </div>
+                {(typ != "ht4" && info.login) && <img className={peopleCSS.profIm} src={themeState.theme_ch ? profd : profl} onClick={e=>goToProf(info.login)} title="Перейти в профиль" alt=""/>}
+                <img className={peopleCSS.imgfield} src={ed} onClick={onEdit} title="Редактировать" alt=""/>
+                <img className={peopleCSS.imginp} style={{marginRight: "1vw"}} src={no} onClick={e=>onDel(e, types[typ].del)} title="Удалить" alt=""/>
+                {typ != "ht4" && <>
+                    <input className={peopleCSS.inp+" "+peopleCSS.copyInp} data-id={x1 ? x+"_"+x1 : undefined} data-id1={x} id={"inpcpt_" + x} placeholder="Ссылка не создана" value={info.link} type="text" readOnly/>
+                    <img className={peopleCSS.imginp+" "+peopleCSS.refrC} src={themeState.theme_ch ? refreshCd : refreshCl} onClick={(e)=>refreshLink(e, types[typ].ch)} title="Создать ссылку-приглашение" alt=""/>
+                    <img className={peopleCSS.imginp} src={themeState.theme_ch ? copyd : copyl} title="Копировать" data-enable={info.link ? "1" : "0"} onClick={(e)=>copyLink(e, info.link, info.name)} alt=""/>
+                </>}
+            </div>
+            :
+            <div className={peopleCSS.fi}>
+                <div className={peopleCSS.nav_i + " " + peopleCSS.nav_iZag2} id={peopleCSS.nav_i}>
+                    {inps.inpnpt}
+                </div>
+                {typ != "ht4" && <img className={peopleCSS.profIm} src={themeState.theme_ch ? profd : profl} title="Так будет выглядеть иконка перехода в профиль" alt=""/>}
+                <img className={peopleCSS.imgfield} src={ed} onClick={onEdit} title="Редактировать" alt=""/>
+                <img className={peopleCSS.imginp+" yes "} data-id1={typ == "ht4L2" ? x : undefined} src={yes} onClick={e=>onFin(e, types[typ].ch)} title="Подтвердить" alt=""/>
+                <img className={peopleCSS.imginp} style={{marginRight: "1vw"}} src={no} onClick={onClose} title="Отменить изменения и выйти из режима редактирования" alt=""/>
+            </div>
+        }
+        <div className={peopleCSS.ed}>
+            <div className={peopleCSS.preinf}>
+                ФИО:
+            </div>
+            <input className={peopleCSS.inp} data-id={x1 ? info.login+"_"+x+"_"+x1 : undefined} data-id1={x} id={"inpnpt_" + (x?x:"")} placeholder={"Фамилия И.О."} defaultValue={b ? info.name : inps.inpnpt} onChange={chStatB} type="text"/>
+            {ele(false, "inpnpt_" + (x?x:""), inps)}
+            <img className={peopleCSS.imginp+" yes "} src={yes} onClick={e=>onFin(e, b ? types[typ].ch : undefined)} title="Подтвердить" alt=""/>
+            <img className={peopleCSS.imginp} style={{marginRight: "1vw"}} src={no} onClick={onClose} title="Отменить изменения и выйти из режима редактирования" alt=""/>
+        </div>
+    </div>;
+    return b ? edFi :
+        <div className={peopleCSS.add+" "+peopleCSS.nav_iZag} style={{marginLeft: typ == "ht4L2" ? "2vw" : undefined}} data-st="0">
+            <div className={peopleCSS.nav_i+" "+peopleCSS.link} id={peopleCSS.nav_i} onClick={onEdit}>
+                {title}
+            </div>
+            {edFi}
+        </div>
+}
+
 export function HTeachers() {
-    const hteachersInfo = useSelector(hteachers);
-    const themeState = useSelector(themes);
+    hteachersInfo = useSelector(hteachers);
+    themeState = useSelector(themes);
+    navigate = useNavigate();
     cState = useSelector(states);
     if(!dispatch) setActNew(1);
     [_, forceUpdate] = useReducer((x) => x + 1, 0);
@@ -63,7 +342,7 @@ export function HTeachers() {
         console.log("I was triggered during componentDidMount HTeachers.jsx");
         setInfo();
         for(let el of document.querySelectorAll("." + peopleCSS.ed + " > *[id^='inpn']")){
-            chStatB({target: el}, inps);
+            chStatB({target: el});
         }
         eventSource.addEventListener('connect', onCon, false);
         return function() {
@@ -86,35 +365,41 @@ export function HTeachers() {
                 <title>{cState.role == 4 ? "Администрации учебных организаций" : "Администрация учебной организации"}</title>
             </Helmet>
             {Object.getOwnPropertyNames(hteachersInfo).length == 0 && !(cState.auth && cState.role > 2) ?
-                    <ErrFound text={errText}/>
+                <ErrFound text={errText}/>
                 :
-                    <div className={peopleCSS.blockPep}>
-                        <div className={peopleCSS.pep}>
-                            <div className={peopleCSS.nav_iZag}>
-                                <div className={peopleCSS.nav_i} id={peopleCSS.nav_i}>
-                                    {cState.role == 4 ? "Администрации учебных организаций" : "Администрация учебной организации"}
-                                </div>
-                                {(cState.auth && cState.role > 2) && getPep(cState.role == 4 ? "Добавить учебную организацию" : "Добавить завуча", typ + (cState.role == 4 ? "4" : ""), inps, forceUpdate, undefined, undefined, undefined, addSchool)}
-                                {Object.getOwnPropertyNames(hteachersInfo).map(param =>
-                                    (cState.auth && cState.role > 2) ?
-                                            cState.role == 4 ? <div className={peopleCSS.nav_iZag} style={{marginLeft: "1vw"}} key={param}>
-                                                    {getPep(undefined, typ+"4", inps, forceUpdate, param, hteachersInfo[param])}
-                                                    {getPep("Добавить завуча", typ+"4L2", inps, forceUpdate, param)}
-                                                    {hteachersInfo[param].pep && Object.getOwnPropertyNames(hteachersInfo[param].pep).map(param1 =>
-                                                        getPep(undefined, typ+"4L2", inps, forceUpdate, param, hteachersInfo[param].pep[param1], param1)
-                                                    )}
-                                                </div>:
-                                                    getPep(undefined, typ, inps, forceUpdate, param, hteachersInfo[param])
-                                        : <div key={param}>
-                                            <div className={peopleCSS.nav_i + " " + peopleCSS.nav_iZag2} id={peopleCSS.nav_i}>
-                                                {hteachersInfo[param].name}
-                                            </div>
-                                            <img className={peopleCSS.profIm} src={themeState.theme_ch ? profd : profl} title="Перейти в профиль" alt=""/>
-                                        </div>
-                                )}
+                <div className={peopleCSS.blockPep}>
+                    <div className={peopleCSS.pep}>
+                        <div className={peopleCSS.nav_iZag}>
+                            <div className={peopleCSS.nav_i} id={peopleCSS.nav_i}>
+                                {cState.role == 4 ? "Администрации учебных организаций" : "Администрация учебной организации"}
                             </div>
+                            {cState.auth && cState.role > 2 ? cState.role == 3 ? <>
+                                        {getBlock("Добавить завуча", "ht")}
+                                        {Object.getOwnPropertyNames(hteachersInfo).map(param =>
+                                            getBlock(undefined, "ht", param, true, hteachersInfo[param])
+                                        )}
+                                    </> : <>
+                                        {getBlock("Добавить учебную организацию", "ht4")}
+                                        {Object.getOwnPropertyNames(hteachersInfo).map(param =><>
+                                            {getBlock(undefined, "ht4", param, true, hteachersInfo[param])}
+                                            {getBlock("Добавить завуча", "ht4L2", param)}
+                                            {hteachersInfo[param].pep && Object.getOwnPropertyNames(hteachersInfo[param].pep).map(param1 =>
+                                                getBlock(undefined, "ht4L2", param, true, hteachersInfo[param].pep[param1], param1)
+                                            )}
+                                        </>)}
+                                </> :
+                                Object.getOwnPropertyNames(hteachersInfo).map(param =>
+                                    <div key={param}>
+                                        <div className={peopleCSS.nav_i+" "+peopleCSS.nav_iZag2} id={peopleCSS.nav_i}>
+                                            {hteachersInfo[param].name}
+                                        </div>
+                                        <img className={peopleCSS.profIm} src={themeState.theme_ch ? profd : profl} title="Перейти в профиль" alt=""/>
+                                    </div>
+                                )
+                            }
                         </div>
                     </div>
+                </div>
             }
         </div>
     )

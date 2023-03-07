@@ -293,6 +293,7 @@ export function Start() {
         console.log("I was triggered during componentDidMount Start.jsx")
         chStatVb({target: elem.logv});
         chStatZb({target: elem.logz});
+        console.log(inv);
         elem.g_id.addEventListener('mouseenter', onsetText);
         elem.g_id.addEventListener('mouseleave', unsetText);
         dispatch(changeInd(0, reset_timer));

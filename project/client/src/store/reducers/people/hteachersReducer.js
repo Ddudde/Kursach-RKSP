@@ -47,7 +47,6 @@ export default function hteachersReducer(state = initialState, action) {
             fd[action.payload.l1].pep[action.payload.l2][action.payload.param] = action.payload.state;
             return fd;
         case CHANGE_HTEACHERS_DEL_L2:
-            console.log(action.payload);
             delete fd[action.payload.l1].pep[action.payload.l2];
             return fd;
         case CHANGE_HTEACHERS:

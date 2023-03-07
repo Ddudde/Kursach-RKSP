@@ -10,16 +10,17 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import ru.mirea.Main;
+import ru.mirea.data.Invite;
 import ru.mirea.data.SSE.SubscriptionData;
 import ru.mirea.data.SSE.TypesConnect;
+import ru.mirea.data.School;
 import ru.mirea.data.User;
+import ru.mirea.data.reps.InviteRepository;
+import ru.mirea.data.reps.SchoolRepository;
 import ru.mirea.data.reps.UserRepository;
 import ru.mirea.data.json.Role;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 @RestController
@@ -32,15 +33,30 @@ public class AuthController {
 
     private final UserRepository userRepository;
 
+    private final InviteRepository inviteRepository;
+
+    private final SchoolRepository schoolRepository;
+
     Map<UUID, SubscriptionData> subscriptions = new ConcurrentHashMap<>();
 
-    public AuthController(UserRepository userRepository) {
+    public AuthController(UserRepository userRepository, InviteRepository inviteRepository, SchoolRepository schoolRepository) {
         this.userRepository = userRepository;
+        this.inviteRepository = inviteRepository;
+        this.schoolRepository = schoolRepository;
     }
 
     public void createUser(User user) {
         User savedUser = userRepository.save(user);
         System.out.println(savedUser);
+    }
+
+    public void createInvite(Invite inv) {
+        Invite savedInv = inviteRepository.save(inv);
+        System.out.println(savedInv);
+    }
+
+    public List<Invite> getInvites() {
+        return inviteRepository.findAll();
     }
 
     public List<User> getUsers() {
@@ -212,6 +228,92 @@ public class AuthController {
                         }
                         break;
                     }
+                }
+                return ans;
+            }
+            case "addInv" -> {
+                bodyAns = new JsonObject();
+                ans.add("body", bodyAns);
+                User user = userRepository.findByLogin(body.get("login").getAsString());
+                School sch = schoolRepository.findById(body.get("yo").getAsLong()).orElse(null);
+                if(user != null && user.getRoles().containsKey(4L) && sch != null) {
+                    Invite inv = new Invite(body.get("name").getAsString(), body.get("yo").getAsLong(), body.get("role").getAsLong());
+                    inviteRepository.save(inv);
+                    if(sch.getHteachersInv() == null) sch.setHteachersInv(new ArrayList<>());
+                    sch.getHteachersInv().add(inv.getId());
+                    schoolRepository.save(sch);
+                    bodyAns.addProperty("id", inv.getId());
+                } else {
+                    ans.addProperty("error", true);
+                }
+                return ans;
+            }
+            case "remInv" -> {
+                bodyAns = new JsonObject();
+                ans.add("body", bodyAns);
+                User user = userRepository.findByLogin(body.get("login").getAsString());
+                User user1 = userRepository.findByLogin(body.get("id").getAsString());
+                School sch = schoolRepository.findById(body.get("id1").getAsLong()).orElse(null);
+                Invite inv = inviteRepository.findById(body.get("id2").getAsLong()).orElse(null);
+                if(user != null && user.getRoles().containsKey(4L) && (user1 != null || inv != null) && sch != null) {
+                    if(user1 != null){
+                        userRepository.delete(user1);
+                        if(!ObjectUtils.isEmpty(sch.getHteachers())) sch.getHteachers().remove(user1.getId());
+                        schoolRepository.save(sch);
+                    } else if(inv != null){
+                        inviteRepository.delete(inv);
+                        if(!ObjectUtils.isEmpty(sch.getHteachersInv())) sch.getHteachersInv().remove(inv.getId());
+                        schoolRepository.save(sch);
+                    }
+                } else {
+                    ans.addProperty("error", true);
+                }
+                return ans;
+            }
+            case "checkInv" -> {
+                bodyAns = new JsonObject();
+                ans.add("body", bodyAns);
+                User user = userRepository.findByLogin(body.get("login").getAsString());
+                if(user != null && user.getRoles().containsKey(4L)) {
+
+                } else {
+                    ans.addProperty("error", true);
+                }
+                return ans;
+            }
+            case "changeInv" -> {
+                bodyAns = new JsonObject();
+                ans.add("body", bodyAns);
+                User user = userRepository.findByLogin(body.get("login").getAsString());
+                User user1 = userRepository.findByLogin(body.get("id").getAsString());
+                Invite inv = inviteRepository.findById(body.get("id1").getAsLong()).orElse(null);
+                if(user != null && user.getRoles().containsKey(4L) && (user1 != null || inv != null)) {
+                    if(user1 != null){
+                        user1.setFio(body.get("name").getAsString());
+                        userRepository.save(user1);
+                    } else if(inv != null){
+                        inv.setFio(body.get("name").getAsString());
+                        inviteRepository.save(inv);
+                    }
+                } else {
+                    ans.addProperty("error", true);
+                }
+                return ans;
+            }
+            case "setCodeInv" -> {
+                bodyAns = new JsonObject();
+                ans.add("body", bodyAns);
+                User user = userRepository.findByLogin(body.get("login").getAsString());
+                User user1 = userRepository.findByLogin(body.get("id").getAsString());
+                Invite inv = inviteRepository.findById(body.get("id1").getAsLong()).orElse(null);
+                if(user != null && user.getRoles().containsKey(4L) && (user1 != null || inv != null)) {
+                    if(user1 != null){
+
+                    } else if(inv != null){
+
+                    }
+                } else {
+                    ans.addProperty("error", true);
                 }
                 return ans;
             }

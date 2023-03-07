@@ -3,15 +3,12 @@ package ru.mirea.data.converters;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.mirea.data.json.Role;
 
 import javax.persistence.AttributeConverter;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-public class ListConverter implements AttributeConverter<List<Long>, String> {
+public class ListLongConverter implements AttributeConverter<List<Long>, String> {
 
     @Autowired
     private Gson g;

@@ -12,32 +12,32 @@ import java.util.List;
 @ToString
 public class Role implements Serializable {
     private String email;
-    private String YO;
+    private Long YO;
     private String group;
     private List<Long> kids;
     private List<Long> parents;
     private List<String> lessons;
 
-    public Role(String email, String YO, String group, List<Long> parents) { // kid
+    public Role(String email, Long YO, String group, List<Long> parents) { // kid
         this.email = email;
         this.YO = YO;
         this.group = group;
         this.parents = parents;
     }
 
-    public Role(String email, String YO, List<Long> kids) { // par
+    public Role(String email, Long YO, List<Long> kids) { // par
         this.email = email;
         this.YO = YO;
         this.kids = kids;
     }
 
-    public Role(String email, List<String> lessons, String YO) { // tea
+    public Role(String email, List<String> lessons, Long YO) { // tea
         this.email = email;
         this.YO = YO;
         this.lessons = lessons;
     }
 
-    public Role(String email, String YO) { //zav
+    public Role(String email, Long YO) { //zav
         this.email = email;
         this.YO = YO;
     }

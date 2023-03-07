@@ -7,7 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 import ru.mirea.data.SSE.TypesConnect;
+import ru.mirea.data.School;
 import ru.mirea.data.User;
+import ru.mirea.data.reps.SchoolRepository;
 import ru.mirea.data.reps.UserRepository;
 import ru.mirea.data.json.Role;
 
@@ -23,6 +25,8 @@ public class ProfileController {
     private final UserRepository userRepository;
 
     private final AuthController authController;
+
+    private final SchoolRepository schoolRepository;
 
     @PostMapping
     public JsonObject post(@RequestBody JsonObject data) {
@@ -47,7 +51,10 @@ public class ProfileController {
                         JsonObject roleO = new JsonObject();
                         Role role = user.getRoles().get(i);
                         if(!ObjectUtils.isEmpty(role.getEmail())) roleO.addProperty("email", role.getEmail());
-                        if(!ObjectUtils.isEmpty(role.getYO())) roleO.addProperty("yo", role.getYO());
+                        if(!ObjectUtils.isEmpty(role.getYO())) {
+                            School school = schoolRepository.findById(role.getYO()).orElseThrow(RuntimeException::new);
+                            if(school != null) roleO.addProperty("yo", school.getName());
+                        }
                         if(!ObjectUtils.isEmpty(role.getGroup())) roleO.addProperty("group", role.getGroup());
                         if(!ObjectUtils.isEmpty(role.getLessons())) roleO.add("lessons", gson.toJsonTree(role.getLessons()));
                         if(!ObjectUtils.isEmpty(role.getKids())){

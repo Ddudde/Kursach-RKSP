@@ -22,6 +22,9 @@ import java.util.Map;
     @Column(name = "pass")
     private String password;
 
+    @Column(name = "code")
+    private String code;
+
     @Column(name = "fio")
     private String fio;
 

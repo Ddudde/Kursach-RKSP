@@ -6,15 +6,7 @@ import {pane, states, themes} from "../../store/selector";
 import Pane from "../other/pane/Pane";
 import {setActived} from "../main/Main";
 import {
-    CHANGE_ADMINS,
-    CHANGE_ADMINS_DEL,
-    CHANGE_CLASSMATES,
-    CHANGE_CLASSMATES_DEL,
     CHANGE_EVENT,
-    CHANGE_HTEACHERS,
-    CHANGE_HTEACHERS_DEL,
-    CHANGE_HTEACHERS_DEL_L2,
-    CHANGE_HTEACHERS_L2,
     CHANGE_PARENTS,
     CHANGE_PARENTS_DEL,
     CHANGE_PARENTS_DEL_L0,
@@ -24,93 +16,13 @@ import {
     changePeople
 } from "../../store/actions";
 import parentsCSS from "./parents/parents.module.css";
-import profd from "../../media/profd.png";
-import profl from "../../media/profl.png";
-import ed from "../../media/edit.png";
-import no from "../../media/no.png";
-import refreshCd from "../../media/refreshCd.png";
-import refreshCl from "../../media/refreshCl.png";
-import copyd from "../../media/copyd.png";
-import copyl from "../../media/copyl.png";
-import yes from "../../media/yes.png";
 
-let gr, cState, dispatch, themeState, types;
+let gr, cState, dispatch, themeState;
 gr = {
     group: 0
 };
-types = {
-    "hteachers" : {
-        del : CHANGE_HTEACHERS_DEL,
-        ch: CHANGE_HTEACHERS
-    },
-    "kids" : {
-        del : CHANGE_CLASSMATES_DEL,
-        ch: CHANGE_CLASSMATES
-    },
-    "hteachers4" : {
-        del : CHANGE_HTEACHERS_DEL,
-        ch: CHANGE_HTEACHERS
-    },
-    "hteachers4L2" : {
-        del : CHANGE_HTEACHERS_DEL_L2,
-        ch: CHANGE_HTEACHERS_L2
-    },
-    "admins" : {
-        del : CHANGE_ADMINS_DEL,
-        ch: CHANGE_ADMINS
-    }
-}
 
 export let sit = "http://localhost:3000";
-
-export function getPep(addTit, typ, inps, forceUpdate, x, info, x1, net) {
-    let edFi, b;
-    b = (x && typ != "hteachers4L2") || (x && x1);
-    edFi = <div className={peopleCSS.pepl} key={x1 ? x1 : x} data-st="0">
-        {b ?
-            <div className={peopleCSS.fi}>
-                <div className={peopleCSS.nav_i+" "+peopleCSS.nav_iZag2} style={{marginLeft: x1 ? "2vw" : "1vw"}} id={peopleCSS.nav_i}>
-                    {info.name}
-                </div>
-                {typ != "hteachers4" && <img className={peopleCSS.profIm} src={themeState.theme_ch ? profd : profl} title="Так будет выглядеть иконка перехода в профиль" alt=""/>}
-                <img className={peopleCSS.imgfield} src={ed} onClick={onEdit} title="Редактировать" alt=""/>
-                <img className={peopleCSS.imginp} style={{marginRight: "1vw"}} src={no} onClick={(e)=>onDel(e, types[typ].del)} title="Удалить" alt=""/>
-                {typ != "hteachers4" && <>
-                    <input className={peopleCSS.inp + " " + peopleCSS.copyInp} data-id={x+"_"+x1} id={"inpcpt_" + x} placeholder="Ссылка не создана" value={info.link} type="text" readOnly/>
-                    <img className={peopleCSS.imginp + " " + peopleCSS.refrC} src={themeState.theme_ch ? refreshCd : refreshCl} onClick={(e) => refreshLink(e, sit, types[typ].ch)} title="Создать ссылку-приглашение" alt=""/>
-                    <img className={peopleCSS.imginp} src={themeState.theme_ch ? copyd : copyl} title="Копировать" data-enable={info.link ? "1" : "0"} onClick={(e) => copyLink(e, info.link, info.name)} alt=""/>
-                </>}
-            </div>
-            :
-            <div className={peopleCSS.fi}>
-                <div className={peopleCSS.nav_i + " " + peopleCSS.nav_iZag2} id={peopleCSS.nav_i}>
-                    {inps.inpnpt}
-                </div>
-                {typ != "hteachers4" && <img className={peopleCSS.profIm} src={themeState.theme_ch ? profd : profl} title="Так будет выглядеть иконка перехода в профиль" alt=""/>}
-                <img className={peopleCSS.imgfield} src={ed} onClick={onEdit} title="Редактировать" alt=""/>
-                <img className={peopleCSS.imginp+" yes "} data-id1={typ == "hteachers4L2" ? x : undefined} src={yes} onClick={(e)=>onFin(e, inps, forceUpdate, types[typ].ch, undefined, net)} title="Подтвердить" alt=""/>
-                <img className={peopleCSS.imginp} style={{marginRight: "1vw"}} src={no} onClick={onClose} title="Отменить изменения и выйти из режима редактирования" alt=""/>
-            </div>
-        }
-        <div className={peopleCSS.ed}>
-            <div className={peopleCSS.preinf}>
-                ФИО:
-            </div>
-            <input className={peopleCSS.inp} data-id={x1 ? x+"_"+x1 : undefined} data-id1={x} id={"inpnpt_" + (x?x:"")} placeholder={"Фамилия И.О."} defaultValue={x && (x1 && typ == "hteachers4L2") ? info.name : inps.inpnpt} onChange={(e)=>chStatB(e, inps)} type="text"/>
-            {ele(false, "inpnpt_" + (x?x:""), inps)}
-            <img className={peopleCSS.imginp+" yes "} src={yes} onClick={(e)=>onFin(e, inps, forceUpdate, types[typ].ch)} title="Подтвердить" alt=""/>
-            <img className={peopleCSS.imginp} style={{marginRight: "1vw"}} src={no} onClick={onClose} title="Отменить изменения и выйти из режима редактирования" alt=""/>
-        </div>
-    </div>
-    return b ? (edFi) : (
-        <div className={peopleCSS.add+" "+peopleCSS.nav_iZag} data-st="0">
-            <div className={peopleCSS.nav_i+" "+peopleCSS.link} id={peopleCSS.nav_i} onClick={onEdit}>
-                {addTit}
-            </div>
-            {edFi}
-        </div>
-    );
-}
 
 export function copyLink(e, link, name) {
     let title, text;
@@ -120,7 +32,7 @@ export function copyLink(e, link, name) {
     dispatch(changeEvents(CHANGE_EVENT, undefined, undefined, title, text, 10));
 }
 
-function gen_cod(){
+export function gen_cod(){
     var password = "";
     var symbols = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     for (var i = 0; i < 15; i++){
@@ -221,12 +133,6 @@ export function onFin(e, inps, forceUpdate, type, info, net) {
                 grop = info.nw && info.nw.par ? Object.getOwnPropertyNames(info.nw.par) : [];
                 id = grop.length == 0 ? "id0" : "id" + (parseInt(grop[grop.length-1].replace("id", "")) + 1);
                 dispatch(changePeople(type, "nw", "par", id, inps.inpnpt));
-            }
-        } else if(type == CHANGE_HTEACHERS_L2){
-            par = par.parentElement;
-            if(e.target.hasAttribute("data-id1")){
-                id = e.target.getAttribute("data-id1");
-                dispatch(changePeople(type, 2, id, "id8", inps.inpnpt));
             }
         } else {
             par = par.parentElement;
