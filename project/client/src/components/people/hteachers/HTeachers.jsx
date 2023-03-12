@@ -1,6 +1,6 @@
 import React, {useEffect, useReducer, useRef} from "react";
 import {Helmet} from "react-helmet-async";
-import {useNavigate} from "react-router-dom"
+import {useNavigate} from "react-router-dom";
 import peopleCSS from '../peopleMain.module.css';
 import {hteachers, states, themes} from "../../../store/selector";
 import {useDispatch, useSelector} from "react-redux";
@@ -17,8 +17,10 @@ import {
     CHANGE_HTEACHERS,
     CHANGE_HTEACHERS_DEL,
     CHANGE_HTEACHERS_DEL_L2,
+    CHANGE_HTEACHERS_EL_GL,
     CHANGE_HTEACHERS_GL,
     CHANGE_HTEACHERS_L2,
+    CHANGE_HTEACHERS_L2_GL,
     changeEvents,
     changePeople
 } from "../../../store/actions";
@@ -28,21 +30,24 @@ import copyd from "../../../media/copyd.png";
 import copyl from "../../../media/copyl.png";
 import {eventSource, send} from "../../main/Main";
 
-let dispatch, errText, cState, inps, navigate, hteachersInfo, themeState, types;
+let dispatch, errText, cState, inps, navigate, hteachersInfo, themeState, tps;
 errText = "К сожалению, информация не найдена... Можете попробовать попросить завуча заполнить информацию.";
 inps = {inpnpt : "Поле для ввода"};
-types = {
+tps = {
     "ht" : {
         del : CHANGE_HTEACHERS_DEL,
-        ch: CHANGE_HTEACHERS
+        ch: CHANGE_HTEACHERS,
+        el_gl: CHANGE_HTEACHERS_EL_GL
     },
     "ht4" : {
         del : CHANGE_HTEACHERS_DEL,
-        ch: CHANGE_HTEACHERS
+        ch: CHANGE_HTEACHERS,
+        el_gl: CHANGE_HTEACHERS_EL_GL
     },
     "ht4L2" : {
         del : CHANGE_HTEACHERS_DEL_L2,
-        ch: CHANGE_HTEACHERS_L2
+        ch: CHANGE_HTEACHERS_L2,
+        el_gl: CHANGE_HTEACHERS_L2_GL
     }
 };
 let [_, forceUpdate] = [];
@@ -58,15 +63,26 @@ function copyLink(e, link, name) {
 function refreshLink(e, type) {
     let inp, id, title, text;
     title = "Внимание!";
-    text = "Ссылка успешно обновлена"
+    text = "Ссылка успешно обновлена";
     inp = e.target.parentElement.querySelector("input");
     if (inp.hasAttribute("data-id")) {
         id = inp.getAttribute("data-id").split("_");
-        dispatch(changePeople(type, 0, id[0], id[1], sit + "/invite/" + gen_cod(), "link"));
-        dispatch(changeEvents(CHANGE_EVENT, undefined, undefined, title, text, 10));
+        send({
+            login: cState.login,
+            id: id[0],
+            id1: id[2],
+            id2: id[1]
+        }, 'POST', "auth", "setCodePep")
+            .then(data => {
+                console.log(data);
+                if(data.error == false){
+                    dispatch(changePeople(type, 0, id[1], id[2], data.body.code, "link"));
+                    dispatch(changeEvents(CHANGE_EVENT, undefined, undefined, title, text, 10));
+                }
+            });
     } else if (inp.hasAttribute("data-id1")) {
         id = inp.getAttribute("data-id1");
-        dispatch(changePeople(type, 2, id, undefined, sit + "/invite/" + gen_cod(), "link"));
+        dispatch(changePeople(type, 2, id, undefined, sit + (id[0] ? "/reauth/" : "/invite/") + gen_cod(), "link"));
         dispatch(changeEvents(CHANGE_EVENT, undefined, undefined, title, text, 10));
     }
 }
@@ -79,7 +95,7 @@ function onDel(e, type) {
         if (inp.hasAttribute("data-id")) {
             id = inp.getAttribute("data-id").split("_");
             // dispatch(changePeople(type, 0, id[0], id[1]));
-            remInv(type, id[0], id[1], id[2]);
+            remPep(type, id[0], id[1], id[2]);
         } else if(inp.hasAttribute("data-id1")){
             let id = inp.getAttribute("data-id1");
             // dispatch(changePeople(type, 2, id));
@@ -109,7 +125,7 @@ function onFin(e, type) {
             par = par.parentElement;
             if(e.target.hasAttribute("data-id1")){
                 let id = e.target.getAttribute("data-id1");
-                addInv(type, id, inps.inpnpt);
+                addPep(type, id, inps.inpnpt);
                 // dispatch(changePeople(type, 2, id, "id8", inps.inpnpt));
             }
         } else {
@@ -121,13 +137,13 @@ function onFin(e, type) {
     }
     inp = par.querySelector("input");
     if (inps[inp.id]) {
-        inp.setAttribute("data-mod", '1');
+        inp.setAttribute("data-mod", '0');
         if(par.parentElement.classList.contains(peopleCSS.pepl)) {
             par = par.parentElement;
             if(type){
                 if(inp.hasAttribute("data-id")){
                     let id = inp.getAttribute("data-id").split("_");
-                    changeInv(type, id[0], id[1], id[2], inp.value);
+                    chPep(type, id[0], id[1], id[2], inp.value);
                     // dispatch(changePeople(type, 0, id[0], id[1], inp.value));
                 } else if(inp.hasAttribute("data-id1")){
                     let id = inp.getAttribute("data-id1");
@@ -140,7 +156,7 @@ function onFin(e, type) {
         }
         par.setAttribute('data-st', '0');
     } else {
-        inp.setAttribute("data-mod", '0');
+        inp.setAttribute("data-mod", '1');
     }
 }
 
@@ -167,8 +183,42 @@ function chStatB(e) {
     el.parentElement.querySelector(".yes").setAttribute("data-enable", +inps[el.id]);
 }
 
+function goToProf(log) {
+    if(log) navigate("/profiles/" + log);
+}
+
 function onCon(e) {
     setInfo();
+}
+
+function remSchC(e) {
+    const msg = JSON.parse(e.data);
+    dispatch(changePeople(tps.ht4.del, 0, msg.id));
+}
+
+function chSchC(e) {
+    const msg = JSON.parse(e.data);
+    dispatch(changePeople(tps.ht4.ch, 0, msg.id, undefined, msg.name));
+}
+
+function addSchC(e) {
+    const msg = JSON.parse(e.data);
+    dispatch(changePeople(tps.ht4.el_gl, 0, msg.id, undefined, msg.body));
+}
+
+function remPepC(e) {
+    const msg = JSON.parse(e.data);
+    dispatch(changePeople(tps.ht4L2.del, 0, msg.id, msg.id1));
+}
+
+function chPepC(e) {
+    const msg = JSON.parse(e.data);
+    dispatch(changePeople(tps.ht4L2.ch, 0, msg.id, msg.id1, msg.name));
+}
+
+function addPepC(e) {
+    const msg = JSON.parse(e.data);
+    dispatch(changePeople(tps.ht4L2.el_gl, 0, msg.id, msg.id1, msg.body));
 }
 
 function addSch (type, inp) {
@@ -183,10 +233,6 @@ function addSch (type, inp) {
                 dispatch(changePeople(type, undefined, data.body.id, undefined, inp));
             }
         });
-}
-
-function goToProf(log) {
-    if(log) navigate("/profiles/" + log);
 }
 
 function remSch (type, id) {
@@ -218,14 +264,20 @@ function chSch (type, id, inp) {
         });
 }
 
-function remInv (type, id, id1, id2) {
+function codPepC(e) {
+    console.log(e.data)
+    const msg = JSON.parse(e.data);
+    dispatch(changePeople(tps.ht4L2.ch, 0, msg.id1, msg.id, msg.code, "link"));
+}
+
+function remPep (type, id, id1, id2) {
     console.log("remInv");
     send({
         login: cState.login,
         id: id,
         id1: id1,
         id2: id2
-    }, 'POST', "auth", "remInv")
+    }, 'POST', "schools", "remPep")
         .then(data => {
             console.log(data);
             if(data.error == false){
@@ -234,14 +286,15 @@ function remInv (type, id, id1, id2) {
         });
 }
 
-function changeInv (type, id, id1, id2, inp) {
+function chPep (type, id, id1, id2, inp) {
     console.log("changeInv");
     send({
         login: cState.login,
         id: id,
-        id1: id2,
+        id1: id1,
+        id2: id2,
         name: inp
-    }, 'POST', "auth", "changeInv")
+    }, 'POST', "schools", "chPep")
         .then(data => {
             console.log(data);
             if(data.error == false){
@@ -250,14 +303,14 @@ function changeInv (type, id, id1, id2, inp) {
         });
 }
 
-function addInv (type, id, inp) {
+function addPep (type, id, inp) {
     console.log("addInv");
     send({
         login: cState.login,
         yo: id,
         name: inp,
         role: 3
-    }, 'POST', "auth", "addInv")
+    }, 'POST', "schools", "addPep")
         .then(data => {
             console.log(data);
             if(data.error == false){
@@ -276,10 +329,14 @@ function setInfo() {
         login: cState.login
     }, 'POST', "schools", "getSchools")
         .then(data => {
+            console.log(data);
             if(data.error == false){
                 dispatch(changePeople(CHANGE_HTEACHERS_GL, undefined, undefined, undefined, data.body));
             }
         });
+    for(let el of document.querySelectorAll("." + peopleCSS.ed + " > *[id^='inpn']")){
+        chStatB({target: el});
+    }
 }
 
 function getBlock(title, typ, x, b, info, x1) {
@@ -292,11 +349,11 @@ function getBlock(title, typ, x, b, info, x1) {
                 </div>
                 {(typ != "ht4" && info.login) && <img className={peopleCSS.profIm} src={themeState.theme_ch ? profd : profl} onClick={e=>goToProf(info.login)} title="Перейти в профиль" alt=""/>}
                 <img className={peopleCSS.imgfield} src={ed} onClick={onEdit} title="Редактировать" alt=""/>
-                <img className={peopleCSS.imginp} style={{marginRight: "1vw"}} src={no} onClick={e=>onDel(e, types[typ].del)} title="Удалить" alt=""/>
+                <img className={peopleCSS.imginp} style={{marginRight: "1vw"}} src={no} onClick={e=>onDel(e, tps[typ].del)} title="Удалить" alt=""/>
                 {typ != "ht4" && <>
-                    <input className={peopleCSS.inp+" "+peopleCSS.copyInp} data-id={x1 ? x+"_"+x1 : undefined} data-id1={x} id={"inpcpt_" + x} placeholder="Ссылка не создана" value={info.link} type="text" readOnly/>
-                    <img className={peopleCSS.imginp+" "+peopleCSS.refrC} src={themeState.theme_ch ? refreshCd : refreshCl} onClick={(e)=>refreshLink(e, types[typ].ch)} title="Создать ссылку-приглашение" alt=""/>
-                    <img className={peopleCSS.imginp} src={themeState.theme_ch ? copyd : copyl} title="Копировать" data-enable={info.link ? "1" : "0"} onClick={(e)=>copyLink(e, info.link, info.name)} alt=""/>
+                    <input className={peopleCSS.inp+" "+peopleCSS.copyInp} data-id={x1 ? info.login+"_"+x+"_"+x1 : undefined} data-id1={x} id={"inpcpt_" + x} placeholder="Ссылка не создана" value={info.link ? sit + (info.login ? "/reauth/" : "/invite/") + info.link : undefined} type="text" readOnly/>
+                    <img className={peopleCSS.imginp+" "+peopleCSS.refrC} src={themeState.theme_ch ? refreshCd : refreshCl} onClick={(e)=>refreshLink(e, tps[typ].ch)} title="Создать ссылку-приглашение" alt=""/>
+                    <img className={peopleCSS.imginp} src={themeState.theme_ch ? copyd : copyl} title="Копировать" data-enable={info.link ? "1" : "0"} onClick={(e)=>copyLink(e, info.link ? sit + (info.login ? "/reauth/" : "/invite/") + info.link : undefined, info.name)} alt=""/>
                 </>}
             </div>
             :
@@ -306,7 +363,7 @@ function getBlock(title, typ, x, b, info, x1) {
                 </div>
                 {typ != "ht4" && <img className={peopleCSS.profIm} src={themeState.theme_ch ? profd : profl} title="Так будет выглядеть иконка перехода в профиль" alt=""/>}
                 <img className={peopleCSS.imgfield} src={ed} onClick={onEdit} title="Редактировать" alt=""/>
-                <img className={peopleCSS.imginp+" yes "} data-id1={typ == "ht4L2" ? x : undefined} src={yes} onClick={e=>onFin(e, types[typ].ch)} title="Подтвердить" alt=""/>
+                <img className={peopleCSS.imginp+" yes "} data-id1={typ == "ht4L2" ? x : undefined} src={yes} onClick={e=>onFin(e, tps[typ].ch)} title="Подтвердить" alt=""/>
                 <img className={peopleCSS.imginp} style={{marginRight: "1vw"}} src={no} onClick={onClose} title="Отменить изменения и выйти из режима редактирования" alt=""/>
             </div>
         }
@@ -316,7 +373,7 @@ function getBlock(title, typ, x, b, info, x1) {
             </div>
             <input className={peopleCSS.inp} data-id={x1 ? info.login+"_"+x+"_"+x1 : undefined} data-id1={x} id={"inpnpt_" + (x?x:"")} placeholder={"Фамилия И.О."} defaultValue={b ? info.name : inps.inpnpt} onChange={chStatB} type="text"/>
             {ele(false, "inpnpt_" + (x?x:""), inps)}
-            <img className={peopleCSS.imginp+" yes "} src={yes} onClick={e=>onFin(e, b ? types[typ].ch : undefined)} title="Подтвердить" alt=""/>
+            <img className={peopleCSS.imginp+" yes "} src={yes} onClick={e=>onFin(e, b ? tps[typ].ch : undefined)} title="Подтвердить" alt=""/>
             <img className={peopleCSS.imginp} style={{marginRight: "1vw"}} src={no} onClick={onClose} title="Отменить изменения и выйти из режима редактирования" alt=""/>
         </div>
     </div>;
@@ -341,14 +398,25 @@ export function HTeachers() {
     useEffect(() => {
         console.log("I was triggered during componentDidMount HTeachers.jsx");
         setInfo();
-        for(let el of document.querySelectorAll("." + peopleCSS.ed + " > *[id^='inpn']")){
-            chStatB({target: el});
-        }
         eventSource.addEventListener('connect', onCon, false);
+        eventSource.addEventListener('addSchC', addSchC, false);
+        eventSource.addEventListener('chSchC', chSchC, false);
+        eventSource.addEventListener('remSchC', remSchC, false);
+        eventSource.addEventListener('addPepC', addPepC, false);
+        eventSource.addEventListener('remPepC', remPepC, false);
+        eventSource.addEventListener('chPepC', chPepC, false);
+        eventSource.addEventListener('codPepC', codPepC, false);
         return function() {
             dispatch(changeEvents(CHANGE_EVENTS_CLEAR));
             dispatch = undefined;
             eventSource.removeEventListener('connect', onCon);
+            eventSource.removeEventListener('addSchC', addSchC);
+            eventSource.removeEventListener('chSchC', chSchC);
+            eventSource.removeEventListener('remSchC', remSchC);
+            eventSource.removeEventListener('addPepC', addPepC);
+            eventSource.removeEventListener('remPepC', remPepC);
+            eventSource.removeEventListener('chPepC', chPepC);
+            eventSource.removeEventListener('codPepC', codPepC);
             console.log("I was triggered during componentWillUnmount HTeachers.jsx");
         }
     }, []);

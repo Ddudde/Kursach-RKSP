@@ -19,6 +19,7 @@ import {checkbox, indicators, states} from "../../store/selector";
 import {
     CHANGE_DIALOG,
     CHANGE_EVENTS_CLEAR,
+    CHANGE_STATE,
     CHANGE_STATE_GL,
     changeDialog,
     changeEvents,
@@ -31,10 +32,10 @@ import {addEvent, eventSource, remEvent, send, setActived} from "../main/Main";
 import {Link, useNavigate, useParams} from "react-router-dom"
 import ErrFound from "../other/error/ErrFound";
 
-let dispatch, warns, timer, indicInfo, cState, navigate, checkBoxInfo, elem, els, textYesInv, textNoInv, blocks, licField;
+let dispatch, warns, timer, indicInfo, cState, navigate, checkBoxInfo, elem, els, textYesInvNR, textNoInv, blocks, licField;
 elem = {regbut: undefined, vxbut: undefined, g_id: undefined, logv: undefined, pasv: undefined, logz: undefined};
 textNoInv = "Приглашение неверно или недействительно.";
-textYesInv = "К действующему аккаунту была добавлена новая роль.";
+textYesInvNR = "К действующему аккаунту была добавлена новая роль.";
 els = {logz: 0, secz: 0, pasnz: 0, paspz: 0, logv: 0, pasv: 0, logr: 0, pasr: 0, ppasr: 0};
 warns = {pat: undefined, empt: undefined, pow: undefined};
 blocks = [
@@ -91,15 +92,18 @@ function gen_pas(e){
     addEvent(`Сгенерирован пароль: ${password}. Он скопирован в буфер обмена`, 10);
 }
 
-function rego(e){
+function rego(e, props, code){
     let par, ch;
     par = e.target.parentElement.parentElement;
     ch = par.querySelector("input[checked]");
+    console.log(props);
     if(els.pasr && els.logr){
         send({
             login: els.logr,
             par: els.pasr,
-            ico: ch.value
+            ico: ch.value,
+            mod: props.mod,
+            code: code
         }, 'POST', "auth", "reg")
             .then(data => {
                 if(data.error == false){
@@ -109,20 +113,23 @@ function rego(e){
                         remEvent(warns.logR);
                         warns.logR = undefined;
                     }
-                } else if(warns.logR == undefined){
+                } else if(data.error == 2){
+                    addEvent(textNoInv, 10);
+                } else if(warns.logR == undefined && props.mod == undefined){
                     warns.logR = addEvent("Логин занят, попробуйте изменить");
                 }
             });
     }
 }
 
-function vxo(){
+export function vxo(log, par, dis){
     send({
-        login: elem.logv.value,
-        password: elem.pasv.value
+        login: log ? log : elem.logv.value,
+        password: par ? par : elem.pasv.value
     }, 'POST', "auth", "auth")
         .then(data => {
             if(data.error == false && data.body.auth){
+                if(dis && !dispatch) dispatch = dis;
                 dispatch(changeState(CHANGE_STATE_GL, undefined, data.body));
             } else {
                 addEvent("Неверный логин или пароль", 10);
@@ -280,9 +287,9 @@ function onCon(e) {
     }, 'POST', "auth", "infCon");
 }
 
-export function Start() {
+export function Start(props) {
     checkBoxInfo = useSelector(checkbox);
-    const { inv } = useParams();
+    const { code } = useParams();
     navigate = useNavigate();
     cState = useSelector(states);
     indicInfo = useSelector(indicators);
@@ -293,7 +300,36 @@ export function Start() {
         console.log("I was triggered during componentDidMount Start.jsx")
         chStatVb({target: elem.logv});
         chStatZb({target: elem.logz});
-        console.log(inv);
+        if(props.mod == "inv" && code){
+            send({
+                code: code,
+                login: cState.login
+            }, 'POST', "auth", "checkInvCode")
+                .then(data => {
+                    if(data.error == false){
+                        if(cState.auth) {
+                            dispatch(changeState(CHANGE_STATE, "reaYes", true));
+                        } else {
+                            addEvent("Поздравляем, приглашение активно! Вам разрешено зарегистроваться.", 10);
+                        }
+                    } else {
+                        dispatch(changeState(CHANGE_STATE, "invErr", true));
+                    }
+                });
+        }
+        if(props.mod == "rea" && code){
+            send({
+                code: code
+            }, 'POST', "auth", "checkReaCode")
+                .then(data => {
+                    if(data.error == false){
+                        addEvent("Аккаунт существует. Открыта возможность перерегистрации.", 10);
+                    } else {
+                        dispatch(changeState(CHANGE_STATE, "invErr", true));
+                    }
+                });
+        }
+        console.log(code);
         elem.g_id.addEventListener('mouseenter', onsetText);
         elem.g_id.addEventListener('mouseleave', unsetText);
         dispatch(changeInd(0, reset_timer));
@@ -327,131 +363,155 @@ export function Start() {
                 <title>Главная</title>
             </Helmet>
             <div className={start.block}>
-                {inv=="ds3" &&
-                    <ErrFound text={textYesInv}/>
-                }
-                {inv=="ds3" &&
+                {cState.invErr &&
                     <ErrFound text={textNoInv}/>
                 }
-                <div className={start.g} ref={el=>elem.g_id=el}>
-                    {blocks.map((param, i) =>
-                        <Link className={start.g_block} to={param.link} key={i} data-act={indicInfo.actived == i ? "1" : "0"}>
-                            <img src={param.img} className={start.pic_g} alt=""/>
-                            <div className={start.g_block_text} data-text={param.name} data-textm={param.text}>
-                                {param.name}
-                            </div>
-                        </Link>
-                    )}
-                    <div className={start.g_block_shad}/>
-                    <img src={left} className={start.pic_l} alt="" onClick={() => {dispatch(changeIndPrev(indicInfo.actived, reset_timer))}}/>
-                    <img src={left} className={start.pic_r} alt="" onClick={() => {dispatch(changeIndNext(indicInfo.actived, reset_timer))}}/>
-                    <div className={start.indic}>
-                        <div className={start.indic_bl} id="ind_0" data-act={!indicInfo.actived ? "1" : "0"} onClick={() => {dispatch(changeInd(0, reset_timer))}}/>
-                        <div className={start.indic_bl} id="ind_1" data-act={indicInfo.actived == 1 ? "1" : "0"} onClick={() => {dispatch(changeInd(1, reset_timer))}}/>
-                        <div className={start.indic_bl} id="ind_2" data-act={indicInfo.actived == 2 ? "1" : "0"} onClick={() => {dispatch(changeInd(2, reset_timer))}}/>
-                        <div className={start.indic_bl} id="ind_3" data-act={indicInfo.actived == 3 ? "1" : "0"} onClick={() => {dispatch(changeInd(3, reset_timer))}}/>
+                {cState.reaYes &&
+                    <ErrFound text={textYesInvNR}/>
+                }
+                {(cState.invErr || cState.reaYes) ? undefined : <>
+                    <div className={start.g} ref={el=>elem.g_id=el}>
+                        {blocks.map((param, i) =>
+                            <Link className={start.g_block} to={param.link} key={i} data-act={indicInfo.actived == i ? "1" : "0"}>
+                                <img src={param.img} className={start.pic_g} alt=""/>
+                                <div className={start.g_block_text} data-text={param.name} data-textm={param.text}>
+                                    {param.name}
+                                </div>
+                            </Link>
+                        )}
+                        <div className={start.g_block_shad}/>
+                        <img src={left} className={start.pic_l} alt="" onClick={() => {dispatch(changeIndPrev(indicInfo.actived, reset_timer))}}/>
+                        <img src={left} className={start.pic_r} alt="" onClick={() => {dispatch(changeIndNext(indicInfo.actived, reset_timer))}}/>
+                        <div className={start.indic}>
+                            <div className={start.indic_bl} id="ind_0" data-act={!indicInfo.actived ? "1" : "0"} onClick={() => {dispatch(changeInd(0, reset_timer))}}/>
+                            <div className={start.indic_bl} id="ind_1" data-act={indicInfo.actived == 1 ? "1" : "0"} onClick={() => {dispatch(changeInd(1, reset_timer))}}/>
+                            <div className={start.indic_bl} id="ind_2" data-act={indicInfo.actived == 2 ? "1" : "0"} onClick={() => {dispatch(changeInd(2, reset_timer))}}/>
+                            <div className={start.indic_bl} id="ind_3" data-act={indicInfo.actived == 3 ? "1" : "0"} onClick={() => {dispatch(changeInd(3, reset_timer))}}/>
+                        </div>
                     </div>
-                </div>
-                <div className={start.startimg}>
-                    <div className={start.startimgText}>
-                        Для авторизации проскролльте или нажмите на стрелки
+                    <div className={start.startimg}>
+                        <div className={start.startimgText}>
+                            Для авторизации проскролльте или нажмите на стрелки
+                        </div>
+                        <img src={sta} alt="" onClick={() => {window.scrollTo(0, window.innerHeight)}}/>
                     </div>
-                    <img src={sta} alt="" onClick={() => {window.scrollTo(0, window.innerHeight)}}/>
-                </div>
+                </>}
             </div>
-            <div className={start.block}>
-                <div className={start.posit} data-mod="0">
-                    <div className={start.help} data-enable={inv ? '1' : '0'} data-mod="0">
-                        <div className={start.r}>
-                            Нет аккаунта? <span className={start.helpa} onClick={onreg}>Регистрация!</span>
-                        </div>
-                        <div className={start.v}>
-                            Есть аккаунт? <span className={start.helpa} onClick={onvxod}>Вход!</span>
-                        </div>
-                    </div>
-                    <form className={start.vxod} data-mod="0">
-                        <div className={start.vxo}>
-                            <input className={start.login} type="login" onChange={chStatVb} ref={el=>elem.logv=el} placeholder="Логин" id="logv" autoComplete="username" required pattern="^[a-zA-Z0-9]+$"/>
-                            <div className={start.grid_cont_l}>
-                                <input className={start.pass} type="password" onChange={chStatVb} ref={el=>elem.pasv=el} placeholder="Пароль" id="pasv" autoComplete="current-password" required pattern="^[a-zA-Z0-9]+$"/>
-                                <div className={start.nav_i+" "+start.zabpar} id={start.nav_i} onClick={onSmvz}>
-                                    Забыли пароль?
-                                </div>
-                                <div className={start.warn+' '+start.warnc} id="warnc">
-                                    <img src={warn} className={start.warnimg} alt=""/>
-                                    Включён Caps Lock!
-                                </div>
-                                <div className={button.button+' '+start.marg} ref={el=>elem.vxbut=el} onClick={vxo}>
-                                    ВОЙТИ!
-                                </div>
+            {(cState.invErr || cState.reaYes) ? undefined :
+                <div className={start.block}>
+                    <div className={start.posit} data-mod="0">
+                        <div className={start.help} data-enable={code ? '1' : '0'} data-mod="0">
+                            <div className={start.r}>
+                                Нет аккаунта? <span className={start.helpa} onClick={onreg}>Регистрация!</span>
+                            </div>
+                            <div className={start.v}>
+                                Есть аккаунт? <span className={start.helpa} onClick={onvxod}>Вход!</span>
                             </div>
                         </div>
-                        <div className={start.zab}>
-                            <input className={start.login+' '+start.inpz} ref={el=>elem.logz=el} type="text" onChange={chStatZb} placeholder="Логин" id="logz" autoComplete="username" required pattern="^[a-zA-Z0-9]+$"/>
-                            <input className={start.pass+' '+start.inpz} type="password" onChange={chStatZb} placeholder="Секретная фраза" id="secz"/>
-                            <div className={start.blockPas}>
-                                <input className={start.pass+' '+start.inpz} type="password" onChange={chStatZb} placeholder="Новый пароль" id="pasnz" autoComplete="new-password" required pattern="^[a-zA-Z0-9]+$"/>
-                                <div className={button.button+' '+start.marg} data-mod='2' onClick={gen_pas}>
+                        <form className={start.vxod} data-mod="0">
+                            <div className={start.vxo}>
+                                <input className={start.login} type="login" onChange={chStatVb}
+                                       ref={el => elem.logv = el} placeholder="Логин" id="logv" autoComplete="username"
+                                       required pattern="^[a-zA-Z0-9]+$"/>
+                                <div className={start.grid_cont_l}>
+                                    <input className={start.pass} type="password" onChange={chStatVb}
+                                           ref={el => elem.pasv = el} placeholder="Пароль" id="pasv"
+                                           autoComplete="current-password" required pattern="^[a-zA-Z0-9]+$"/>
+                                    <div className={start.nav_i + " " + start.zabpar} id={start.nav_i} onClick={onSmvz}>
+                                        Забыли пароль?
+                                    </div>
+                                    <div className={start.warn + ' ' + start.warnc} id="warnc">
+                                        <img src={warn} className={start.warnimg} alt=""/>
+                                        Включён Caps Lock!
+                                    </div>
+                                    <div className={button.button + ' ' + start.marg} ref={el => elem.vxbut = el}
+                                         onClick={vxo}>
+                                        ВОЙТИ!
+                                    </div>
+                                </div>
+                            </div>
+                            <div className={start.zab}>
+                                <input className={start.login + ' ' + start.inpz} ref={el => elem.logz = el} type="text"
+                                       onChange={chStatZb} placeholder="Логин" id="logz" autoComplete="username"
+                                       required pattern="^[a-zA-Z0-9]+$"/>
+                                <input className={start.pass + ' ' + start.inpz} type="password" onChange={chStatZb}
+                                       placeholder="Секретная фраза" id="secz"/>
+                                <div className={start.blockPas}>
+                                    <input className={start.pass + ' ' + start.inpz} type="password" onChange={chStatZb}
+                                           placeholder="Новый пароль" id="pasnz" autoComplete="new-password" required
+                                           pattern="^[a-zA-Z0-9]+$"/>
+                                    <div className={button.button + ' ' + start.marg} data-mod='2' onClick={gen_pas}>
+                                        <img src={ran} className={start.randimg} alt=""/>
+                                        Случайный пароль
+                                    </div>
+                                </div>
+                                <div className={start.grid_cont_l}>
+                                    <input className={start.pass + ' ' + start.inpz} type="password" onChange={chStatZb}
+                                           placeholder="Подтвердите пароль" id="paspz" autoComplete="new-password"
+                                           required pattern="^[a-zA-Z0-9]+$"/>
+                                    <span className={start.warn + ' ' + start.marg} id="warncz">
+                                        <img src={warn} className={start.warnimg} alt=""/>
+                                        Включён Caps Lock!
+                                    </span>
+                                    <div className={button.button + ' ' + start.butZab} id="butL" data-mod="1"
+                                         onClick={onRec}>
+                                        Подтвердить
+                                    </div>
+                                    <div className={button.button + ' ' + start.butZab + ' ' + start.marg} id="butR"
+                                         data-mod="1" onClick={onSmvz}>
+                                        Вспомнил пароль
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                        <form className={start.reg} id="reg">
+                            <div className={start.logo}>
+                                <p style={{marginBlock: "0.5vw"}}>Выберите аватар для профиля:</p>
+                                <div className={start.blockAva} onClick={chStatAv}>
+                                    <input id="ch1" name="ico" type="radio" value="1" defaultChecked/>
+                                    <img className={start.logoi} src={ls1} alt=""/>
+                                </div>
+                                <div className={start.blockAva} onClick={chStatAv}>
+                                    <input id="ch2" name="ico" type="radio" value="2"/>
+                                    <img className={start.logoi} src={ls2} alt=""/>
+                                </div>
+                                <div className={start.blockAva} onClick={chStatAv}>
+                                    <input id="ch3" name="ico" type="radio" value="3"/>
+                                    <img className={start.logoi} src={ls3} alt=""/>
+                                </div>
+                            </div>
+                            <input className={start.login} type="text" placeholder="Логин" onChange={chStatRb} id="logr"
+                                   autoComplete="username" required pattern="^[a-zA-Z0-9]+$"/>
+                            <input className={start.pass} type="password" placeholder="Пароль" onChange={chStatRb}
+                                   id="pasr" autoComplete="new-password" required pattern="^[a-zA-Z0-9]+$"/>
+                            <div className={start.grid_cont_r}>
+                                <input className={start.pass} type="password" placeholder="Повторите пароль"
+                                       onChange={chStatRb} id="ppasr" autoComplete="new-password" required
+                                       pattern="^[a-zA-Z0-9]+$"/>
+                                <div className={button.button + ' ' + start.marg} data-mod='2' onClick={gen_pas}>
                                     <img src={ran} className={start.randimg} alt=""/>
                                     Случайный пароль
                                 </div>
-                            </div>
-                            <div className={start.grid_cont_l}>
-                                <input className={start.pass+' '+start.inpz} type="password" onChange={chStatZb} placeholder="Подтвердите пароль" id="paspz" autoComplete="new-password" required pattern="^[a-zA-Z0-9]+$"/>
-                                <span className={start.warn+' '+start.marg} id="warncz">
-                                    <img src={warn} className={start.warnimg} alt=""/>
-                                    Включён Caps Lock!
-                                </span>
-                                <div className={button.button+' '+start.butZab} id="butL" data-mod="1" onClick={onRec}>
-                                    Подтвердить
+                                <div className={start.lic}>
+                                    <CheckBox text={"Принимаю условия "} checkbox_id={"checkbox_lic"}/>
+                                    <span className={start.url}
+                                          onClick={() => dispatch(changeDialog(CHANGE_DIALOG, licField))}>
+                                        соглашения
+                                    </span>
+                                    <div className={start.warn} id="warncr">
+                                        <img src={warn} className={start.warnimg} alt=""/>
+                                        Включён Caps Lock!
+                                    </div>
                                 </div>
-                                <div className={button.button+' '+start.butZab+' '+start.marg} id="butR" data-mod="1" onClick={onSmvz}>
-                                    Вспомнил пароль
-                                </div>
-                            </div>
-                        </div>
-                    </form>
-                    <form className={start.reg} id="reg">
-                        <div className={start.logo}>
-                            <p style={{marginBlock: "0.5vw"}}>Выберите аватар для профиля:</p>
-                            <div className={start.blockAva} onClick={chStatAv}>
-                                <input id="ch1" name="ico" type="radio" value="1" defaultChecked/>
-                                <img className={start.logoi} src={ls1} alt=""/>
-                            </div>
-                            <div className={start.blockAva} onClick={chStatAv}>
-                                <input id="ch2" name="ico" type="radio" value="2"/>
-                                <img className={start.logoi} src={ls2} alt=""/>
-                            </div>
-                            <div className={start.blockAva} onClick={chStatAv}>
-                                <input id="ch3" name="ico" type="radio" value="3"/>
-                                <img className={start.logoi} src={ls3} alt=""/>
-                            </div>
-                        </div>
-                        <input className={start.login} type="text" placeholder="Логин" onChange={chStatRb} id="logr" autoComplete="username" required pattern="^[a-zA-Z0-9]+$"/>
-                        <input className={start.pass} type="password" placeholder="Пароль" onChange={chStatRb} id="pasr" autoComplete="new-password" required pattern="^[a-zA-Z0-9]+$"/>
-                        <div className={start.grid_cont_r}>
-                            <input className={start.pass} type="password" placeholder="Повторите пароль" onChange={chStatRb} id="ppasr" autoComplete="new-password" required pattern="^[a-zA-Z0-9]+$"/>
-                            <div className={button.button+' '+start.marg} data-mod='2' onClick={gen_pas}>
-                                <img src={ran} className={start.randimg} alt=""/>
-                                Случайный пароль
-                            </div>
-                            <div className={start.lic}>
-                                <CheckBox text={"Принимаю условия "} checkbox_id={"checkbox_lic"}/>
-                                <span className={start.url} onClick={() => dispatch(changeDialog(CHANGE_DIALOG, licField))}>
-                                    соглашения
-                                </span>
-                                <div className={start.warn} id="warncr">
-                                    <img src={warn} className={start.warnimg} alt=""/>
-                                    Включён Caps Lock!
+                                <div data-enable={+els.regb} className={button.button + ' ' + start.marg}
+                                     ref={el => elem.regbut = el} onClick={e=>rego(e, props, code)}>
+                                    ЗАРЕГИСТРИРОВАТЬСЯ!
                                 </div>
                             </div>
-                            <div data-enable={+els.regb} className={button.button+' '+start.marg} ref={el=>elem.regbut=el} onClick={rego}>
-                                ЗАРЕГИСТРИРОВАТЬСЯ!
-                            </div>
-                        </div>
-                    </form>
+                        </form>
+                    </div>
                 </div>
-            </div>
+            }
         </div>
     )
 }

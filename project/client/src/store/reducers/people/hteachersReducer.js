@@ -2,8 +2,10 @@ import {
     CHANGE_HTEACHERS,
     CHANGE_HTEACHERS_DEL,
     CHANGE_HTEACHERS_DEL_L2,
+    CHANGE_HTEACHERS_EL_GL,
     CHANGE_HTEACHERS_GL,
-    CHANGE_HTEACHERS_L2
+    CHANGE_HTEACHERS_L2,
+    CHANGE_HTEACHERS_L2_GL
 } from '../../actions';
 
 const initialState = {
@@ -46,6 +48,12 @@ export default function hteachersReducer(state = initialState, action) {
             }
             fd[action.payload.l1].pep[action.payload.l2][action.payload.param] = action.payload.state;
             return fd;
+        case CHANGE_HTEACHERS_L2_GL:
+            if(!fd[action.payload.l1].pep){
+                fd[action.payload.l1].pep = {};
+            }
+            fd[action.payload.l1].pep[action.payload.l2] = action.payload.state;
+            return fd;
         case CHANGE_HTEACHERS_DEL_L2:
             delete fd[action.payload.l1].pep[action.payload.l2];
             return fd;
@@ -54,6 +62,9 @@ export default function hteachersReducer(state = initialState, action) {
                 fd[action.payload.l1] = {};
             }
             fd[action.payload.l1][action.payload.param] = action.payload.state;
+            return fd;
+        case CHANGE_HTEACHERS_EL_GL:
+            fd[action.payload.l1] = action.payload.state;
             return fd;
         case CHANGE_HTEACHERS_DEL:
             delete fd[action.payload.l1];

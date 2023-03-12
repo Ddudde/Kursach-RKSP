@@ -1,4 +1,4 @@
-package ru.mirea.data;
+package ru.mirea.data.models;
 
 import lombok.*;
 import ru.mirea.data.converters.ListLongConverter;
@@ -26,6 +26,13 @@ import java.util.List;
     @Column(name = "hteachersInv")
     private List<Long> hteachersInv;
 
+    @Convert(converter = ListLongConverter.class)
+    @Column(name = "news")
+    private List<Long> news;
+
+    @Column(name = "contacts")
+    private Long contacts;
+
     public School(String name) {
         this.name = name;
     }
@@ -35,9 +42,24 @@ import java.util.List;
         this.hteachers = hteachers;
     }
 
-    public School(String name, List<Long> hteachers, List<Long> hteachersInv) {
+    public School(List<Long> hteachers, String name, List<Long> hteachersInv) {
         this.name = name;
         this.hteachers = hteachers;
         this.hteachersInv = hteachersInv;
+    }
+
+    public School(String name, List<Long> hteachers, List<Long> news, Long contacts) {
+        this.name = name;
+        this.hteachers = hteachers;
+        this.news = news;
+        this.contacts = contacts;
+    }
+
+    public School(String name, List<Long> hteachers, List<Long> hteachersInv, List<Long> news, Long contacts) {
+        this.name = name;
+        this.hteachers = hteachers;
+        this.hteachersInv = hteachersInv;
+        this.news = news;
+        this.contacts = contacts;
     }
 }

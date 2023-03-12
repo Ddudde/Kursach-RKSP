@@ -1,8 +1,6 @@
 package ru.mirea.controllers;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -10,16 +8,18 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import ru.mirea.Main;
-import ru.mirea.data.Invite;
+import ru.mirea.data.models.auth.Invite;
 import ru.mirea.data.SSE.SubscriptionData;
 import ru.mirea.data.SSE.TypesConnect;
-import ru.mirea.data.School;
-import ru.mirea.data.User;
-import ru.mirea.data.reps.InviteRepository;
+import ru.mirea.data.models.School;
+import ru.mirea.data.models.auth.User;
+import ru.mirea.data.reps.auth.InviteRepository;
 import ru.mirea.data.reps.SchoolRepository;
-import ru.mirea.data.reps.UserRepository;
+import ru.mirea.data.reps.auth.UserRepository;
 import ru.mirea.data.json.Role;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -27,9 +27,6 @@ import java.util.concurrent.ConcurrentHashMap;
 @RequestMapping("/auth")
 @CrossOrigin(origins = {"http://localhost:3000", "http://192.168.1.66:3000"})
 public class AuthController {
-
-    @Autowired
-    private Gson gson;
 
     private final UserRepository userRepository;
 
@@ -46,13 +43,33 @@ public class AuthController {
     }
 
     public void createUser(User user) {
-        User savedUser = userRepository.save(user);
+        User savedUser = userRepository.saveAndFlush(user);
         System.out.println(savedUser);
     }
 
     public void createInvite(Invite inv) {
-        Invite savedInv = inviteRepository.save(inv);
+        Invite savedInv = inviteRepository.saveAndFlush(inv);
         System.out.println(savedInv);
+    }
+
+    public void delCodeUser(User user){
+        if(user != null){
+            user.setCode(null);
+            user.setExpDate(null);
+            userRepository.saveAndFlush(user);
+        }
+    }
+
+    public void delInv(Invite inv) {
+        if(inv != null){
+            School school = schoolRepository.findById(((Role) inv.getRole().values().toArray()[0]).getYO()).orElse(null);
+            if(ObjectUtils.isEmpty(school.getHteachersInv())) {
+                school.setHteachersInv(new ArrayList<>());
+            }
+            school.getHteachersInv().remove(inv.getId());
+            schoolRepository.saveAndFlush(school);
+            inviteRepository.delete(inv);
+        }
     }
 
     public List<Invite> getInvites() {
@@ -175,6 +192,7 @@ public class AuthController {
                     if(Objects.equals(user.getPassword(), body.get("password").getAsString())) {
                         bodyAns.addProperty("auth", true);
                         bodyAns.addProperty("login", user.getLogin());
+//                        bodyAns.addProperty("role", ObjectUtils.isEmpty(user.getRoles()) ? 0 : ((Long) user.getRoles().keySet().toArray()[4]));
                         bodyAns.addProperty("role", ObjectUtils.isEmpty(user.getRoles()) ? 0 : ((Long) user.getRoles().keySet().toArray()[0]));
                         bodyAns.addProperty("ico", user.getIco());
                         bodyAns.addProperty("roles", !ObjectUtils.isEmpty(user.getRoles()) && user.getRoles().size() > 1);
@@ -187,9 +205,40 @@ public class AuthController {
                 bodyAns = new JsonObject();
                 ans.add("body", bodyAns);
                 User user = userRepository.findByLogin(body.get("login").getAsString());
+                Invite inv = null;
+                User user1 = null;
+                if(Objects.equals(body.get("mod").getAsString(), "inv")){
+                    inv = inviteRepository.findByCode(body.get("code").getAsString());
+                }
+                if(Objects.equals(body.get("mod").getAsString(), "rea")){
+                    user1 = userRepository.findByCode(body.get("code").getAsString());
+                }
+                if(inv == null && user1 == null){
+                    ans.addProperty("error", 2);
+                    return ans;
+                }
                 if(user == null) {
-                    user = new User(body.get("login").getAsString(), body.get("par").getAsString(), body.get("ico").getAsInt());
-                    userRepository.save(user);
+                    if(inv != null) {
+                        user = new User(body.get("login").getAsString(), body.get("par").getAsString(), body.get("ico").getAsInt());
+                        user.setRoles(inv.getRole());
+                        user.setFio(inv.getFio());
+                        userRepository.saveAndFlush(user);
+                        School school = schoolRepository.findById(((Role) inv.getRole().values().toArray()[0]).getYO()).orElse(null);
+                        if(ObjectUtils.isEmpty(school.getHteachersInv())) school.setHteachersInv(new ArrayList<>());
+                        if(ObjectUtils.isEmpty(school.getHteachers())) school.setHteachers(new ArrayList<>());
+                        school.getHteachersInv().remove(inv.getId());
+                        school.getHteachers().add(user.getId());
+                        schoolRepository.saveAndFlush(school);
+                        inviteRepository.delete(inv);
+                    }
+                    if(user1 != null){
+                        user1.setLogin(body.get("login").getAsString());
+                        user1.setPassword(body.get("par").getAsString());
+                        user1.setIco(body.get("ico").getAsInt());
+                        user1.setCode(null);
+                        user1.setExpDate(null);
+                        userRepository.saveAndFlush(user1);
+                    }
                 } else {
                     ans.addProperty("error", true);
                 }
@@ -201,7 +250,7 @@ public class AuthController {
                 User user = userRepository.findByLogin(body.get("login").getAsString());
                 if(user != null && Objects.equals(user.getSecFr(), body.get("secFr").getAsString())) {
                     user.setPassword(body.get("par").getAsString());
-                    userRepository.save(user);
+                    userRepository.saveAndFlush(user);
                 } else {
                     ans.addProperty("error", true);
                 }
@@ -231,87 +280,61 @@ public class AuthController {
                 }
                 return ans;
             }
-            case "addInv" -> {
-                bodyAns = new JsonObject();
-                ans.add("body", bodyAns);
+            case "checkInvCode" -> {
                 User user = userRepository.findByLogin(body.get("login").getAsString());
-                School sch = schoolRepository.findById(body.get("yo").getAsLong()).orElse(null);
-                if(user != null && user.getRoles().containsKey(4L) && sch != null) {
-                    Invite inv = new Invite(body.get("name").getAsString(), body.get("yo").getAsLong(), body.get("role").getAsLong());
-                    inviteRepository.save(inv);
-                    if(sch.getHteachersInv() == null) sch.setHteachersInv(new ArrayList<>());
-                    sch.getHteachersInv().add(inv.getId());
-                    schoolRepository.save(sch);
-                    bodyAns.addProperty("id", inv.getId());
-                } else {
+                Invite inv = inviteRepository.findByCode(body.get("code").getAsString());
+                if(inv == null) {
+                    ans.addProperty("error", true);
+                }else if (user != null) {
+                    user.getRoles().putAll(inv.getRole());
+                    userRepository.saveAndFlush(user);
+                    School school = schoolRepository.findById(((Role) inv.getRole().values().toArray()[0]).getYO()).orElse(null);
+                    if(ObjectUtils.isEmpty(school.getHteachersInv())) school.setHteachersInv(new ArrayList<>());
+                    if(ObjectUtils.isEmpty(school.getHteachers())) school.setHteachers(new ArrayList<>());
+                    school.getHteachersInv().remove(inv.getId());
+                    school.getHteachers().add(user.getId());
+                    schoolRepository.saveAndFlush(school);
+                    inviteRepository.delete(inv);
+                }
+                return ans;
+            }
+            case "checkReaCode" -> {
+                User user = userRepository.findByCode(body.get("code").getAsString());
+                if(user == null) {
                     ans.addProperty("error", true);
                 }
                 return ans;
             }
-            case "remInv" -> {
-                bodyAns = new JsonObject();
-                ans.add("body", bodyAns);
-                User user = userRepository.findByLogin(body.get("login").getAsString());
-                User user1 = userRepository.findByLogin(body.get("id").getAsString());
-                School sch = schoolRepository.findById(body.get("id1").getAsLong()).orElse(null);
-                Invite inv = inviteRepository.findById(body.get("id2").getAsLong()).orElse(null);
-                if(user != null && user.getRoles().containsKey(4L) && (user1 != null || inv != null) && sch != null) {
-                    if(user1 != null){
-                        userRepository.delete(user1);
-                        if(!ObjectUtils.isEmpty(sch.getHteachers())) sch.getHteachers().remove(user1.getId());
-                        schoolRepository.save(sch);
-                    } else if(inv != null){
-                        inviteRepository.delete(inv);
-                        if(!ObjectUtils.isEmpty(sch.getHteachersInv())) sch.getHteachersInv().remove(inv.getId());
-                        schoolRepository.save(sch);
-                    }
-                } else {
-                    ans.addProperty("error", true);
-                }
-                return ans;
-            }
-            case "checkInv" -> {
-                bodyAns = new JsonObject();
-                ans.add("body", bodyAns);
-                User user = userRepository.findByLogin(body.get("login").getAsString());
-                if(user != null && user.getRoles().containsKey(4L)) {
-
-                } else {
-                    ans.addProperty("error", true);
-                }
-                return ans;
-            }
-            case "changeInv" -> {
+            case "setCodePep" -> {
                 bodyAns = new JsonObject();
                 ans.add("body", bodyAns);
                 User user = userRepository.findByLogin(body.get("login").getAsString());
                 User user1 = userRepository.findByLogin(body.get("id").getAsString());
                 Invite inv = inviteRepository.findById(body.get("id1").getAsLong()).orElse(null);
                 if(user != null && user.getRoles().containsKey(4L) && (user1 != null || inv != null)) {
+                    UUID uuid = UUID.randomUUID();
+                    Instant after = Instant.now().plus(Duration.ofDays(30));
+                    Date dateAfter = Date.from(after);
+                    JsonObject ansToCl = new JsonObject();
                     if(user1 != null){
-                        user1.setFio(body.get("name").getAsString());
-                        userRepository.save(user1);
-                    } else if(inv != null){
-                        inv.setFio(body.get("name").getAsString());
-                        inviteRepository.save(inv);
-                    }
-                } else {
-                    ans.addProperty("error", true);
-                }
-                return ans;
-            }
-            case "setCodeInv" -> {
-                bodyAns = new JsonObject();
-                ans.add("body", bodyAns);
-                User user = userRepository.findByLogin(body.get("login").getAsString());
-                User user1 = userRepository.findByLogin(body.get("id").getAsString());
-                Invite inv = inviteRepository.findById(body.get("id1").getAsLong()).orElse(null);
-                if(user != null && user.getRoles().containsKey(4L) && (user1 != null || inv != null)) {
-                    if(user1 != null){
+                        user1.setCode(uuid.toString());
+                        user1.setExpDate(Main.df.format(dateAfter));
+                        userRepository.saveAndFlush(user1);
 
+                        ansToCl.addProperty("id", user1.getId());
                     } else if(inv != null){
+                        inv.setCode(uuid.toString());
+                        inv.setExpDate(Main.df.format(dateAfter));
+                        inviteRepository.saveAndFlush(inv);
 
+                        ansToCl.addProperty("id", inv.getId());
                     }
+                    System.out.println("setCode " + uuid);
+                    bodyAns.addProperty("code", uuid.toString());
+
+                    ansToCl.addProperty("code", uuid.toString());
+                    if(body.has("id2")) ansToCl.addProperty("id1", body.get("id2").getAsLong());
+                    sendMessageForAll("codPepC", ansToCl, TypesConnect.MAIN, "adm");
                 } else {
                     ans.addProperty("error", true);
                 }

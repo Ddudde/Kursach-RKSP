@@ -1,14 +1,13 @@
 package ru.mirea.controllers;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import ru.mirea.data.*;
 import ru.mirea.data.SSE.TypesConnect;
+import ru.mirea.data.models.Request;
+import ru.mirea.data.models.auth.User;
 import ru.mirea.data.reps.RequestRepository;
-import ru.mirea.data.reps.UserRepository;
+import ru.mirea.data.reps.auth.UserRepository;
 
 import java.util.List;
 
@@ -18,9 +17,6 @@ import java.util.List;
 @CrossOrigin(origins = {"http://localhost:3000", "http://192.168.1.66:3000"})
 public class RequestController {
 
-    @Autowired
-    private Gson gson;
-
     private final RequestRepository requestRepository;
 
     private final UserRepository userRepository;
@@ -28,7 +24,7 @@ public class RequestController {
     private final AuthController authController;
 
     public List<Request> createReq(@RequestBody Request request) {
-        Request savedRequest = requestRepository.save(request);
+        Request savedRequest = requestRepository.saveAndFlush(request);
         System.out.println(savedRequest);
         return requestRepository.findAll();
     }
@@ -69,7 +65,7 @@ public class RequestController {
                 Request request = requestRepository.findById(body.get("id").getAsLong()).orElseThrow(RuntimeException::new);
                 if(user != null && user.getRoles().containsKey(4L) && request != null) {
                     request.setText(body.get("text").getAsString());
-                    requestRepository.save(request);
+                    requestRepository.saveAndFlush(request);
 
                     JsonObject ansToCl = new JsonObject();
                     ansToCl.addProperty("id", request.getId());
@@ -87,7 +83,7 @@ public class RequestController {
                 Request request = requestRepository.findById(body.get("id").getAsLong()).orElseThrow(RuntimeException::new);
                 if(user != null && user.getRoles().containsKey(4L) && request != null) {
                     request.setDate(body.get("date").getAsString());
-                    requestRepository.save(request);
+                    requestRepository.saveAndFlush(request);
 
                     JsonObject ansToCl = new JsonObject();
                     ansToCl.addProperty("id", request.getId());
@@ -105,7 +101,7 @@ public class RequestController {
                 Request request = requestRepository.findById(body.get("id").getAsLong()).orElseThrow(RuntimeException::new);
                 if(user != null && user.getRoles().containsKey(4L) && request != null) {
                     request.setEmail(body.get("title").getAsString());
-                    requestRepository.save(request);
+                    requestRepository.saveAndFlush(request);
 
                     JsonObject ansToCl = new JsonObject();
                     ansToCl.addProperty("id", request.getId());
@@ -136,7 +132,7 @@ public class RequestController {
                 bodyAns = new JsonObject();
                 if(body.has("title") && body.has("dat") && body.has("text")) {
                     Request request = new Request(body.get("title").getAsString(), body.get("dat").getAsString(), body.get("text").getAsString());
-                    requestRepository.save(request);
+                    requestRepository.saveAndFlush(request);
 
                     JsonObject ansToCl = new JsonObject();
                     ansToCl.addProperty("id", request.getId());

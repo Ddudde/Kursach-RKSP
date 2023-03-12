@@ -2,25 +2,26 @@ import React, {useEffect, useRef} from "react";
 import contactCSS from './contactMain.module.css';
 import {Outlet} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
-import {pane, states} from "../../store/selector";
+import {states} from "../../store/selector";
 import Pane from "../other/pane/Pane";
-import {setActived} from "../main/Main";
-import {CHANGE_CONTACT, CHANGE_CONTACT_MAP, CHANGE_CONTACT_MAPIMG, changeContacts} from "../../store/actions";
+import {eventSource, send, setActived} from "../main/Main";
+import {CHANGE_CONTACT_GL, CHANGE_CONTACT_PARAM, changeContacts} from "../../store/actions";
 import ed from "../../media/edit.png";
 import yes from "../../media/yes.png";
 import no from "../../media/no.png";
 
-let gr, cState, dispatch;
+let gr, cState, dispatch, type;
+type = "Por";
 
 gr = {
     group: 0
 }
 
-export function getEdField(edFi, titleEd, inf, inp, type, info, inps, forceUpdate, placeholder, pattern) {
+export function getEdField(edFi, titleEd, inf, inp, info, inps, forceUpdate, placeholder, pattern) {
     return (<>
         <div className={contactCSS.fi}>
             {edFi}
-            {titleEd != "Ссылка:" && <img className={contactCSS.imgfield} src={ed} onClick={(e)=>onEdit(e, type, inps, info)} title="Редактировать" alt=""/>}
+            {titleEd != "Ссылка:" && <img className={contactCSS.imgfield} src={ed} onClick={(e)=>onEdit(e, inps, info)} title="Редактировать" alt=""/>}
         </div>
         <div className={contactCSS.ed}>
             <div className={contactCSS.preinf}>
@@ -32,19 +33,19 @@ export function getEdField(edFi, titleEd, inf, inp, type, info, inps, forceUpdat
                     <input className={contactCSS.inp} id={inp} placeholder={placeholder} pattern={pattern} defaultValue={inf} onChange={(e)=>chStatB(e, inps)}/>
             }
             {ele(false, inp, inps)}
-            <img className={contactCSS.imginp+" yes "} src={yes} onClick={(e)=>onFin(e, type, inps)} title="Подтвердить" alt=""/>
+            <img className={contactCSS.imginp+" yes "} src={yes} onClick={(e)=>onFin(e, inps)} title="Подтвердить" alt=""/>
             <img className={contactCSS.imginp} style={{marginRight: "1vw"}} src={no} onClick={(e)=>onClose(e, inps, forceUpdate)} title="Отменить изменения и выйти из режима редактирования" alt=""/>
         </div>
     </>)
 }
 
-export function getEdCon(type, info, inps, forceUpdate) {
+export function getEdCon(info, inps, forceUpdate) {
     let telFi, tel, telM, telMFi, im, imFi;
     tel = info[type].contact;
     telFi = <pre className={contactCSS.field}>
         {tel}
     </pre>;
-    telM = info[type].mapPr.text;
+    telM = info[type].mapPr ? info[type].mapPr.text : undefined;
     telMFi = <pre className={contactCSS.field}>
         {telM}
     </pre>;
@@ -54,7 +55,7 @@ export function getEdCon(type, info, inps, forceUpdate) {
             <div>
                 Изображение
             </div>
-            <img className={contactCSS.imgfield} src={ed} onClick={(e)=>onEdit(e, inps, type, info)} title="Редактировать" alt=""/>
+            <img className={contactCSS.imgfield} src={ed} onClick={(e)=>onEdit(e, inps, info)} title="Редактировать" alt=""/>
         </div>
     </div>;
     return (
@@ -62,24 +63,24 @@ export function getEdCon(type, info, inps, forceUpdate) {
             <div className={contactCSS.blockTel}>
                 <h1 className={contactCSS.zag}>Телефоны для связи</h1>
                 <div className={contactCSS.te} data-st="0">
-                    {getEdField(telFi, "Текст:", tel, "inpntt_c", type, info, inps, forceUpdate)}
+                    {getEdField(telFi, "Текст:", tel, "inpntt_c", info, inps, forceUpdate)}
                 </div>
             </div>
             <div className={contactCSS.map+" "+contactCSS.blockTel}>
                 <h1 className={contactCSS.zag}>Карта проезда</h1>
                 <div className={contactCSS.te+" mapt"} data-st="0">
-                    {getEdField(telMFi, "Текст:", telM, "inpntt_m", type, info, inps, forceUpdate)}
-                    {info[type].mapPr.imgUrl ?
+                    {getEdField(telMFi, "Текст:", telM, "inpntt_m", info, inps, forceUpdate)}
+                    {info[type].mapPr && info[type].mapPr.imgUrl ?
                             <span className={contactCSS.banner}>
-                                <img alt="banner" src={info[type].mapPr.imgUrl} onError={(e)=>errLoadAddIm(e, type)}/>
+                                <img alt="banner" src={info[type].mapPr.imgUrl} onError={errLoadAddIm}/>
                                 <div className={contactCSS.upr}>
-                                    <img className={contactCSS.imgfield} src={ed} onClick={(e)=>onEdit(e, inps, type, info)} title="Редактировать" alt=""/>
-                                    <img className={contactCSS.imginp} style={{marginRight: "1vw"}} src={no} onClick={(e)=>onDel(e, type)} title="Удалить изображение" alt=""/>
+                                    <img className={contactCSS.imgfield} src={ed} onClick={(e)=>onEdit(e, inps, info)} title="Редактировать" alt=""/>
+                                    <img className={contactCSS.imginp} style={{marginRight: "1vw"}} src={no} onClick={onDel} title="Удалить изображение" alt=""/>
                                 </div>
                             </span>
                         :
                             <div className={contactCSS.im} data-st={inps.edAddIm ? "1" : "0"}>
-                                {getEdField(imFi, "Ссылка:", im, "inpnit_m", type, info, inps, forceUpdate, "/media/tuman.jpg")}
+                                {getEdField(imFi, "Ссылка:", im, "inpnit_m", info, inps, forceUpdate, "/media/tuman.jpg")}
                             </div>
                     }
                 </div>
@@ -92,19 +93,21 @@ export function errorLoad(e) {
     e.target.style.display = 'none';
 }
 
-export function errLoadAddIm(e, type) {
-    dispatch(changeContacts(CHANGE_CONTACT_MAPIMG, type, ""));
+export function errLoadAddIm(e) {
+    chContact("", "mapPr", "imgUrl");
+    // dispatch(changeContacts(CHANGE_CONTACT_PARAM, type, "", "mapPr", "imgUrl"));
 }
 
-export function onDel(e, type) {
+export function onDel(e) {
     let par;
     par = e.target.parentElement.parentElement;
     if(par.classList.contains(contactCSS.banner)){
-        dispatch(changeContacts(CHANGE_CONTACT_MAPIMG, type, ""));
+        chContact("", "mapPr", "imgUrl");
+        // dispatch(changeContacts(CHANGE_CONTACT_PARAM, type, "", "mapPr", "imgUrl"));
     }
 }
 
-export function onEdit(e, inps, type, info) {
+export function onEdit(e, inps, info) {
     let par;
     par = e.target.parentElement;
     if(par.parentElement.classList.contains(contactCSS.im) || par.parentElement.classList.contains(contactCSS.te)){
@@ -117,36 +120,36 @@ export function onEdit(e, inps, type, info) {
     }
     if(par.classList.contains(contactCSS.upr)){
         inps.edAddIm = info[type].mapPr.imgUrl;
-        dispatch(changeContacts(CHANGE_CONTACT_MAPIMG, type, ""));
+        chContact("", "mapPr", "imgUrl");
+        // dispatch(changeContacts(CHANGE_CONTACT_PARAM, type, "", "mapPr", "imgUrl"));
     }
 }
 
-export function onFin(e, type, inps) {
+export function onFin(e, inps) {
     let par, inp, bul;
     par = e.target.parentElement;
     bul = par.parentElement.classList.contains(contactCSS.te);
     inp = par.querySelector(bul ? "textarea" : "input");
     if (inps[inp.id]) {
-        inp.style.outline = "none black";
+        inp.setAttribute("data-mod", '0');
         if(par.parentElement.classList.contains(contactCSS.im)) {
             if (inps.edAddIm) inps.edAddIm = undefined;
-            dispatch(changeContacts(CHANGE_CONTACT_MAPIMG, type, inp.value));
+            chContact(inp.value, "mapPr", "imgUrl");
+            // dispatch(changeContacts(CHANGE_CONTACT_PARAM, type, inp.value, "mapPr", "imgUrl"));
         }
         if(bul) {
             par = par.parentElement;
             if(par.classList.contains("mapt")){
-                dispatch(changeContacts(CHANGE_CONTACT_MAP, type, inp.value));
+                chContact(inp.value, "mapPr", "text");
+                // dispatch(changeContacts(CHANGE_CONTACT_PARAM, type, inp.value, "mapPr", "text"));
             } else {
-                dispatch(changeContacts(CHANGE_CONTACT, type, inp.value));
+                chContact(inp.value, "contact");
+                // dispatch(changeContacts(CHANGE_CONTACT_PARAM, type, inp.value, "contact"));
             }
         }
         par.setAttribute('data-st', '0');
     } else {
-        inp.style.animation = "but 1s ease infinite";
-        setTimeout(function () {
-            inp.style.animation = "none"
-        }, 1000);
-        inp.style.outline = "solid red";
+        inp.setAttribute("data-mod", '1');
     }
 }
 
@@ -166,19 +169,11 @@ export function onClose(e, inps, forceUpdate) {
 
 export function chStatB(e, inps) {
     let el = e.target;
-    if(el.pattern) {
-        inps[el.id] = !el.validity.patternMismatch && el.value.length != 0;
-    } else {
-        inps[el.id] = el.value.length != 0;
-    }
+    inps[el.id] = !el.validity.patternMismatch && el.value.length != 0;
     if (inps[el.id]) {
-        el.style.outline = "none black";
+        el.setAttribute("data-mod", '0');
     } else {
-        el.style.animation = "but 1s ease infinite";
-        setTimeout(function () {
-            el.style.animation = "none"
-        }, 1000);
-        el.style.outline = "solid red";
+        el.setAttribute("data-mod", '1');
     }
     el.parentElement.querySelector(".yes").setAttribute("data-enable", +inps[el.id]);
 }
@@ -187,13 +182,63 @@ export function ele (x, par, inps) {
     if(!inps[par]) inps[par] = x;
 }
 
+export function setTyp(x) {
+    type = x;
+    setInfo();
+    eventSource.addEventListener('connect', onCon, false);
+    eventSource.addEventListener('chContactC', chContactC, false);
+}
+
+function onCon() {
+    setInfo();
+}
+
+function setInfo() {
+    send({
+        type: "CONTACTS",
+        uuid: cState.uuid,
+        podType: type
+    }, 'POST', "auth", "infCon")
+        .then(e => {
+            send({
+                login: cState.login
+            }, 'POST', "contacts", "getContacts")
+                .then(data => {
+                    console.log(data);
+                    if(data.error == false){
+                        dispatch(changeContacts(CHANGE_CONTACT_GL, type, data.body));
+                    }
+                });
+        });
+}
+
+function chContact (inp, p, p1) {
+    console.log("chContact");
+    send({
+        login: cState.login,
+        p: p,
+        p1: p1,
+        val: inp
+    }, 'POST', "contacts", "chContact")
+        .then(data => {
+            console.log(data);
+            if(data.error == false){
+                dispatch(changeContacts(CHANGE_CONTACT_PARAM, type, data.val, data.p, data.p1));
+            }
+        });
+}
+
+function chContactC(e) {
+    const msg = JSON.parse(e.data);
+    dispatch(changeContacts(CHANGE_CONTACT_PARAM, type, msg.val, msg.p, msg.p1));
+}
+
 export function setActNew(name) {
     gr.group = name;
 }
 
 export function ContactMain() {
     cState = useSelector(states);
-    const paneInfo = useSelector(pane);
     dispatch = useDispatch();
     gr.groups = {
         0: {
@@ -211,6 +256,8 @@ export function ContactMain() {
         setActived(2);
         return function() {
             dispatch = undefined;
+            eventSource.removeEventListener('connect', onCon);
+            eventSource.removeEventListener('chContactC', chContactC);
             console.log("I was triggered during componentWillUnmount ContactMain.jsx");
         }
     }, []);

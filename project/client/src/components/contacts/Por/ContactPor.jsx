@@ -3,8 +3,9 @@ import {Helmet} from "react-helmet-async";
 import contactCSS from '../contactMain.module.css';
 import {contacts, states} from "../../../store/selector";
 import {useDispatch, useSelector} from "react-redux";
-import {errorLoad, getEdCon, setActNew} from "../ContactMain";
+import {errorLoad, getEdCon, setActNew, setTyp} from "../ContactMain";
 import ErrFound from "../../other/error/ErrFound";
+import {CHANGE_EVENTS_CLEAR, changeEvents} from "../../../store/actions";
 
 let dispatch, contactsInfo, type, errText, cState, inps;
 type = "Por";
@@ -21,14 +22,9 @@ export function ContactPor() {
     const isFirstUpdate = useRef(true);
     useEffect(() => {
         console.log("I was triggered during componentDidMount ContactPor.jsx");
-        // dispatch(changeContacts("Por", "imageUrl", '/media/tuman.jpg'));
-        // dispatch(changeContacts("Por", "imageUrl"));
-        // dispatch(changeContacts("Por", "id_0", '8 (800) 555 35 37', '+78005553537'));
-        // dispatch(changeContacts("Por", "id_0"));
-        // setInterval(function() {
-        //     dispatch(changeContacts("Por", "id_" + Object.getOwnPropertyNames(contactsInfo.contactsPor.numbers).length, '8 (800) 555 35 37', '+78005553537'));
-        // }, 5000);
+        setTyp(type);
         return function() {
+            dispatch(changeEvents(CHANGE_EVENTS_CLEAR));
             dispatch = undefined;
             console.log("I was triggered during componentWillUnmount ContactPor.jsx");
         }
@@ -45,12 +41,12 @@ export function ContactPor() {
             <Helmet>
                 <title>Контакты портала</title>
             </Helmet>
-            {(!contactsInfo[type].contact && !contactsInfo[type].mapPr.imgUrl && !(cState.auth && cState.role == 4)) ?
+            {(!contactsInfo[type].contact && !contactsInfo[type].mapPr && !(cState.auth && cState.role == 4)) ?
                     <ErrFound text={errText}/>
                 :
                     <div className={contactCSS.block}>
                         {(cState.auth && cState.role == 4) ?
-                                getEdCon(type, contactsInfo, inps, forceUpdate)
+                                getEdCon(contactsInfo, inps, forceUpdate)
                             :
                                 <section className={contactCSS.center_colum}>
                                     <div className={contactCSS.blockTel}>

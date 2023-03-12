@@ -58,6 +58,8 @@ export const CHANGE_TEACHERS_DEL = "CHANGE_TEACHERS_DEL";
 export const CHANGE_TEACHERS_DEL_L1 = "CHANGE_TEACHERS_DEL_L1";
 
 export const CHANGE_HTEACHERS_GL = "CHANGE_HTEACHERS_GL";
+export const CHANGE_HTEACHERS_EL_GL = "CHANGE_HTEACHERS_EL_GL";
+export const CHANGE_HTEACHERS_L2_GL = "CHANGE_HTEACHERS_L2_GL";
 export const CHANGE_HTEACHERS_L2 = "CHANGE_HTEACHERS_L2";
 export const CHANGE_HTEACHERS_DEL_L2 = "CHANGE_HTEACHERS_DEL_L2";
 export const CHANGE_HTEACHERS = "CHANGE_HTEACHERS";
@@ -77,6 +79,7 @@ export const CHANGE_PARENTS_DEL_L0 = "CHANGE_PARENTS_DEL_L0";
 
 export const CHANGE_ADMINS_GL = "CHANGE_ADMINS_GL";
 export const CHANGE_ADMINS = "CHANGE_ADMINS";
+export const CHANGE_ADMINS_EL_GL = "CHANGE_ADMINS_EL_GL";
 export const CHANGE_ADMINS_DEL = "CHANGE_ADMINS_DEL";
 
 export const CHANGE_MARKS = "CHANGE_MARKS";
@@ -93,12 +96,13 @@ export const CHANGE_REQUEST_PARAM = "CHANGE_REQUEST_PARAM";
 export const CHANGE_REQUEST_DEL = "CHANGE_REQUEST_DEL";
 
 export const CHANGE_NEWS = "CHANGE_NEWS";
+export const CHANGE_NEWS_GL = "CHANGE_NEWS_GL";
 export const CHANGE_NEWS_PARAM = "CHANGE_NEWS_PARAM";
 export const CHANGE_NEWS_DEL = "CHANGE_NEWS_DEL";
 
 export const CHANGE_CONTACT = "CHANGE_CONTACT";
-export const CHANGE_CONTACT_MAPIMG = "CHANGE_CONTACT_MAPIMG";
-export const CHANGE_CONTACT_MAP = "CHANGE_CONTACT_MAP";
+export const CHANGE_CONTACT_GL = "CHANGE_CONTACT_GL";
+export const CHANGE_CONTACT_PARAM = "CHANGE_CONTACT_PARAM";
 
 export const CHANGE_EVENTS = "CHANGE_EVENTS";
 export const CHANGE_EVENTS_CLEAR = "CHANGE_EVENTS_CLEAR";
@@ -357,12 +361,14 @@ export function changeNews(typeR, type, id, state, param) {
     };
 }
 
-export function changeContacts(typeR, type, state) {
+export function changeContacts(typeR, type, state, param, param1) {
     return {
         type: typeR,
         payload: {
             type: type,
-            state: state
+            state: state,
+            param: param,
+            param1: param1
         }
     };
 }

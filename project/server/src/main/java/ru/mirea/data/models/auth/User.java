@@ -1,4 +1,4 @@
-package ru.mirea.data;
+package ru.mirea.data.models.auth;
 
 import lombok.*;
 import ru.mirea.data.converters.RoleConverter;
@@ -24,6 +24,9 @@ import java.util.Map;
 
     @Column(name = "code")
     private String code;
+
+    @Column(name = "date")
+    private String expDate;
 
     @Column(name = "fio")
     private String fio;

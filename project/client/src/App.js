@@ -78,7 +78,8 @@ function App() {
               <Route path="profiles/:log" element={<Profile/>} />
               {cState.auth && <Route path="settings" element={<Settings/>} />}
               {(cState.auth && cState.role == 4) && <Route path="request" element={<Request/>} />}
-              <Route path="invite/:inv" element={<Start/>} />
+              <Route path="invite/:code" element={<Start mod="inv"/>} />
+              <Route path="reauth/:code" element={<Start mod="rea"/>} />
               <Route path="*" element={<ErrFound/>} />
           </Route>
       </Routes>

@@ -1,12 +1,10 @@
-package ru.mirea.controllers;
+package ru.mirea.controllers.main;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import ru.mirea.data.User;
-import ru.mirea.data.reps.UserRepository;
+import ru.mirea.data.models.auth.User;
+import ru.mirea.data.reps.auth.UserRepository;
 
 import java.util.Objects;
 
@@ -15,9 +13,6 @@ import java.util.Objects;
 @AllArgsConstructor
 @CrossOrigin(origins = {"http://localhost:3000", "http://192.168.1.66:3000"})
 public class SettingsController {
-
-    @Autowired
-    private Gson gson;
 
     private final UserRepository userRepository;
 
@@ -35,7 +30,7 @@ public class SettingsController {
                 User user = userRepository.findByLogin(body.get("login").getAsString());
                 if(user != null) {
                     user.setIco(body.get("ico").getAsInt());
-                    userRepository.save(user);
+                    userRepository.saveAndFlush(user);
                 } else {
                     ans.addProperty("error", true);
                 }
@@ -47,7 +42,7 @@ public class SettingsController {
                 User user = userRepository.findByLogin(body.get("login").getAsString());
                 if(user != null) {
                     user.setSecFr(body.get("secFR").getAsString());
-                    userRepository.save(user);
+                    userRepository.saveAndFlush(user);
                 } else {
                     ans.addProperty("error", true);
                 }
@@ -67,7 +62,7 @@ public class SettingsController {
                         return ans;
                     }
                     user.setPassword(body.get("nPar").getAsString());
-                    userRepository.save(user);
+                    userRepository.saveAndFlush(user);
                 } else {
                     ans.addProperty("error", true);
                 }

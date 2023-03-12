@@ -1,4 +1,4 @@
-package ru.mirea.controllers;
+package ru.mirea.controllers.main;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -6,11 +6,12 @@ import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
+import ru.mirea.controllers.AuthController;
 import ru.mirea.data.SSE.TypesConnect;
-import ru.mirea.data.School;
-import ru.mirea.data.User;
+import ru.mirea.data.models.School;
+import ru.mirea.data.models.auth.User;
 import ru.mirea.data.reps.SchoolRepository;
-import ru.mirea.data.reps.UserRepository;
+import ru.mirea.data.reps.auth.UserRepository;
 import ru.mirea.data.json.Role;
 
 @RestController
@@ -43,6 +44,7 @@ public class ProfileController {
                 if(user != null) {
                     bodyAns.addProperty("login", user.getLogin());
                     bodyAns.addProperty("ico", user.getIco());
+                    bodyAns.addProperty("id", user.getId());
                     if(!ObjectUtils.isEmpty(user.getFio())) bodyAns.addProperty("fio", user.getFio());
                     if(!ObjectUtils.isEmpty(user.getInfo())) bodyAns.addProperty("more", user.getInfo());
                     JsonObject roles = new JsonObject();
@@ -92,7 +94,7 @@ public class ProfileController {
                 User userN = userRepository.findByLogin(body.get("nLogin").getAsString());
                 if(user != null && userN == null){
                     user.setLogin(body.get("nLogin").getAsString());
-                    userRepository.save(user);
+                    userRepository.saveAndFlush(user);
 
                     JsonObject ansToCl = new JsonObject();
                     ansToCl.addProperty("login", user.getLogin());
@@ -108,7 +110,7 @@ public class ProfileController {
                 User user = userRepository.findByLogin(body.get("login").getAsString());
                 if(user != null) {
                     user.setInfo(body.get("info").getAsString());
-                    userRepository.save(user);
+                    userRepository.saveAndFlush(user);
 
                     JsonObject ansToCl = new JsonObject();
                     ansToCl.addProperty("more", user.getInfo());
@@ -124,7 +126,7 @@ public class ProfileController {
                 User user = userRepository.findByLogin(body.get("login").getAsString());
                 if(user != null) {
                     user.getRoles().get(body.get("role").getAsLong()).setEmail(body.get("email").getAsString());
-                    userRepository.save(user);
+                    userRepository.saveAndFlush(user);
 
                     JsonObject ansToCl = new JsonObject();
                     ansToCl.addProperty("email", body.get("email").getAsString());

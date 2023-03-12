@@ -23,6 +23,7 @@ import up from "../../media/up.png";
 import Events from "../other/events/Events";
 import Dialog from "../other/dialog/Dialog";
 import Pane from "../other/pane/Pane";
+import {vxo} from "../start/Start";
 
 let act, ke, gr, cState, dispatch, paneInfo, themeInfo, scrolling, timid, timidP, d1, warnErrNet;
 scrolling = false;
@@ -317,6 +318,7 @@ export function Main() {
     useEffect(() => {
         console.log("I was triggered during componentDidMount Main.jsx");
         scr();
+        vxo("nm13", "1111", dispatch);
         iniTheme(themeInfo.theme_ch);
         window.onscroll = () => {
             if(!scrolling) {

@@ -1,4 +1,4 @@
-package ru.mirea.data;
+package ru.mirea.data.models;
 
 import lombok.*;
 

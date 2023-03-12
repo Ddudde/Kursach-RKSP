@@ -3,11 +3,36 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import ru.mirea.data.SSE.TypesConnect;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.*;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.UUID;
 
 public class Test {
-    public static void main(String[] args) {
-        enumsTest();
+    public static void main(String[] args) throws ParseException {
+        dateTest();
+    }
+
+    private static void dateTest() throws ParseException {
+        DateFormat df = new SimpleDateFormat("dd.MM.yyyy");
+        System.out.println(df.parse(df.format(new Date())));
+        System.out.println(df.parse("10.03.2023"));
+        Instant after = Instant.now().plus(Duration.ofDays(30));
+        Date dateAfter = Date.from(after);
+        System.out.println(df.format(dateAfter));
+        System.out.println(dateAfter.getTime());
+        System.out.println(df.parse("09.03.2023").getTime());
+        System.out.println((df.parse(df.format(new Date())).getTime() >= df.parse("09.03.2023").getTime()));
+//        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+//        String text = dtf.format( LocalDateTime.now() );
+//        System.out.println(dtf.parse("10.03.2023"));
+//        System.out.println(LocalDateTime.now().toLocalDate().atStartOfDay().isBefore(LocalDate.parse("09.03.2023", dtf).atStartOfDay()));
+//        System.out.println(text);
     }
 
     private static void enumsTest(){

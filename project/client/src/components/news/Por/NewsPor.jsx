@@ -3,8 +3,9 @@ import {Helmet} from "react-helmet-async";
 import newsCSS from '../newsMain.module.css';
 import {news, states} from "../../../store/selector";
 import {useDispatch, useSelector} from "react-redux";
-import {errorLoad, getAdd, setActNew} from "../NewsMain";
+import {chStatB, errorLoad, getAdd, setActNew, setTyp} from "../NewsMain";
 import ErrFound from "../../other/error/ErrFound";
+import {CHANGE_EVENTS_CLEAR, changeEvents} from "../../../store/actions";
 
 let dispatch, newsInfo, type, errText, inps, cState;
 type = "Por";
@@ -21,12 +22,12 @@ export function NewsPor() {
     const isFirstUpdate = useRef(true);
     useEffect(() => {
         console.log("I was triggered during componentDidMount NewsPor.jsx");
-        // dispatch(changeNews("Por", "id_0", 'ПОШЛА ВОДА В ХАТУ', '02.12.2020', '', 'Да'));
-        // dispatch(changeNews("Por", "id_0"));
-        // setInterval(function() {
-        //     dispatch(changeNews("Por", "id_" + Object.getOwnPropertyNames(newsInfo.newsPor).length, 'ПОШЛА ВОДА В ХАТУ', '02.12.2020', '', 'Да'));
-        // }, 5000);
+        setTyp(type);
+        for(let el of document.querySelectorAll("." + newsCSS.ed + " > *[id^='inpn']")){
+            chStatB({target: el}, inps);
+        }
         return function() {
+            dispatch(changeEvents(CHANGE_EVENTS_CLEAR));
             dispatch = undefined;
             console.log("I was triggered during componentWillUnmount NewsPor.jsx");
         }
@@ -48,11 +49,11 @@ export function NewsPor() {
                 :
                     <div className={newsCSS.block}>
                         <section className={newsCSS.center_colum}>
-                            {(cState.auth && cState.role == 4) && getAdd(type, newsInfo, inps, forceUpdate)}
+                            {(cState.auth && cState.role == 4) && getAdd(newsInfo, inps, forceUpdate)}
                             {Object.getOwnPropertyNames(newsInfo[type]).reverse().map(param =>
                                 <div className={newsCSS.news_line} data-st="1" key={param}>
                                     {(cState.auth && cState.role == 4) ?
-                                            getAdd(type, newsInfo, inps, forceUpdate, param)
+                                            getAdd(newsInfo, inps, forceUpdate, param)
                                         : <>
                                             <h2 className={newsCSS.zag}>{newsInfo[type][param].title}</h2>
                                             <span className={newsCSS.date}>{newsInfo[type][param].date}</span>

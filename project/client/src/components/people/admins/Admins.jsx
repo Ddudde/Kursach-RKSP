@@ -1,13 +1,23 @@
 import React, {useEffect, useReducer, useRef} from "react";
 import {Helmet} from "react-helmet-async";
 import peopleCSS from '../peopleMain.module.css';
+import {useNavigate} from "react-router-dom";
 import {admins, states, themes} from "../../../store/selector";
 import {useDispatch, useSelector} from "react-redux";
-import {ele, gen_cod, setActNew, sit} from "../PeopleMain";
+import {ele, setActNew, sit} from "../PeopleMain";
 import profl from "../../../media/profl.png";
 import profd from "../../../media/profd.png";
 import ErrFound from "../../other/error/ErrFound";
-import {CHANGE_ADMINS, CHANGE_ADMINS_DEL, CHANGE_EVENT, changeEvents, changePeople} from "../../../store/actions";
+import {
+    CHANGE_ADMINS,
+    CHANGE_ADMINS_DEL,
+    CHANGE_ADMINS_EL_GL,
+    CHANGE_ADMINS_GL,
+    CHANGE_EVENT,
+    CHANGE_EVENTS_CLEAR,
+    changeEvents,
+    changePeople
+} from "../../../store/actions";
 import ed from "../../../media/edit.png";
 import no from "../../../media/no.png";
 import refreshCd from "../../../media/refreshCd.png";
@@ -15,13 +25,16 @@ import refreshCl from "../../../media/refreshCl.png";
 import copyd from "../../../media/copyd.png";
 import copyl from "../../../media/copyl.png";
 import yes from "../../../media/yes.png";
+import {eventSource, send} from "../../main/Main";
 
-let dispatch, errText, inps, adminsInfo, themeState, cState, types;
+let dispatch, errText, inps, adminsInfo, themeState, cState, tps, navigate;
 errText = "К сожалению, информация не найдена...";
 inps = {inpnpt : "Фамилия И.О."};
-types = {
+tps = {
     del : CHANGE_ADMINS_DEL,
-    ch: CHANGE_ADMINS
+    ch: CHANGE_ADMINS,
+    el_gl: CHANGE_ADMINS_EL_GL,
+    gl: CHANGE_ADMINS_GL
 };
 let [_, forceUpdate] = [];
 
@@ -40,12 +53,20 @@ function refreshLink(e, type) {
     inp = e.target.parentElement.querySelector("input");
     if (inp.hasAttribute("data-id")) {
         id = inp.getAttribute("data-id").split("_");
-        dispatch(changePeople(type, 0, id[0], id[1], sit + "/invite/" + gen_cod(), "link"));
-        dispatch(changeEvents(CHANGE_EVENT, undefined, undefined, title, text, 10));
-    } else if (inp.hasAttribute("data-id1")) {
-        id = inp.getAttribute("data-id1");
-        dispatch(changePeople(type, 2, id, undefined, sit + "/invite/" + gen_cod(), "link"));
-        dispatch(changeEvents(CHANGE_EVENT, undefined, undefined, title, text, 10));
+        // dispatch(changePeople(type, 0, id[0], id[1], sit + "/invite/" + gen_cod(), "link"));
+        // dispatch(changeEvents(CHANGE_EVENT, undefined, undefined, title, text, 10));
+        send({
+            login: cState.login,
+            id: id[0],
+            id1: id[1]
+        }, 'POST', "auth", "setCodePep")
+            .then(data => {
+                console.log(data);
+                if(data.error == false){
+                    dispatch(changePeople(type, 0, id[1], undefined, data.body.code, "link"));
+                    dispatch(changeEvents(CHANGE_EVENT, undefined, undefined, title, text, 10));
+                }
+            });
     }
 }
 
@@ -56,10 +77,8 @@ function onDel(e, type) {
         inp = par.querySelector("input:not([readOnly])");
         if (inp.hasAttribute("data-id")) {
             id = inp.getAttribute("data-id").split("_");
-            dispatch(changePeople(type, 0, id[0], id[1]));
-        } else if(inp.hasAttribute("data-id1")){
-            let id = inp.getAttribute("data-id1");
-            dispatch(changePeople(type, 2, id));
+            // dispatch(changePeople(type, 0, id[0], id[1]));
+            remInv(type, id[0], id[1]);
         }
     }
 }
@@ -80,34 +99,32 @@ function onFin(e, type) {
     let par, inp;
     par = e.target.parentElement;
     if (par.classList.contains(peopleCSS.fi)){
-        par = par.parentElement;
-        par = par.parentElement;
-        // if(net) {
-        //     net(type, inps.inpnpt);
-        // } else {
-        dispatch(changePeople(type, 2, "id8", undefined, inps.inpnpt));
-        // }
-        par.setAttribute('data-st', '0');
+        par = par.parentElement.parentElement;
+        addInv(type, inps.inpnpt, par);
+        // dispatch(changePeople(type, 2, "id8", undefined, inps.inpnpt));
+        // par.setAttribute('data-st', '0');
         return;
     }
     inp = par.querySelector("input");
     if (inps[inp.id]) {
-        inp.setAttribute("data-mod", '1');
+        inp.setAttribute("data-mod", '0');
         if(par.parentElement.classList.contains(peopleCSS.pepl)) {
             par = par.parentElement;
             if(type){
-                if(inp.hasAttribute("data-id1")){
-                    let id = inp.getAttribute("data-id1");
-                    dispatch(changePeople(type, 2, id, undefined, inp.value));
+                if(inp.hasAttribute("data-id")){
+                    let id = inp.getAttribute("data-id").split("_");
+                    changeInv(type, id[0], id[1], inp.value, par);
+                    // dispatch(changePeople(type, 2, id, undefined, inp.value));
                 }
             } else {
                 inps.inpnpt = inp.value;
                 forceUpdate();
+                par.setAttribute('data-st', '0');
             }
         }
-        par.setAttribute('data-st', '0');
+        // par.setAttribute('data-st', '0');
     } else {
-        inp.setAttribute("data-mod", '0');
+        inp.setAttribute("data-mod", '1');
     }
 }
 
@@ -134,19 +151,117 @@ function chStatB(e) {
     el.parentElement.querySelector(".yes").setAttribute("data-enable", +inps[el.id]);
 }
 
+function goToProf(log) {
+    if(log) navigate("/profiles/" + log);
+}
+
+function codPep(e) {
+    const msg = JSON.parse(e.data);
+    dispatch(changePeople(tps.ch, 0, msg.id, undefined, msg.code, "link"));
+}
+
+function remPep(e) {
+    const msg = JSON.parse(e.data);
+    dispatch(changePeople(tps.del, 0, msg.id));
+}
+
+function chPep(e) {
+    const msg = JSON.parse(e.data);
+    dispatch(changePeople(tps.ch, 0, msg.id, undefined, msg.name));
+}
+
+function addPep(e) {
+    const msg = JSON.parse(e.data);
+    dispatch(changePeople(tps.el_gl, 0, msg.id, undefined, msg.body));
+}
+
+function remInv (type, id, id1) {
+    console.log("remInv");
+    send({
+        login: cState.login,
+        id: id,
+        id1: id1
+    }, 'POST', "admins", "remPep")
+        .then(data => {
+            console.log(data);
+            if(data.error == false){
+                dispatch(changePeople(type, 0, id1));
+            }
+        });
+}
+
+function changeInv (type, id, id1, inp, par) {
+    console.log("changeInv");
+    send({
+        login: cState.login,
+        id: id,
+        id1: id1,
+        name: inp
+    }, 'POST', "admins", "chPep")
+        .then(data => {
+            console.log(data);
+            if(data.error == false){
+                dispatch(changePeople(type, 0, id1, undefined, inp));
+                par.setAttribute('data-st', '0');
+            }
+        });
+}
+
+function addInv (type, inp, par) {
+    console.log("addInv");
+    send({
+        login: cState.login,
+        name: inp,
+        role: 4
+    }, 'POST', "admins", "addPep")
+        .then(data => {
+            console.log(data);
+            if(data.error == false){
+                dispatch(changePeople(type, 2, data.body.id, undefined, inp));
+                par.setAttribute('data-st', '0');
+            }
+        });
+}
+
+function onCon(e) {
+    setInfo();
+}
+
+function setInfo() {
+    send({
+        type: "ADMINS",
+        uuid: cState.uuid,
+        podType: cState.role == 4 ? "adm" : undefined
+    }, 'POST', "auth", "infCon");
+    send({
+        login: cState.login
+    }, 'POST', "admins", "getAdmins")
+        .then(data => {
+            console.log(data);
+            if(data.error == false){
+                dispatch(changePeople(tps.gl, undefined, undefined, undefined, data.body));
+            }
+        });
+    for(let el of document.querySelectorAll("." + peopleCSS.ed + " > *[id^='inpn']")){
+        chStatB({target: el});
+    }
+}
+
 function getBlock(x, b) {
-    let edFi = <div className={peopleCSS.pepl} key={x} data-st="0">
+    let edFi, info;
+    info = adminsInfo[x];
+    edFi = <div className={peopleCSS.pepl} key={x} data-st="0">
         {x ?
             <div className={peopleCSS.fi}>
                 <div className={peopleCSS.nav_i+" "+peopleCSS.nav_iZag2} id={peopleCSS.nav_i}>
-                    {adminsInfo[x].name}
+                    {info.name}
                 </div>
-                <img className={peopleCSS.profIm} src={themeState.theme_ch ? profd : profl} title="Перейти в профиль" alt=""/>
+                {info.login && <img className={peopleCSS.profIm} src={themeState.theme_ch ? profd : profl} onClick={e=>goToProf(info.login)} title="Перейти в профиль" alt=""/>}
                 <img className={peopleCSS.imgfield} src={ed} onClick={onEdit} title="Редактировать" alt=""/>
-                <img className={peopleCSS.imginp} data-id={x} style={{marginRight: "1vw"}} src={no} onClick={e=>onDel(e, types.del)} title="Удалить" alt=""/>
-                <input className={peopleCSS.inp+" "+peopleCSS.copyInp} data-id1={x} id={"inpcpt_" + x} placeholder="Ссылка не создана" value={adminsInfo[x].link} type="text" readOnly/>
-                <img className={peopleCSS.imginp+" "+peopleCSS.refrC} src={themeState.theme_ch ? refreshCd : refreshCl} onClick={(e)=>refreshLink(e, types.ch)} title="Создать ссылку-приглашение" alt=""/>
-                <img className={peopleCSS.imginp} src={themeState.theme_ch ? copyd : copyl} title="Копировать" data-enable={adminsInfo[x].link ? "1" : "0"} onClick={(e)=>copyLink(e, adminsInfo[x].link, adminsInfo[x].name)} alt=""/>
+                <img className={peopleCSS.imginp} style={{marginRight: "1vw"}} src={no} onClick={e=>onDel(e, tps.del)} title="Удалить" alt=""/>
+                <input className={peopleCSS.inp+" "+peopleCSS.copyInp} data-id={x ? info.login+"_"+x : undefined} id={"inpcpt_" + x} placeholder="Ссылка не создана" value={info.link ? sit + (info.login ? "/reauth/" : "/invite/") + info.link : undefined} type="text" readOnly/>
+                <img className={peopleCSS.imginp+" "+peopleCSS.refrC} src={themeState.theme_ch ? refreshCd : refreshCl} onClick={(e)=>refreshLink(e, tps.ch)} title="Создать ссылку-приглашение" alt=""/>
+                <img className={peopleCSS.imginp} src={themeState.theme_ch ? copyd : copyl} title="Копировать" data-enable={info.link ? "1" : "0"} onClick={(e)=>copyLink(e, info.link ? sit + (info.login ? "/reauth/" : "/invite/") + info.link : undefined, info.name)} alt=""/>
             </div>
             :
             <div className={peopleCSS.fi}>
@@ -155,7 +270,7 @@ function getBlock(x, b) {
                 </div>
                 <img className={peopleCSS.profIm} src={themeState.theme_ch ? profd : profl} title="Так будет выглядеть иконка перехода в профиль" alt=""/>
                 <img className={peopleCSS.imgfield} src={ed} onClick={onEdit} title="Редактировать" alt=""/>
-                <img className={peopleCSS.imginp+" yes "} src={yes} onClick={e=>onFin(e, types.ch)} title="Подтвердить" alt=""/>
+                <img className={peopleCSS.imginp+" yes "} src={yes} onClick={e=>onFin(e, tps.ch)} title="Подтвердить" alt=""/>
                 <img className={peopleCSS.imginp} style={{marginRight: "1vw"}} src={no} onClick={onClose} title="Отменить изменения и выйти из режима редактирования" alt=""/>
             </div>
         }
@@ -163,9 +278,9 @@ function getBlock(x, b) {
             <div className={peopleCSS.preinf}>
                 ФИО:
             </div>
-            <input className={peopleCSS.inp} data-id1={x} id={"inpnpt_" + (x?x:"")} placeholder={"Фамилия И.О."} defaultValue={x ? adminsInfo[x].name : inps.inpnpt} onChange={chStatB} type="text"/>
+            <input className={peopleCSS.inp} data-id={x ? info.login+"_"+x : undefined} id={"inpnpt_" + (x?x:"")} placeholder={"Фамилия И.О."} defaultValue={x ? info.name : inps.inpnpt} onChange={chStatB} type="text"/>
             {ele(false, "inpnpt_" + (x?x:""), inps)}
-            <img className={peopleCSS.imginp+" yes "} src={yes} onClick={e=>onFin(e, x ? types.ch : undefined)} title="Подтвердить" alt=""/>
+            <img className={peopleCSS.imginp+" yes "} src={yes} onClick={e=>onFin(e, x ? tps.ch : undefined)} title="Подтвердить" alt=""/>
             <img className={peopleCSS.imginp} style={{marginRight: "1vw"}} src={no} onClick={onClose} title="Отменить изменения и выйти из режима редактирования" alt=""/>
         </div>
     </div>;
@@ -181,6 +296,7 @@ function getBlock(x, b) {
 export function Admins() {
     adminsInfo = useSelector(admins);
     themeState = useSelector(themes);
+    navigate = useNavigate();
     cState = useSelector(states);
     if(!dispatch) setActNew(4);
     [_, forceUpdate] = useReducer((x) => x + 1, 0);
@@ -188,11 +304,20 @@ export function Admins() {
     const isFirstUpdate = useRef(true);
     useEffect(() => {
         console.log("I was triggered during componentDidMount Admins.jsx");
-        for(let el of document.querySelectorAll("." + peopleCSS.ed + " > *[id^='inpn']")){
-            chStatB({target: el}, inps);
-        }
+        setInfo();
+        eventSource.addEventListener('connect', onCon, false);
+        eventSource.addEventListener('addPepC', addPep, false);
+        eventSource.addEventListener('chPepC', chPep, false);
+        eventSource.addEventListener('remPepC', remPep, false);
+        eventSource.addEventListener('codPepC', codPep, false);
         return function() {
+            dispatch(changeEvents(CHANGE_EVENTS_CLEAR));
             dispatch = undefined;
+            eventSource.removeEventListener('connect', onCon);
+            eventSource.removeEventListener('addPepC', addPep);
+            eventSource.removeEventListener('chPepC', chPep);
+            eventSource.removeEventListener('remPepC', remPep);
+            eventSource.removeEventListener('codPepC', codPep);
             console.log("I was triggered during componentWillUnmount Admins.jsx");
         }
     }, []);
