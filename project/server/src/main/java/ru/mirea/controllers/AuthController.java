@@ -1,6 +1,8 @@
 package ru.mirea.controllers;
 
 import com.google.gson.JsonObject;
+import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -9,14 +11,12 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import ru.mirea.Main;
 import ru.mirea.data.models.auth.Invite;
-import ru.mirea.data.SSE.SubscriptionData;
+import ru.mirea.data.SSE.Subscriber;
 import ru.mirea.data.SSE.TypesConnect;
 import ru.mirea.data.models.School;
 import ru.mirea.data.models.auth.User;
-import ru.mirea.data.reps.auth.InviteRepository;
-import ru.mirea.data.reps.SchoolRepository;
-import ru.mirea.data.reps.auth.UserRepository;
 import ru.mirea.data.json.Role;
+import ru.mirea.data.ServerService;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -25,64 +25,17 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @RestController
 @RequestMapping("/auth")
+@NoArgsConstructor
 @CrossOrigin(origins = {"http://localhost:3000", "http://192.168.1.66:3000"})
 public class AuthController {
 
-    private final UserRepository userRepository;
+    @Autowired
+    private ServerService datas;
 
-    private final InviteRepository inviteRepository;
-
-    private final SchoolRepository schoolRepository;
-
-    Map<UUID, SubscriptionData> subscriptions = new ConcurrentHashMap<>();
-
-    public AuthController(UserRepository userRepository, InviteRepository inviteRepository, SchoolRepository schoolRepository) {
-        this.userRepository = userRepository;
-        this.inviteRepository = inviteRepository;
-        this.schoolRepository = schoolRepository;
-    }
-
-    public void createUser(User user) {
-        User savedUser = userRepository.saveAndFlush(user);
-        System.out.println(savedUser);
-    }
-
-    public void createInvite(Invite inv) {
-        Invite savedInv = inviteRepository.saveAndFlush(inv);
-        System.out.println(savedInv);
-    }
-
-    public void delCodeUser(User user){
-        if(user != null){
-            user.setCode(null);
-            user.setExpDate(null);
-            userRepository.saveAndFlush(user);
-        }
-    }
-
-    public void delInv(Invite inv) {
-        if(inv != null){
-            School school = schoolRepository.findById(((Role) inv.getRole().values().toArray()[0]).getYO()).orElse(null);
-            if(ObjectUtils.isEmpty(school.getHteachersInv())) {
-                school.setHteachersInv(new ArrayList<>());
-            }
-            school.getHteachersInv().remove(inv.getId());
-            schoolRepository.saveAndFlush(school);
-            inviteRepository.delete(inv);
-        }
-    }
-
-    public List<Invite> getInvites() {
-        return inviteRepository.findAll();
-    }
-
-    public List<User> getUsers() {
-        return userRepository.findAll();
-    }
+    Map<UUID, Subscriber> subscriptions = new ConcurrentHashMap<>();
 
     @GetMapping(path = "/open-stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<ServerSentEvent> openSseStream() {
-        Main.init();
         Flux<ServerSentEvent> stream = Flux.create(fluxSink -> {
             UUID uuid = UUID.randomUUID();
             System.out.println("create subscription for " + uuid);
@@ -99,8 +52,8 @@ public class AuthController {
                 }
             );
 //            fluxSink.error(new Exception("test"));
-            SubscriptionData subscriptionData = new SubscriptionData(fluxSink);
-            subscriptions.put(uuid, subscriptionData);
+            Subscriber subscriber = new Subscriber(fluxSink);
+            subscriptions.put(uuid, subscriber);
             ServerSentEvent<Object> event = ServerSentEvent
                     .builder()
                     .event("connect")
@@ -113,20 +66,21 @@ public class AuthController {
 
     @Scheduled(cron = "*/10 * * * * *")
     public void ping(){
-        sendMessageForAll("ping", "test", TypesConnect.MAIN, "main");
+        sendMessageForAll("ping", "test", TypesConnect.MAIN, "main", "main");
     }
 
-    public void sendMessageForAll(String evName, Object data, TypesConnect type, String podType) {
+    public void sendMessageForAll(String evName, Object data, TypesConnect type, String podTypeL1, String podTypeL2) {
         ServerSentEvent<Object> event = ServerSentEvent
                 .builder()
                 .event(evName)
                 .data(data)
                 .build();
-        subscriptions.forEach((uuid, subscriptionData) -> {
-                if ((type == TypesConnect.MAIN || Objects.equals(type, subscriptionData.getType()))
-                 && (Objects.equals(podType, "main") || Objects.equals(podType, subscriptionData.getPodType()))) {
+        subscriptions.forEach((uuid, subscriber) -> {
+                if ((type == TypesConnect.MAIN || Objects.equals(type, subscriber.getType()))
+                 && (Objects.equals(podTypeL1, "main") || Objects.equals(podTypeL1, subscriber.getPodTypeL1()))
+                 && (Objects.equals(podTypeL2, "main") || Objects.equals(podTypeL2, subscriber.getPodTypeL2()))) {
                     try {
-                        subscriptionData.getFluxSink().next(event);
+                        subscriber.getFluxSink().next(event);
                     } catch (Error e) {
                         subscriptions.remove(uuid);
                         System.out.println("subscription " + uuid + " was closed from Ping");
@@ -136,16 +90,33 @@ public class AuthController {
         );
     }
 
-    public void sendMessageByLogin(String login) {
-        ServerSentEvent<String> event = ServerSentEvent
-            .builder("sdf")
-            .build();
-        subscriptions.forEach((uuid, subscriptionData) -> {
-                if (Objects.equals(login, subscriptionData.getLogin())) {
-                    subscriptionData.getFluxSink().next(event);
-                }
+    public Subscriber getSubscriber(String uuid) {
+        return subscriptions.get(UUID.fromString(uuid));
+    }
+
+    public void infCon(String uuid, String login, TypesConnect type, String podTypeL1, String podTypeL2){
+        if(uuid != null) {
+            if(login != null) {
+                subscriptions.get(UUID.fromString(uuid))
+                        .setLogin(login);
+                System.out.println("setLog " + login + " subscription for " + uuid);
             }
-        );
+            if(type != null) {
+                subscriptions.get(UUID.fromString(uuid))
+                        .setType(type);
+                System.out.println("setType " + type + " subscription for " + uuid);
+            }
+            if(podTypeL1 != null) {
+                subscriptions.get(UUID.fromString(uuid))
+                        .setPodTypeL1(podTypeL1);
+                System.out.println("setPodTypeL1 " + podTypeL1 + " subscription for " + uuid);
+            }
+            if(podTypeL2 != null) {
+                subscriptions.get(UUID.fromString(uuid))
+                        .setPodTypeL2(podTypeL2);
+                System.out.println("setPodTypeL2 " + podTypeL2 + " subscription for " + uuid);
+            }
+        }
     }
 
     @PostMapping
@@ -170,7 +141,7 @@ public class AuthController {
                     }
                     if(body.has("podType")) {
                         subscriptions.get(UUID.fromString(body.get("uuid").getAsString()))
-                                .setPodType(body.get("podType").getAsString());
+                                .setPodTypeL1(body.get("podType").getAsString());
                         System.out.println("setPodType " + body.get("podType").getAsString() + " subscription for " + body.get("uuid").getAsString());
                     }
                 }
@@ -187,7 +158,7 @@ public class AuthController {
                 bodyAns = new JsonObject();
                 ans.add("body", bodyAns);
                 bodyAns.addProperty("auth", false);
-                User user = userRepository.findByLogin(body.get("login").getAsString());
+                User user = datas.userByLogin(body.get("login").getAsString());
                 if(user != null) {
                     if(Objects.equals(user.getPassword(), body.get("password").getAsString())) {
                         bodyAns.addProperty("auth", true);
@@ -204,14 +175,14 @@ public class AuthController {
             case "reg" -> {
                 bodyAns = new JsonObject();
                 ans.add("body", bodyAns);
-                User user = userRepository.findByLogin(body.get("login").getAsString());
+                User user = datas.userByLogin(body.get("login").getAsString());
                 Invite inv = null;
                 User user1 = null;
                 if(Objects.equals(body.get("mod").getAsString(), "inv")){
-                    inv = inviteRepository.findByCode(body.get("code").getAsString());
+                    inv = datas.inviteByCode(body.get("code").getAsString());
                 }
                 if(Objects.equals(body.get("mod").getAsString(), "rea")){
-                    user1 = userRepository.findByCode(body.get("code").getAsString());
+                    user1 = datas.userByCode(body.get("code").getAsString());
                 }
                 if(inv == null && user1 == null){
                     ans.addProperty("error", 2);
@@ -222,14 +193,14 @@ public class AuthController {
                         user = new User(body.get("login").getAsString(), body.get("par").getAsString(), body.get("ico").getAsInt());
                         user.setRoles(inv.getRole());
                         user.setFio(inv.getFio());
-                        userRepository.saveAndFlush(user);
-                        School school = schoolRepository.findById(((Role) inv.getRole().values().toArray()[0]).getYO()).orElse(null);
+                        datas.getUserRepository().saveAndFlush(user);
+                        School school = datas.schoolById(((Role) inv.getRole().values().toArray()[0]).getYO());
                         if(ObjectUtils.isEmpty(school.getHteachersInv())) school.setHteachersInv(new ArrayList<>());
                         if(ObjectUtils.isEmpty(school.getHteachers())) school.setHteachers(new ArrayList<>());
                         school.getHteachersInv().remove(inv.getId());
                         school.getHteachers().add(user.getId());
-                        schoolRepository.saveAndFlush(school);
-                        inviteRepository.delete(inv);
+                        datas.getSchoolRepository().saveAndFlush(school);
+                        datas.getInviteRepository().delete(inv);
                     }
                     if(user1 != null){
                         user1.setLogin(body.get("login").getAsString());
@@ -237,7 +208,7 @@ public class AuthController {
                         user1.setIco(body.get("ico").getAsInt());
                         user1.setCode(null);
                         user1.setExpDate(null);
-                        userRepository.saveAndFlush(user1);
+                        datas.getUserRepository().saveAndFlush(user1);
                     }
                 } else {
                     ans.addProperty("error", true);
@@ -247,10 +218,10 @@ public class AuthController {
             case "chPass" -> {
                 bodyAns = new JsonObject();
                 ans.add("body", bodyAns);
-                User user = userRepository.findByLogin(body.get("login").getAsString());
+                User user = datas.userByLogin(body.get("login").getAsString());
                 if(user != null && Objects.equals(user.getSecFr(), body.get("secFr").getAsString())) {
                     user.setPassword(body.get("par").getAsString());
-                    userRepository.saveAndFlush(user);
+                    datas.getUserRepository().saveAndFlush(user);
                 } else {
                     ans.addProperty("error", true);
                 }
@@ -259,7 +230,7 @@ public class AuthController {
             case "chRole" -> {
                 bodyAns = new JsonObject();
                 ans.add("body", bodyAns);
-                User user = userRepository.findByLogin(body.get("login").getAsString());
+                User user = datas.userByLogin(body.get("login").getAsString());
                 long curRol = body.get("role").getAsLong();
                 if(user != null && user.getRoles().containsKey(curRol)) {
                     for(long i = (curRol == 4 ? 0 : curRol+1L); i < 5; i++){
@@ -270,7 +241,7 @@ public class AuthController {
                             bodyAns.addProperty("kid", role.getKids().get(0));
                             JsonObject kids = new JsonObject();
                             for(Long i1 : role.getKids()){
-                                User kid = userRepository.findById(i1).orElseThrow(RuntimeException::new);
+                                User kid = datas.userById(i1);
                                 kids.addProperty(i1+"", kid.getFio());
                             }
                             bodyAns.add("kids", kids);
@@ -280,61 +251,64 @@ public class AuthController {
                 }
                 return ans;
             }
+            case "exit" -> {
+                Subscriber subscriber = getSubscriber(body.get("uuid").getAsString());
+                subscriber.setLogin(null);
+                subscriber.setPodTypeL2(null);
+                return ans;
+            }
             case "checkInvCode" -> {
-                User user = userRepository.findByLogin(body.get("login").getAsString());
-                Invite inv = inviteRepository.findByCode(body.get("code").getAsString());
+                User user = datas.userByLogin(body.get("login").getAsString());
+                Invite inv = datas.inviteByCode(body.get("code").getAsString());
                 if(inv == null) {
                     ans.addProperty("error", true);
                 }else if (user != null) {
                     user.getRoles().putAll(inv.getRole());
-                    userRepository.saveAndFlush(user);
-                    School school = schoolRepository.findById(((Role) inv.getRole().values().toArray()[0]).getYO()).orElse(null);
+                    datas.getUserRepository().saveAndFlush(user);
+                    School school = datas.schoolById(((Role) inv.getRole().values().toArray()[0]).getYO());
                     if(ObjectUtils.isEmpty(school.getHteachersInv())) school.setHteachersInv(new ArrayList<>());
                     if(ObjectUtils.isEmpty(school.getHteachers())) school.setHteachers(new ArrayList<>());
                     school.getHteachersInv().remove(inv.getId());
                     school.getHteachers().add(user.getId());
-                    schoolRepository.saveAndFlush(school);
-                    inviteRepository.delete(inv);
+                    datas.getSchoolRepository().saveAndFlush(school);
+                    datas.getInviteRepository().delete(inv);
                 }
                 return ans;
             }
             case "checkReaCode" -> {
-                User user = userRepository.findByCode(body.get("code").getAsString());
+                User user = datas.userByCode(body.get("code").getAsString());
                 if(user == null) {
                     ans.addProperty("error", true);
                 }
                 return ans;
             }
             case "setCodePep" -> {
-                bodyAns = new JsonObject();
-                ans.add("body", bodyAns);
-                User user = userRepository.findByLogin(body.get("login").getAsString());
-                User user1 = userRepository.findByLogin(body.get("id").getAsString());
-                Invite inv = inviteRepository.findById(body.get("id1").getAsLong()).orElse(null);
+                Subscriber subscriber = getSubscriber(body.get("uuid").getAsString());
+                User user = datas.userByLogin(subscriber.getLogin());
+                User user1 = datas.userByLogin(body.get("id").getAsString());
+                Invite inv = datas.inviteById(body.get("id1").getAsLong());
                 if(user != null && user.getRoles().containsKey(4L) && (user1 != null || inv != null)) {
                     UUID uuid = UUID.randomUUID();
                     Instant after = Instant.now().plus(Duration.ofDays(30));
                     Date dateAfter = Date.from(after);
-                    JsonObject ansToCl = new JsonObject();
                     if(user1 != null){
                         user1.setCode(uuid.toString());
                         user1.setExpDate(Main.df.format(dateAfter));
-                        userRepository.saveAndFlush(user1);
+                        datas.getUserRepository().saveAndFlush(user1);
 
-                        ansToCl.addProperty("id", user1.getId());
+                        ans.addProperty("id", user1.getId());
                     } else if(inv != null){
                         inv.setCode(uuid.toString());
                         inv.setExpDate(Main.df.format(dateAfter));
-                        inviteRepository.saveAndFlush(inv);
+                        datas.getInviteRepository().saveAndFlush(inv);
 
-                        ansToCl.addProperty("id", inv.getId());
+                        ans.addProperty("id", inv.getId());
                     }
                     System.out.println("setCode " + uuid);
-                    bodyAns.addProperty("code", uuid.toString());
 
-                    ansToCl.addProperty("code", uuid.toString());
-                    if(body.has("id2")) ansToCl.addProperty("id1", body.get("id2").getAsLong());
-                    sendMessageForAll("codPepC", ansToCl, TypesConnect.MAIN, "adm");
+                    ans.addProperty("code", uuid.toString());
+                    if(body.has("id2")) ans.addProperty("id1", body.get("id2").getAsLong());
+                    sendMessageForAll("codPepC", ans, TypesConnect.MAIN, "adm", "main");
                 } else {
                     ans.addProperty("error", true);
                 }

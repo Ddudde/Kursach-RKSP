@@ -2,10 +2,15 @@ package ru.mirea.controllers;
 
 import com.google.gson.JsonObject;
 import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
+import ru.mirea.data.SSE.Subscriber;
 import ru.mirea.data.SSE.TypesConnect;
+import ru.mirea.data.ServerService;
 import ru.mirea.data.models.Contacts;
+import ru.mirea.data.models.School;
 import ru.mirea.data.models.Syst;
 import ru.mirea.data.models.auth.User;
 import ru.mirea.data.reps.ContactsRepository;
@@ -17,28 +22,15 @@ import java.util.Objects;
 
 @RestController
 @RequestMapping("/contacts")
-@AllArgsConstructor
+@NoArgsConstructor
 @CrossOrigin(origins = {"http://localhost:3000", "http://192.168.1.66:3000"})
 public class ContactsController {
 
-    private final UserRepository userRepository;
+    @Autowired
+    private ServerService datas;
 
-    private final AuthController authController;
-
-    private final ContactsRepository contactsRepository;
-
-    private final AdminsController adminsController;
-
-    private final SystemRepository systemRepository;
-
-    public void createContacts(Contacts contacts) {
-        Contacts savedContacts = contactsRepository.saveAndFlush(contacts);
-        System.out.println(savedContacts);
-    }
-
-    public List<Contacts> getContacts() {
-        return contactsRepository.findAll();
-    }
+    @Autowired
+    private AuthController authController;
 
     @PostMapping
     public JsonObject post(@RequestBody JsonObject data) {
@@ -49,15 +41,30 @@ public class ContactsController {
         if(!data.has("type")) data.addProperty("type", "default");
         switch (data.get("type").getAsString()){
             case "getContacts" -> {
+                Subscriber subscriber = authController.getSubscriber(body.get("uuid").getAsString());
                 bodyAns = new JsonObject();
                 JsonObject map = new JsonObject();
-                ans.add("body", bodyAns);
-                bodyAns.add("mapPr", map);
-                User user = null;
-                if(body.has("login")) user = userRepository.findByLogin(body.get("login").getAsString());
-                Syst syst = adminsController.getSyst();
-                if(user != null && syst != null && !ObjectUtils.isEmpty(syst.getContacts())) {
-                    Contacts conM = contactsRepository.findById(syst.getContacts()).orElseThrow(RuntimeException::new);
+                Long conId = null, schId = null;
+                if(subscriber != null) {
+                    ans.add("body", bodyAns);
+                    bodyAns.add("mapPr", map);
+                    User user = datas.userByLogin(subscriber.getLogin());
+                    Syst syst = datas.getSyst();
+                    if (user != null) {
+                        schId = user.getRoles().get(body.get("role").getAsLong()).getYO();
+                        School school = datas.schoolById(schId);
+                        if (Objects.equals(body.get("type").getAsString(), "Yo") && school != null) {
+                            conId = school.getContacts();
+                        }
+                    }
+                    if (Objects.equals(body.get("type").getAsString(), "Por") && syst != null) {
+                        conId = syst.getContacts();
+                        schId = null;
+                    }
+                    authController.infCon(body.get("uuid").getAsString(), subscriber.getLogin(), TypesConnect.CONTACTS, body.get("type").getAsString(), schId + "");
+                }
+                if(conId != null) {
+                    Contacts conM = datas.contactsById(conId);
                     bodyAns.addProperty("contact", conM.getContact());
                     map.addProperty("text", conM.getText());
                     map.addProperty("imgUrl", conM.getImgUrl());
@@ -67,10 +74,23 @@ public class ContactsController {
                 return ans;
             }
             case "chContact" -> {
-                User user = userRepository.findByLogin(body.get("login").getAsString());
-                Syst syst = adminsController.getSyst();
-                Contacts contacts = contactsRepository.findById(syst.getContacts()).orElseThrow(RuntimeException::new);
-                if(user != null && user.getRoles().containsKey(4L) && contacts != null) {
+                Subscriber subscriber = authController.getSubscriber(body.get("uuid").getAsString());
+                User user = datas.userByLogin(subscriber.getLogin());
+                Syst syst = datas.getSyst();
+                Contacts contacts = null;
+                if(user != null) {
+                    if(user.getRoles().containsKey(4L) && Objects.equals(subscriber.getPodTypeL1(), "Por")){
+                        contacts = datas.contactsById(syst.getContacts());
+                    }
+                    if(user.getRoles().containsKey(3L) && Objects.equals(subscriber.getPodTypeL1(), "Yo")){
+                        Long schId = user.getRoles().get(body.get("role").getAsLong()).getYO();
+                        School school = datas.schoolById(schId);
+                        if(school != null) {
+                            contacts = datas.contactsById(school.getContacts());
+                        }
+                    }
+                }
+                if(contacts != null) {
                     String p = body.get("p").getAsString();
                     String p1 = body.has("p1") ? body.get("p1").getAsString() : null;
                     if(Objects.equals(p, "contact")) {
@@ -84,12 +104,12 @@ public class ContactsController {
                             contacts.setImgUrl(body.get("val").getAsString());
                         }
                     }
-                    contactsRepository.saveAndFlush(contacts);
+                    datas.getContactsRepository().saveAndFlush(contacts);
                     ans.add("val", body.get("val"));
                     ans.add("p", body.get("p"));
                     ans.add("p1", body.get("p1"));
 
-                    authController.sendMessageForAll("chContactC", ans, TypesConnect.CONTACTS, "Por");
+                    authController.sendMessageForAll("chContactC", ans, TypesConnect.CONTACTS, subscriber.getPodTypeL1(), subscriber.getPodTypeL2());
                 } else {
                     ans.addProperty("error", true);
                 }

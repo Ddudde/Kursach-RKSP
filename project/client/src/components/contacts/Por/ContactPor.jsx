@@ -3,7 +3,7 @@ import {Helmet} from "react-helmet-async";
 import contactCSS from '../contactMain.module.css';
 import {contacts, states} from "../../../store/selector";
 import {useDispatch, useSelector} from "react-redux";
-import {errorLoad, getEdCon, setActNew, setTyp} from "../ContactMain";
+import {chStatB, errorLoad, getEdCon, setActNew, setTyp} from "../ContactMain";
 import ErrFound from "../../other/error/ErrFound";
 import {CHANGE_EVENTS_CLEAR, changeEvents} from "../../../store/actions";
 
@@ -16,13 +16,19 @@ let [_, forceUpdate] = [];
 export function ContactPor() {
     contactsInfo = useSelector(contacts);
     cState = useSelector(states);
-    if(!dispatch) setActNew(0);
+    if(!dispatch) {
+        setActNew(0);
+        setTyp(type);
+    }
     [_, forceUpdate] = useReducer((x) => x + 1, 0);
     dispatch = useDispatch();
     const isFirstUpdate = useRef(true);
     useEffect(() => {
         console.log("I was triggered during componentDidMount ContactPor.jsx");
         setTyp(type);
+        for(let el of document.querySelectorAll("." + contactCSS.ed + " > *[id^='inpn']")){
+            chStatB({target: el}, inps);
+        }
         return function() {
             dispatch(changeEvents(CHANGE_EVENTS_CLEAR));
             dispatch = undefined;

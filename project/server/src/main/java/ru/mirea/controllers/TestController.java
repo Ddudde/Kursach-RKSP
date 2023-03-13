@@ -9,11 +9,11 @@ import java.util.List;
 @RestController
 @RequestMapping("/cts")
 @CrossOrigin(origins = {"http://localhost:3000", "http://192.168.1.66:3000"})
-public class ClientsController {
+public class TestController {
 
     private final UserRepository userRepository;
 
-    public ClientsController(UserRepository userRepository) {
+    public TestController(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 

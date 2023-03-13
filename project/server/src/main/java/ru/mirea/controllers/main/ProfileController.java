@@ -3,11 +3,13 @@ package ru.mirea.controllers.main;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 import ru.mirea.controllers.AuthController;
 import ru.mirea.data.SSE.TypesConnect;
+import ru.mirea.data.ServerService;
 import ru.mirea.data.models.School;
 import ru.mirea.data.models.auth.User;
 import ru.mirea.data.reps.SchoolRepository;
@@ -16,18 +18,18 @@ import ru.mirea.data.json.Role;
 
 @RestController
 @RequestMapping("/profiles")
-@AllArgsConstructor
+@NoArgsConstructor
 @CrossOrigin(origins = {"http://localhost:3000", "http://192.168.1.66:3000"})
 public class ProfileController {
 
     @Autowired
     private Gson gson;
 
-    private final UserRepository userRepository;
+    @Autowired
+    private ServerService datas;
 
-    private final AuthController authController;
-
-    private final SchoolRepository schoolRepository;
+    @Autowired
+    private AuthController authController;
 
     @PostMapping
     public JsonObject post(@RequestBody JsonObject data) {
@@ -40,7 +42,7 @@ public class ProfileController {
             case "getProfile" -> {
                 bodyAns = new JsonObject();
                 ans.add("body", bodyAns);
-                User user = userRepository.findByLogin(body.get("login").getAsString());
+                User user = datas.userByLogin(body.get("login").getAsString());
                 if(user != null) {
                     bodyAns.addProperty("login", user.getLogin());
                     bodyAns.addProperty("ico", user.getIco());
@@ -54,7 +56,7 @@ public class ProfileController {
                         Role role = user.getRoles().get(i);
                         if(!ObjectUtils.isEmpty(role.getEmail())) roleO.addProperty("email", role.getEmail());
                         if(!ObjectUtils.isEmpty(role.getYO())) {
-                            School school = schoolRepository.findById(role.getYO()).orElseThrow(RuntimeException::new);
+                            School school = datas.getSchoolRepository().findById(role.getYO()).orElseThrow(RuntimeException::new);
                             if(school != null) roleO.addProperty("yo", school.getName());
                         }
                         if(!ObjectUtils.isEmpty(role.getGroup())) roleO.addProperty("group", role.getGroup());
@@ -63,7 +65,7 @@ public class ProfileController {
                             JsonObject kids = new JsonObject();
                             for(Long i1 : role.getKids()){
                                 JsonObject kid = new JsonObject();
-                                User kidU = userRepository.findById(i1).orElseThrow(RuntimeException::new);
+                                User kidU = datas.userById(i1);
                                 kid.addProperty("name", kidU.getFio());
                                 kid.addProperty("login", kidU.getLogin());
                                 kids.add(i1+"", kid);
@@ -74,7 +76,7 @@ public class ProfileController {
                             JsonObject parents = new JsonObject();
                             for(Long i1 : role.getParents()){
                                 JsonObject parent = new JsonObject();
-                                User parentU = userRepository.findById(i1).orElseThrow(RuntimeException::new);
+                                User parentU = datas.userById(i1);
                                 parent.addProperty("name", parentU.getFio());
                                 parent.addProperty("login", parentU.getLogin());
                                 parents.add(i1+"", parent);
@@ -90,15 +92,15 @@ public class ProfileController {
             case "chLogin" -> {
                 bodyAns = new JsonObject();
                 ans.add("body", bodyAns);
-                User user = userRepository.findByLogin(body.get("oLogin").getAsString());
-                User userN = userRepository.findByLogin(body.get("nLogin").getAsString());
+                User user = datas.userByLogin(body.get("oLogin").getAsString());
+                User userN = datas.userByLogin(body.get("nLogin").getAsString());
                 if(user != null && userN == null){
                     user.setLogin(body.get("nLogin").getAsString());
-                    userRepository.saveAndFlush(user);
+                    datas.getUserRepository().saveAndFlush(user);
 
                     JsonObject ansToCl = new JsonObject();
                     ansToCl.addProperty("login", user.getLogin());
-                    authController.sendMessageForAll("chLogin", ansToCl, TypesConnect.PROFILES, user.getLogin());
+                    authController.sendMessageForAll("chLogin", ansToCl, TypesConnect.PROFILES, user.getLogin(), "main");
                 } else {
                     ans.addProperty("error", true);
                 }
@@ -107,14 +109,14 @@ public class ProfileController {
             case "chInfo" -> {
                 bodyAns = new JsonObject();
                 ans.add("body", bodyAns);
-                User user = userRepository.findByLogin(body.get("login").getAsString());
+                User user = datas.userByLogin(body.get("login").getAsString());
                 if(user != null) {
                     user.setInfo(body.get("info").getAsString());
-                    userRepository.saveAndFlush(user);
+                    datas.getUserRepository().saveAndFlush(user);
 
                     JsonObject ansToCl = new JsonObject();
                     ansToCl.addProperty("more", user.getInfo());
-                    authController.sendMessageForAll("chInfo", ansToCl, TypesConnect.PROFILES, user.getLogin());
+                    authController.sendMessageForAll("chInfo", ansToCl, TypesConnect.PROFILES, user.getLogin(), "main");
                 } else {
                     ans.addProperty("error", true);
                 }
@@ -123,15 +125,15 @@ public class ProfileController {
             case "chEmail" -> {
                 bodyAns = new JsonObject();
                 ans.add("body", bodyAns);
-                User user = userRepository.findByLogin(body.get("login").getAsString());
+                User user = datas.userByLogin(body.get("login").getAsString());
                 if(user != null) {
                     user.getRoles().get(body.get("role").getAsLong()).setEmail(body.get("email").getAsString());
-                    userRepository.saveAndFlush(user);
+                    datas.getUserRepository().saveAndFlush(user);
 
                     JsonObject ansToCl = new JsonObject();
                     ansToCl.addProperty("email", body.get("email").getAsString());
                     ansToCl.addProperty("role", body.get("role").getAsLong());
-                    authController.sendMessageForAll("chEmail", ansToCl, TypesConnect.PROFILES, user.getLogin());
+                    authController.sendMessageForAll("chEmail", ansToCl, TypesConnect.PROFILES, user.getLogin(), "main");
                 } else {
                     ans.addProperty("error", true);
                 }

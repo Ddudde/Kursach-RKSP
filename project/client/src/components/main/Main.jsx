@@ -23,7 +23,6 @@ import up from "../../media/up.png";
 import Events from "../other/events/Events";
 import Dialog from "../other/dialog/Dialog";
 import Pane from "../other/pane/Pane";
-import {vxo} from "../start/Start";
 
 let act, ke, gr, cState, dispatch, paneInfo, themeInfo, scrolling, timid, timidP, d1, warnErrNet;
 scrolling = false;
@@ -108,23 +107,22 @@ export function send(bod, typeC, url, type) {
 }
 
 function chRoles() {
-    let bod = {
-        type: "chRole",
-        body: {
-            login: cState.login,
-            role: cState.role
-        }
-    };
-    const setRole = (data) => {
-        if(data.error == false && data.body.role != undefined){
-            dispatch(changeState(CHANGE_STATE_GL, undefined, data.body));
-        }
-    };
-    send('POST', JSON.stringify(bod), "auth", setRole);
+    send({
+        login: cState.login,
+        role: cState.role
+    }, 'POST', "auth", "chRole")
+        .then(data => {
+            if(data.error == false && data.body.role != undefined){
+                dispatch(changeState(CHANGE_STATE_GL, undefined, data.body));
+            }
+        });
 }
 
 function onExit() {
     dispatch(changeState(CHANGE_STATE_RESET));
+    send({
+        uuid: cState.uuid
+    }, 'POST', "auth", "exit");
 }
 
 export function setActived(name) {
@@ -181,7 +179,9 @@ function badPing() {
 
 function iniNet() {
     eventSource = new EventSource('http://192.168.1.66:8080/auth/open-stream');
-    eventSource.onopen = e => console.log('open');
+    eventSource.onopen = e => {
+        console.log('open');
+    };
     eventSource.onerror = e => {
         if (e.readyState == EventSource.CLOSED) {
             console.log('close');
@@ -318,7 +318,6 @@ export function Main() {
     useEffect(() => {
         console.log("I was triggered during componentDidMount Main.jsx");
         scr();
-        vxo("nm13", "1111", dispatch);
         iniTheme(themeInfo.theme_ch);
         window.onscroll = () => {
             if(!scrolling) {

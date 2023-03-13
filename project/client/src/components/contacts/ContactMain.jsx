@@ -184,7 +184,7 @@ export function ele (x, par, inps) {
 
 export function setTyp(x) {
     type = x;
-    setInfo();
+    if(eventSource.readyState == EventSource.OPEN) setInfo();
     eventSource.addEventListener('connect', onCon, false);
     eventSource.addEventListener('chContactC', chContactC, false);
 }
@@ -195,37 +195,27 @@ function onCon() {
 
 function setInfo() {
     send({
-        type: "CONTACTS",
-        uuid: cState.uuid,
-        podType: type
-    }, 'POST', "auth", "infCon")
-        .then(e => {
-            send({
-                login: cState.login
-            }, 'POST', "contacts", "getContacts")
-                .then(data => {
-                    console.log(data);
-                    if(data.error == false){
-                        dispatch(changeContacts(CHANGE_CONTACT_GL, type, data.body));
-                    }
-                });
+        type: type,
+        role: cState.role,
+        uuid: cState.uuid
+    }, 'POST', "contacts", "getContacts")
+        .then(data => {
+            console.log(data);
+            if(data.error == false){
+                dispatch(changeContacts(CHANGE_CONTACT_GL, type, data.body));
+            }
         });
 }
 
 function chContact (inp, p, p1) {
     console.log("chContact");
     send({
-        login: cState.login,
+        uuid: cState.uuid,
         p: p,
         p1: p1,
-        val: inp
-    }, 'POST', "contacts", "chContact")
-        .then(data => {
-            console.log(data);
-            if(data.error == false){
-                dispatch(changeContacts(CHANGE_CONTACT_PARAM, type, data.val, data.p, data.p1));
-            }
-        });
+        val: inp,
+        role: cState.role
+    }, 'POST', "contacts", "chContact");
 }
 
 function chContactC(e) {

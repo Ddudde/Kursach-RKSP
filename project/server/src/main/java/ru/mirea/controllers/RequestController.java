@@ -2,8 +2,11 @@ package ru.mirea.controllers;
 
 import com.google.gson.JsonObject;
 import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.mirea.data.SSE.TypesConnect;
+import ru.mirea.data.ServerService;
 import ru.mirea.data.models.Request;
 import ru.mirea.data.models.auth.User;
 import ru.mirea.data.reps.RequestRepository;
@@ -13,25 +16,15 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/requests")
-@AllArgsConstructor
+@NoArgsConstructor
 @CrossOrigin(origins = {"http://localhost:3000", "http://192.168.1.66:3000"})
 public class RequestController {
 
-    private final RequestRepository requestRepository;
+    @Autowired
+    private ServerService datas;
 
-    private final UserRepository userRepository;
-
-    private final AuthController authController;
-
-    public List<Request> createReq(@RequestBody Request request) {
-        Request savedRequest = requestRepository.saveAndFlush(request);
-        System.out.println(savedRequest);
-        return requestRepository.findAll();
-    }
-
-    public List<Request> getRequests() {
-        return requestRepository.findAll();
-    }
+    @Autowired
+    private AuthController authController;
 
     @PostMapping
     public JsonObject post(@RequestBody JsonObject data) {
@@ -44,9 +37,9 @@ public class RequestController {
             case "getRequests" -> {
                 bodyAns = new JsonObject();
                 ans.add("body", bodyAns);
-                User user = userRepository.findByLogin(body.get("login").getAsString());
+                User user = datas.userByLogin(body.get("login").getAsString());
                 if(user != null && user.getRoles().containsKey(4L)) {
-                    for(Request reqR : getRequests()){
+                    for(Request reqR : datas.getRequests()){
                         JsonObject req = new JsonObject();
                         bodyAns.add(reqR.getId()+"", req);
                         req.addProperty("title", reqR.getEmail());
@@ -61,16 +54,16 @@ public class RequestController {
             case "chText" -> {
                 bodyAns = new JsonObject();
                 ans.add("body", bodyAns);
-                User user = userRepository.findByLogin(body.get("login").getAsString());
-                Request request = requestRepository.findById(body.get("id").getAsLong()).orElseThrow(RuntimeException::new);
+                User user = datas.userByLogin(body.get("login").getAsString());
+                Request request = datas.requestById(body.get("id").getAsLong());
                 if(user != null && user.getRoles().containsKey(4L) && request != null) {
                     request.setText(body.get("text").getAsString());
-                    requestRepository.saveAndFlush(request);
+                    datas.getRequestRepository().saveAndFlush(request);
 
                     JsonObject ansToCl = new JsonObject();
                     ansToCl.addProperty("id", request.getId());
                     ansToCl.addProperty("text", request.getText());
-                    authController.sendMessageForAll("chText", ansToCl, TypesConnect.REQUESTS, "main");
+                    authController.sendMessageForAll("chText", ansToCl, TypesConnect.REQUESTS, "main", "main");
                 } else {
                     ans.addProperty("error", true);
                 }
@@ -79,16 +72,16 @@ public class RequestController {
             case "chDate" -> {
                 bodyAns = new JsonObject();
                 ans.add("body", bodyAns);
-                User user = userRepository.findByLogin(body.get("login").getAsString());
-                Request request = requestRepository.findById(body.get("id").getAsLong()).orElseThrow(RuntimeException::new);
+                User user = datas.userByLogin(body.get("login").getAsString());
+                Request request = datas.requestById(body.get("id").getAsLong());
                 if(user != null && user.getRoles().containsKey(4L) && request != null) {
                     request.setDate(body.get("date").getAsString());
-                    requestRepository.saveAndFlush(request);
+                    datas.getRequestRepository().saveAndFlush(request);
 
                     JsonObject ansToCl = new JsonObject();
                     ansToCl.addProperty("id", request.getId());
                     ansToCl.addProperty("date", request.getDate());
-                    authController.sendMessageForAll("chDate", ansToCl, TypesConnect.REQUESTS, "main");
+                    authController.sendMessageForAll("chDate", ansToCl, TypesConnect.REQUESTS, "main", "main");
                 } else {
                     ans.addProperty("error", true);
                 }
@@ -97,16 +90,16 @@ public class RequestController {
             case "chTitle" -> {
                 bodyAns = new JsonObject();
                 ans.add("body", bodyAns);
-                User user = userRepository.findByLogin(body.get("login").getAsString());
-                Request request = requestRepository.findById(body.get("id").getAsLong()).orElseThrow(RuntimeException::new);
+                User user = datas.userByLogin(body.get("login").getAsString());
+                Request request = datas.requestById(body.get("id").getAsLong());
                 if(user != null && user.getRoles().containsKey(4L) && request != null) {
                     request.setEmail(body.get("title").getAsString());
-                    requestRepository.saveAndFlush(request);
+                    datas.getRequestRepository().saveAndFlush(request);
 
                     JsonObject ansToCl = new JsonObject();
                     ansToCl.addProperty("id", request.getId());
                     ansToCl.addProperty("title", request.getEmail());
-                    authController.sendMessageForAll("chTitle", ansToCl, TypesConnect.REQUESTS, "main");
+                    authController.sendMessageForAll("chTitle", ansToCl, TypesConnect.REQUESTS, "main", "main");
                 } else {
                     ans.addProperty("error", true);
                 }
@@ -115,14 +108,14 @@ public class RequestController {
             case "delReq" -> {
                 bodyAns = new JsonObject();
                 ans.add("body", bodyAns);
-                User user = userRepository.findByLogin(body.get("login").getAsString());
-                Request request = requestRepository.findById(body.get("id").getAsLong()).orElseThrow(RuntimeException::new);
+                User user = datas.userByLogin(body.get("login").getAsString());
+                Request request = datas.requestById(body.get("id").getAsLong());
                 if(user != null && user.getRoles().containsKey(4L) && request != null) {
-                    requestRepository.delete(request);
+                    datas.getRequestRepository().delete(request);
 
                     JsonObject ansToCl = new JsonObject();
                     ansToCl.addProperty("id", request.getId());
-                    authController.sendMessageForAll("delReq", ansToCl, TypesConnect.REQUESTS, "main");
+                    authController.sendMessageForAll("delReq", ansToCl, TypesConnect.REQUESTS, "main", "main");
                 } else {
                     ans.addProperty("error", true);
                 }
@@ -132,7 +125,7 @@ public class RequestController {
                 bodyAns = new JsonObject();
                 if(body.has("title") && body.has("dat") && body.has("text")) {
                     Request request = new Request(body.get("title").getAsString(), body.get("dat").getAsString(), body.get("text").getAsString());
-                    requestRepository.saveAndFlush(request);
+                    datas.getRequestRepository().saveAndFlush(request);
 
                     JsonObject ansToCl = new JsonObject();
                     ansToCl.addProperty("id", request.getId());
@@ -140,7 +133,7 @@ public class RequestController {
                     bodyAns.addProperty("title", request.getEmail());
                     bodyAns.addProperty("date", request.getDate());
                     bodyAns.addProperty("text", request.getText());
-                    authController.sendMessageForAll("addReq", ansToCl, TypesConnect.REQUESTS, "main");
+                    authController.sendMessageForAll("addReq", ansToCl, TypesConnect.REQUESTS, "main", "main");
                 } else {
                     ans.addProperty("error", true);
                 }

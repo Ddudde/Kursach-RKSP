@@ -2,9 +2,12 @@ package ru.mirea.controllers;
 
 import com.google.gson.JsonObject;
 import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 import ru.mirea.Main;
+import ru.mirea.data.ServerService;
 import ru.mirea.data.models.auth.Invite;
 import ru.mirea.data.SSE.TypesConnect;
 import ru.mirea.data.models.School;
@@ -23,26 +26,15 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/schools")
-@AllArgsConstructor
+@NoArgsConstructor
 @CrossOrigin(origins = {"http://localhost:3000", "http://192.168.1.66:3000"})
 public class SchoolController {
 
-    private final UserRepository userRepository;
+    @Autowired
+    private ServerService datas;
 
-    private final SchoolRepository schoolRepository;
-
-    private final InviteRepository inviteRepository;
-
-    private final AuthController authController;
-
-    public void createSchool(School school) {
-        School savedSchool = schoolRepository.saveAndFlush(school);
-        System.out.println(savedSchool);
-    }
-
-    public List<School> getSchools() {
-        return schoolRepository.findAll();
-    }
+    @Autowired
+    private AuthController authController;
 
     @PostMapping
     public JsonObject post(@RequestBody JsonObject data) {
@@ -55,9 +47,9 @@ public class SchoolController {
             case "getSchools" -> {
                 bodyAns = new JsonObject();
                 ans.add("body", bodyAns);
-                User user = userRepository.findByLogin(body.get("login").getAsString());
+                User user = datas.userByLogin(body.get("login").getAsString());
                 if(user != null && user.getRoles().containsKey(4L)) {
-                    for(School el : getSchools()){
+                    for(School el : datas.getSchools()){
                         JsonObject schools = new JsonObject();
                         schools.addProperty("name", el.getName());
                         JsonObject pep = new JsonObject();
@@ -65,7 +57,7 @@ public class SchoolController {
                         if(!ObjectUtils.isEmpty(el.getHteachers())){
                             for(Long i1 : el.getHteachers()){
                                 JsonObject htO = new JsonObject();
-                                User htU = userRepository.findById(i1).orElseThrow(RuntimeException::new);
+                                User htU = datas.userById(i1);
                                 htO.addProperty("name", htU.getFio());
                                 htO.addProperty("login", htU.getLogin());
                                 System.out.println(htU.getCode());
@@ -76,7 +68,7 @@ public class SchoolController {
                         if(!ObjectUtils.isEmpty(el.getHteachersInv())){
                             for(Long i1 : el.getHteachersInv()){
                                 JsonObject htO = new JsonObject();
-                                Invite htI = inviteRepository.findById(i1).orElseThrow(RuntimeException::new);
+                                Invite htI = datas.inviteById(i1);
                                 htO.addProperty("name", htI.getFio());
                                 System.out.println(htI.getCode());
                                 if(!ObjectUtils.isEmpty(htI.getCode())) htO.addProperty("link", htI.getCode());
@@ -93,47 +85,47 @@ public class SchoolController {
             case "addSch" -> {
                 bodyAns = new JsonObject();
                 ans.add("body", bodyAns);
-                User user = userRepository.findByLogin(body.get("login").getAsString());
+                User user = datas.userByLogin(body.get("login").getAsString());
                 if(user != null && user.getRoles().containsKey(4L)) {
                     School school = new School(body.get("name").getAsString());
-                    schoolRepository.saveAndFlush(school);
+                    datas.getSchoolRepository().saveAndFlush(school);
                     bodyAns.addProperty("id", school.getId());
 
                     JsonObject ansToCl = new JsonObject(), bod = new JsonObject();
                     ansToCl.addProperty("id", school.getId());
                     ansToCl.add("body", bod);
                     bod.addProperty("name", body.get("name").getAsString());
-                    authController.sendMessageForAll("addSchC", ansToCl, TypesConnect.HTEACHERS, "adm");
+                    authController.sendMessageForAll("addSchC", ansToCl, TypesConnect.HTEACHERS, "adm", "main");
                 } else {
                     ans.addProperty("error", true);
                 }
                 return ans;
             }
             case "remSch" -> {
-                User user = userRepository.findByLogin(body.get("login").getAsString());
-                School school = schoolRepository.findById(body.get("id").getAsLong()).orElseThrow(RuntimeException::new);
+                User user = datas.userByLogin(body.get("login").getAsString());
+                School school = datas.schoolById(body.get("id").getAsLong());
                 if(user != null && user.getRoles().containsKey(4L) && school != null) {
-                    schoolRepository.delete(school);
+                    datas.getSchoolRepository().delete(school);
 
                     JsonObject ansToCl = new JsonObject();
                     ansToCl.addProperty("id", body.get("id").getAsLong());
-                    authController.sendMessageForAll("remSchC", ansToCl, TypesConnect.HTEACHERS, "adm");
+                    authController.sendMessageForAll("remSchC", ansToCl, TypesConnect.HTEACHERS, "adm", "main");
                 } else {
                     ans.addProperty("error", true);
                 }
                 return ans;
             }
             case "chSch" -> {
-                User user = userRepository.findByLogin(body.get("login").getAsString());
-                School school = schoolRepository.findById(body.get("id").getAsLong()).orElseThrow(RuntimeException::new);
+                User user = datas.userByLogin(body.get("login").getAsString());
+                School school = datas.schoolById(body.get("id").getAsLong());
                 if(user != null && user.getRoles().containsKey(4L) && school != null) {
                     school.setName(body.get("name").getAsString());
-                    schoolRepository.saveAndFlush(school);
+                    datas.getSchoolRepository().saveAndFlush(school);
 
                     JsonObject ansToCl = new JsonObject();
                     ansToCl.addProperty("id", body.get("id").getAsLong());
                     ansToCl.addProperty("name", body.get("name").getAsString());
-                    authController.sendMessageForAll("chSchC", ansToCl, TypesConnect.HTEACHERS, "adm");
+                    authController.sendMessageForAll("chSchC", ansToCl, TypesConnect.HTEACHERS, "adm", "main");
                 } else {
                     ans.addProperty("error", true);
                 }
@@ -142,8 +134,8 @@ public class SchoolController {
             case "addPep" -> {
                 bodyAns = new JsonObject();
                 ans.add("body", bodyAns);
-                User user = userRepository.findByLogin(body.get("login").getAsString());
-                School sch = schoolRepository.findById(body.get("yo").getAsLong()).orElse(null);
+                User user = datas.userByLogin(body.get("login").getAsString());
+                School sch = datas.schoolById(body.get("yo").getAsLong());
                 if(user != null && user.getRoles().containsKey(4L) && sch != null) {
                     JsonObject finBody = data.get("body").getAsJsonObject();
                     Instant after = Instant.now().plus(Duration.ofDays(30));
@@ -151,10 +143,10 @@ public class SchoolController {
                     Invite inv = new Invite(body.get("name").getAsString(), new HashMap<>(){{
                         put(finBody.get("role").getAsLong(), new Role(null, finBody.get("yo").getAsLong()));
                     }}, Main.df.format(dateAfter));
-                    inviteRepository.saveAndFlush(inv);
+                    datas.getInviteRepository().saveAndFlush(inv);
                     if(sch.getHteachersInv() == null) sch.setHteachersInv(new ArrayList<>());
                     sch.getHteachersInv().add(inv.getId());
-                    schoolRepository.saveAndFlush(sch);
+                    datas.getSchoolRepository().saveAndFlush(sch);
                     bodyAns.addProperty("id", inv.getId());
 
                     JsonObject ansToCl = new JsonObject(), bod = new JsonObject();
@@ -162,7 +154,7 @@ public class SchoolController {
                     ansToCl.addProperty("id1", inv.getId());
                     ansToCl.add("body", bod);
                     bod.addProperty("name", body.get("name").getAsString());
-                    authController.sendMessageForAll("addPepC", ansToCl, TypesConnect.HTEACHERS, "adm");
+                    authController.sendMessageForAll("addPepC", ansToCl, TypesConnect.HTEACHERS, "adm", "main");
                 } else {
                     ans.addProperty("error", true);
                 }
@@ -171,29 +163,29 @@ public class SchoolController {
             case "remPep" -> {
                 bodyAns = new JsonObject();
                 ans.add("body", bodyAns);
-                User user = userRepository.findByLogin(body.get("login").getAsString());
-                User user1 = userRepository.findByLogin(body.get("id").getAsString());
-                School sch = schoolRepository.findById(body.get("id1").getAsLong()).orElse(null);
-                Invite inv = inviteRepository.findById(body.get("id2").getAsLong()).orElse(null);
+                User user = datas.userByLogin(body.get("login").getAsString());
+                User user1 = datas.userByLogin(body.get("id").getAsString());
+                School sch = datas.schoolById(body.get("id1").getAsLong());
+                Invite inv = datas.inviteById(body.get("id2").getAsLong());
                 if(user != null && user.getRoles().containsKey(4L) && (user1 != null || inv != null) && sch != null) {
                     JsonObject ansToCl = new JsonObject();
                     if(user1 != null){
                         user1.getRoles().remove(3L);
-                        userRepository.saveAndFlush(user1);
+                        datas.getUserRepository().saveAndFlush(user1);
                         if(!ObjectUtils.isEmpty(sch.getHteachers())) sch.getHteachers().remove(user1.getId());
-                        schoolRepository.saveAndFlush(sch);
+                        datas.getSchoolRepository().saveAndFlush(sch);
 
                         ansToCl.addProperty("id1", user1.getId());
                     } else if(inv != null){
-                        inviteRepository.delete(inv);
+                        datas.getInviteRepository().delete(inv);
                         if(!ObjectUtils.isEmpty(sch.getHteachersInv())) sch.getHteachersInv().remove(inv.getId());
-                        schoolRepository.saveAndFlush(sch);
+                        datas.getSchoolRepository().saveAndFlush(sch);
 
                         ansToCl.addProperty("id1", inv.getId());
                     }
 
                     ansToCl.addProperty("id", sch.getId());
-                    authController.sendMessageForAll("remPepC", ansToCl, TypesConnect.HTEACHERS, "adm");
+                    authController.sendMessageForAll("remPepC", ansToCl, TypesConnect.HTEACHERS, "adm", "main");
                 } else {
                     ans.addProperty("error", true);
                 }
@@ -202,27 +194,27 @@ public class SchoolController {
             case "chPep" -> {
                 bodyAns = new JsonObject();
                 ans.add("body", bodyAns);
-                User user = userRepository.findByLogin(body.get("login").getAsString());
-                User user1 = userRepository.findByLogin(body.get("id").getAsString());
-                School sch = schoolRepository.findById(body.get("id1").getAsLong()).orElse(null);
-                Invite inv = inviteRepository.findById(body.get("id2").getAsLong()).orElse(null);
+                User user = datas.userByLogin(body.get("login").getAsString());
+                User user1 = datas.userByLogin(body.get("id").getAsString());
+                School sch = datas.schoolById(body.get("id1").getAsLong());
+                Invite inv = datas.inviteById(body.get("id2").getAsLong());
                 if(user != null && user.getRoles().containsKey(4L) && (user1 != null || inv != null) && sch != null) {
                     JsonObject ansToCl = new JsonObject();
                     if(user1 != null){
                         user1.setFio(body.get("name").getAsString());
-                        userRepository.saveAndFlush(user1);
+                        datas.getUserRepository().saveAndFlush(user1);
 
                         ansToCl.addProperty("id1", user1.getId());
                     } else if(inv != null){
                         inv.setFio(body.get("name").getAsString());
-                        inviteRepository.saveAndFlush(inv);
+                        datas.getInviteRepository().saveAndFlush(inv);
 
                         ansToCl.addProperty("id1", inv.getId());
                     }
 
                     ansToCl.addProperty("id", sch.getId());
                     ansToCl.addProperty("name", body.get("name").getAsString());
-                    authController.sendMessageForAll("chPepC", ansToCl, TypesConnect.HTEACHERS, "adm");
+                    authController.sendMessageForAll("chPepC", ansToCl, TypesConnect.HTEACHERS, "adm", "main");
                 } else {
                     ans.addProperty("error", true);
                 }

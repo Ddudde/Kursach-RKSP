@@ -46,7 +46,7 @@ function copyLink(e, link, name) {
     dispatch(changeEvents(CHANGE_EVENT, undefined, undefined, title, text, 10));
 }
 
-function refreshLink(e, type) {
+function refreshLink(e) {
     let inp, id, title, text;
     title = "Внимание!";
     text = "Ссылка успешно обновлена"
@@ -56,14 +56,13 @@ function refreshLink(e, type) {
         // dispatch(changePeople(type, 0, id[0], id[1], sit + "/invite/" + gen_cod(), "link"));
         // dispatch(changeEvents(CHANGE_EVENT, undefined, undefined, title, text, 10));
         send({
-            login: cState.login,
+            uuid: cState.uuid,
             id: id[0],
             id1: id[1]
         }, 'POST', "auth", "setCodePep")
             .then(data => {
                 console.log(data);
                 if(data.error == false){
-                    dispatch(changePeople(type, 0, id[1], undefined, data.body.code, "link"));
                     dispatch(changeEvents(CHANGE_EVENT, undefined, undefined, title, text, 10));
                 }
             });
@@ -155,22 +154,24 @@ function goToProf(log) {
     if(log) navigate("/profiles/" + log);
 }
 
-function codPep(e) {
+function codPepC(e) {
     const msg = JSON.parse(e.data);
+    console.log("codC");
+    console.log(msg);
     dispatch(changePeople(tps.ch, 0, msg.id, undefined, msg.code, "link"));
 }
 
-function remPep(e) {
+function remPepC(e) {
     const msg = JSON.parse(e.data);
     dispatch(changePeople(tps.del, 0, msg.id));
 }
 
-function chPep(e) {
+function chPepC(e) {
     const msg = JSON.parse(e.data);
     dispatch(changePeople(tps.ch, 0, msg.id, undefined, msg.name));
 }
 
-function addPep(e) {
+function addPepC(e) {
     const msg = JSON.parse(e.data);
     dispatch(changePeople(tps.el_gl, 0, msg.id, undefined, msg.body));
 }
@@ -178,22 +179,16 @@ function addPep(e) {
 function remInv (type, id, id1) {
     console.log("remInv");
     send({
-        login: cState.login,
+        uuid: cState.uuid,
         id: id,
         id1: id1
     }, 'POST', "admins", "remPep")
-        .then(data => {
-            console.log(data);
-            if(data.error == false){
-                dispatch(changePeople(type, 0, id1));
-            }
-        });
 }
 
 function changeInv (type, id, id1, inp, par) {
     console.log("changeInv");
     send({
-        login: cState.login,
+        uuid: cState.uuid,
         id: id,
         id1: id1,
         name: inp
@@ -201,7 +196,6 @@ function changeInv (type, id, id1, inp, par) {
         .then(data => {
             console.log(data);
             if(data.error == false){
-                dispatch(changePeople(type, 0, id1, undefined, inp));
                 par.setAttribute('data-st', '0');
             }
         });
@@ -210,14 +204,12 @@ function changeInv (type, id, id1, inp, par) {
 function addInv (type, inp, par) {
     console.log("addInv");
     send({
-        login: cState.login,
-        name: inp,
-        role: 4
+        uuid: cState.uuid,
+        name: inp
     }, 'POST', "admins", "addPep")
         .then(data => {
             console.log(data);
             if(data.error == false){
-                dispatch(changePeople(type, 2, data.body.id, undefined, inp));
                 par.setAttribute('data-st', '0');
             }
         });
@@ -229,22 +221,18 @@ function onCon(e) {
 
 function setInfo() {
     send({
-        type: "ADMINS",
-        uuid: cState.uuid,
-        podType: cState.role == 4 ? "adm" : undefined
-    }, 'POST', "auth", "infCon");
-    send({
-        login: cState.login
+        role: cState.role,
+        uuid: cState.uuid
     }, 'POST', "admins", "getAdmins")
         .then(data => {
             console.log(data);
             if(data.error == false){
                 dispatch(changePeople(tps.gl, undefined, undefined, undefined, data.body));
             }
+            for(let el of document.querySelectorAll("." + peopleCSS.ed + " > *[id^='inpn']")){
+                chStatB({target: el});
+            }
         });
-    for(let el of document.querySelectorAll("." + peopleCSS.ed + " > *[id^='inpn']")){
-        chStatB({target: el});
-    }
 }
 
 function getBlock(x, b) {
@@ -260,7 +248,7 @@ function getBlock(x, b) {
                 <img className={peopleCSS.imgfield} src={ed} onClick={onEdit} title="Редактировать" alt=""/>
                 <img className={peopleCSS.imginp} style={{marginRight: "1vw"}} src={no} onClick={e=>onDel(e, tps.del)} title="Удалить" alt=""/>
                 <input className={peopleCSS.inp+" "+peopleCSS.copyInp} data-id={x ? info.login+"_"+x : undefined} id={"inpcpt_" + x} placeholder="Ссылка не создана" value={info.link ? sit + (info.login ? "/reauth/" : "/invite/") + info.link : undefined} type="text" readOnly/>
-                <img className={peopleCSS.imginp+" "+peopleCSS.refrC} src={themeState.theme_ch ? refreshCd : refreshCl} onClick={(e)=>refreshLink(e, tps.ch)} title="Создать ссылку-приглашение" alt=""/>
+                <img className={peopleCSS.imginp+" "+peopleCSS.refrC} src={themeState.theme_ch ? refreshCd : refreshCl} onClick={refreshLink} title="Создать ссылку-приглашение" alt=""/>
                 <img className={peopleCSS.imginp} src={themeState.theme_ch ? copyd : copyl} title="Копировать" data-enable={info.link ? "1" : "0"} onClick={(e)=>copyLink(e, info.link ? sit + (info.login ? "/reauth/" : "/invite/") + info.link : undefined, info.name)} alt=""/>
             </div>
             :
@@ -298,26 +286,28 @@ export function Admins() {
     themeState = useSelector(themes);
     navigate = useNavigate();
     cState = useSelector(states);
-    if(!dispatch) setActNew(4);
+    if(!dispatch) {
+        setActNew(4);
+        if(eventSource.readyState == EventSource.OPEN) setInfo();
+        eventSource.addEventListener('connect', onCon, false);
+        eventSource.addEventListener('addPepC', addPepC, false);
+        eventSource.addEventListener('chPepC', chPepC, false);
+        eventSource.addEventListener('remPepC', remPepC, false);
+        eventSource.addEventListener('codPepC', codPepC, false);
+    }
     [_, forceUpdate] = useReducer((x) => x + 1, 0);
     dispatch = useDispatch();
     const isFirstUpdate = useRef(true);
     useEffect(() => {
         console.log("I was triggered during componentDidMount Admins.jsx");
-        setInfo();
-        eventSource.addEventListener('connect', onCon, false);
-        eventSource.addEventListener('addPepC', addPep, false);
-        eventSource.addEventListener('chPepC', chPep, false);
-        eventSource.addEventListener('remPepC', remPep, false);
-        eventSource.addEventListener('codPepC', codPep, false);
         return function() {
             dispatch(changeEvents(CHANGE_EVENTS_CLEAR));
             dispatch = undefined;
             eventSource.removeEventListener('connect', onCon);
-            eventSource.removeEventListener('addPepC', addPep);
-            eventSource.removeEventListener('chPepC', chPep);
-            eventSource.removeEventListener('remPepC', remPep);
-            eventSource.removeEventListener('codPepC', codPep);
+            eventSource.removeEventListener('addPepC', addPepC);
+            eventSource.removeEventListener('chPepC', chPepC);
+            eventSource.removeEventListener('remPepC', remPepC);
+            eventSource.removeEventListener('codPepC', codPepC);
             console.log("I was triggered during componentWillUnmount Admins.jsx");
         }
     }, []);

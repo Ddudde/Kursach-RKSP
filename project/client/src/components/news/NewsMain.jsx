@@ -252,7 +252,7 @@ export function ele (x, par, inps) {
 
 export function setTyp(x) {
     type = x;
-    setInfo();
+    if(eventSource.readyState == EventSource.OPEN) setInfo();
     eventSource.addEventListener('connect', onCon, false);
     eventSource.addEventListener('addNewsC', addNewsC, false);
     eventSource.addEventListener('delNewsC', delNewsC, false);
@@ -265,20 +265,15 @@ function onCon() {
 
 function setInfo() {
     send({
-        type: "NEWS",
-        uuid: cState.uuid,
-        podType: type
-    }, 'POST', "auth", "infCon")
-        .then(e => {
-            send({
-                login: cState.login
-            }, 'POST', "news", "getNews")
-                .then(data => {
-                    console.log(data);
-                    if(data.error == false){
-                        dispatch(changeNews(CHANGE_NEWS_GL, type, undefined, data.body));
-                    }
-                });
+        type: type,
+        role: cState.role,
+        uuid: cState.uuid
+    }, 'POST', "news", "getNews")
+        .then(data => {
+            console.log(data);
+            if(data.error == false){
+                dispatch(changeNews(CHANGE_NEWS_GL, type, undefined, data.body));
+            }
         });
 }
 
@@ -300,48 +295,31 @@ function addNewsC(e) {
 function delNews (id) {
     console.log("delNews");
     send({
-        login: cState.login,
+        uuid: cState.uuid,
         id: id
     }, 'POST', "news", "delNews")
-        .then(data => {
-            console.log(data);
-            if(data.error == false){
-                dispatch(changeNews(CHANGE_NEWS_DEL, type, data.id));
-            }
-        });
 }
 
 function chNews (id, inps, typ) {
     console.log("chNews");
     send({
-        login: cState.login,
+        uuid: cState.uuid,
         type: typ,
         val: inps,
         id: id
     }, 'POST', "news", "chNews")
-        .then(data => {
-            console.log(data);
-            if(data.error == false){
-                dispatch(changeNews(CHANGE_NEWS_PARAM, type, data.id, data.val, data.type));
-            }
-        });
 }
 
 function addNews (inps) {
     console.log("addNews");
     send({
-        login: cState.login,
+        uuid: cState.uuid,
         title: inps.inpnzt,
         date: inps.inpndt,
         img_url: inps.addIm,
-        text: inps.inpntt
+        text: inps.inpntt,
+        role: cState.role
     }, 'POST', "news", "addNews")
-        .then(data => {
-            console.log(data);
-            if(data.error == false){
-                dispatch(changeNews(CHANGE_NEWS, type, data.id, data.body));
-            }
-        });
 }
 
 export function setActNew(name) {

@@ -2,7 +2,7 @@ import React, {useEffect, useRef} from "react";
 import peopleCSS from './peopleMain.module.css';
 import {Outlet} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
-import {pane, states, themes} from "../../store/selector";
+import {states, themes} from "../../store/selector";
 import Pane from "../other/pane/Pane";
 import {setActived} from "../main/Main";
 import {
@@ -210,7 +210,6 @@ export function setActNew(name) {
 
 export function PeopleMain() {
     cState = useSelector(states);
-    const paneInfo = useSelector(pane);
     themeState = useSelector(themes);
     dispatch = useDispatch();
     gr.groups = {

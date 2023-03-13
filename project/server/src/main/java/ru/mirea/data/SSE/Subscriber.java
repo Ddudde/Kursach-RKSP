@@ -11,17 +11,19 @@ import reactor.core.publisher.FluxSink;
 @Setter
 @AllArgsConstructor
 @ToString
-public class SubscriptionData {
+public class Subscriber {
 
     private String login;
 
     private TypesConnect type;
 
-    private String podType;
+    private String podTypeL1;
+
+    private String podTypeL2;
 
     private FluxSink<ServerSentEvent> fluxSink;
 
-    public SubscriptionData(FluxSink<ServerSentEvent> fluxSink) {
+    public Subscriber(FluxSink<ServerSentEvent> fluxSink) {
         this.fluxSink = fluxSink;
     }
 }

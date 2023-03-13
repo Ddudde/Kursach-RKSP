@@ -16,13 +16,15 @@ let [_, forceUpdate] = [];
 export function NewsPor() {
     newsInfo = useSelector(news);
     cState = useSelector(states);
-    if(!dispatch) setActNew(0);
+    if(!dispatch) {
+        setActNew(0);
+        setTyp(type);
+    }
     [_, forceUpdate] = useReducer((x) => x + 1, 0);
     dispatch = useDispatch();
     const isFirstUpdate = useRef(true);
     useEffect(() => {
         console.log("I was triggered during componentDidMount NewsPor.jsx");
-        setTyp(type);
         for(let el of document.querySelectorAll("." + newsCSS.ed + " > *[id^='inpn']")){
             chStatB({target: el}, inps);
         }

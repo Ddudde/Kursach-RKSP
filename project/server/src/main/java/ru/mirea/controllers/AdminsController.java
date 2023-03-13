@@ -2,9 +2,13 @@ package ru.mirea.controllers;
 
 import com.google.gson.JsonObject;
 import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 import ru.mirea.Main;
+import ru.mirea.data.SSE.Subscriber;
+import ru.mirea.data.ServerService;
 import ru.mirea.data.models.auth.Invite;
 import ru.mirea.data.SSE.TypesConnect;
 import ru.mirea.data.models.Syst;
@@ -23,27 +27,15 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/admins")
-@AllArgsConstructor
+@NoArgsConstructor
 @CrossOrigin(origins = {"http://localhost:3000", "http://192.168.1.66:3000"})
 public class AdminsController {
 
-    private final UserRepository userRepository;
+    @Autowired
+    private ServerService datas;
 
-    private final SystemRepository systemRepository;
-
-    private final InviteRepository inviteRepository;
-
-    private final AuthController authController;
-
-    public void createSyst(Syst syst) {
-        Syst savedSyst = systemRepository.saveAndFlush(syst);
-        System.out.println(savedSyst);
-    }
-
-    public Syst getSyst() {
-        List<Syst> systs = systemRepository.findAll();
-        return systs.isEmpty() ? null : systs.get(0);
-    }
+    @Autowired
+    private AuthController authController;
 
     @PostMapping
     public JsonObject post(@RequestBody JsonObject data) {
@@ -54,15 +46,16 @@ public class AdminsController {
         if(!data.has("type")) data.addProperty("type", "default");
         switch (data.get("type").getAsString()){
             case "getAdmins" -> {
+                Subscriber subscriber = authController.getSubscriber(body.get("uuid").getAsString());
                 bodyAns = new JsonObject();
                 ans.add("body", bodyAns);
-                User user = userRepository.findByLogin(body.get("login").getAsString());
-                Syst syst = getSyst();
-                if(user != null && user.getRoles().containsKey(4L) && syst != null) {
+                User user = datas.userByLogin(subscriber.getLogin());
+                Syst syst = datas.getSyst();
+                if(user != null && syst != null) {
                     if(!ObjectUtils.isEmpty(syst.getAdmins())){
                         for(Long i1 : syst.getAdmins()){
                             JsonObject admO = new JsonObject();
-                            User admU = userRepository.findById(i1).orElseThrow(RuntimeException::new);
+                            User admU = datas.userById(i1);
                             admO.addProperty("name", admU.getFio());
                             admO.addProperty("login", admU.getLogin());
                             if(!ObjectUtils.isEmpty(admU.getCode())) admO.addProperty("link", admU.getCode());
@@ -72,12 +65,13 @@ public class AdminsController {
                     if(!ObjectUtils.isEmpty(syst.getAdminsInv())){
                         for(Long i1 : syst.getAdminsInv()){
                             JsonObject admO = new JsonObject();
-                            Invite admI = inviteRepository.findById(i1).orElseThrow(RuntimeException::new);
+                            Invite admI = datas.inviteById(i1);
                             admO.addProperty("name", admI.getFio());
                             if(!ObjectUtils.isEmpty(admI.getCode())) admO.addProperty("link", admI.getCode());
                             bodyAns.add(i1+"", admO);
                         }
                     }
+                    authController.infCon(body.get("uuid").getAsString(), subscriber.getLogin(), TypesConnect.ADMINS, user.getRoles().containsKey(4L) ? "adm" : "main", "main");
                 } else {
                     ans.addProperty("error", true);
                 }
@@ -86,83 +80,78 @@ public class AdminsController {
             case "addPep" -> {
                 bodyAns = new JsonObject();
                 ans.add("body", bodyAns);
-                User user = userRepository.findByLogin(body.get("login").getAsString());
-                Syst syst = getSyst();
+                Subscriber subscriber = authController.getSubscriber(body.get("uuid").getAsString());
+                User user = datas.userByLogin(subscriber.getLogin());
+                Syst syst = datas.getSyst();
                 if(user != null && user.getRoles().containsKey(4L) && syst != null) {
-                    JsonObject finBody = data.get("body").getAsJsonObject();
                     Instant after = Instant.now().plus(Duration.ofDays(30));
                     Date dateAfter = Date.from(after);
                     Invite inv = new Invite(body.get("name").getAsString(), new HashMap<>(){{
-                        put(finBody.get("role").getAsLong(), new Role(null));
+                        put(4L, new Role(null));
                     }}, Main.df.format(dateAfter));
-                    inviteRepository.saveAndFlush(inv);
+                    datas.getInviteRepository().saveAndFlush(inv);
                     if(syst.getAdminsInv() == null) syst.setAdminsInv(new ArrayList<>());
                     syst.getAdminsInv().add(inv.getId());
-                    systemRepository.saveAndFlush(syst);
-                    bodyAns.addProperty("id", inv.getId());
+                    datas.getSystemRepository().saveAndFlush(syst);
 
-                    JsonObject ansToCl = new JsonObject(), bod = new JsonObject();
-                    ansToCl.addProperty("id", inv.getId());
-                    ansToCl.add("body", bod);
-                    bod.addProperty("name", body.get("name").getAsString());
-                    authController.sendMessageForAll("addPepC", ansToCl, TypesConnect.ADMINS, "main");
+                    ans.addProperty("id", inv.getId());
+                    bodyAns.addProperty("name", body.get("name").getAsString());
+
+                    authController.sendMessageForAll("addPepC", ans, TypesConnect.ADMINS, "main", "main");
                 } else {
                     ans.addProperty("error", true);
                 }
                 return ans;
             }
             case "chPep" -> {
-                bodyAns = new JsonObject();
-                ans.add("body", bodyAns);
-                User user = userRepository.findByLogin(body.get("login").getAsString());
-                User user1 = userRepository.findByLogin(body.get("id").getAsString());
-                Invite inv = inviteRepository.findById(body.get("id1").getAsLong()).orElse(null);
+                Subscriber subscriber = authController.getSubscriber(body.get("uuid").getAsString());
+                User user = datas.userByLogin(subscriber.getLogin());
+                User user1 = datas.userByLogin(body.get("id").getAsString());
+                Invite inv = datas.inviteById(body.get("id1").getAsLong());
                 if(user != null && user.getRoles().containsKey(4L) && (user1 != null || inv != null)) {
-                    JsonObject ansToCl = new JsonObject();
                     if(user1 != null){
                         user1.setFio(body.get("name").getAsString());
-                        userRepository.saveAndFlush(user1);
+                        datas.getUserRepository().saveAndFlush(user1);
 
-                        ansToCl.addProperty("id", user1.getId());
+                        ans.addProperty("id", user1.getId());
                     } else if(inv != null){
                         inv.setFio(body.get("name").getAsString());
-                        inviteRepository.saveAndFlush(inv);
+                        datas.getInviteRepository().saveAndFlush(inv);
 
-                        ansToCl.addProperty("id", inv.getId());
+                        ans.addProperty("id", inv.getId());
                     }
 
-                    ansToCl.addProperty("name", body.get("name").getAsString());
-                    authController.sendMessageForAll("chPepC", ansToCl, TypesConnect.ADMINS, "main");
+                    ans.addProperty("name", body.get("name").getAsString());
+
+                    authController.sendMessageForAll("chPepC", ans, TypesConnect.ADMINS, "main", "main");
                 } else {
                     ans.addProperty("error", true);
                 }
                 return ans;
             }
             case "remPep" -> {
-                bodyAns = new JsonObject();
-                ans.add("body", bodyAns);
-                User user = userRepository.findByLogin(body.get("login").getAsString());
-                User user1 = userRepository.findByLogin(body.get("id").getAsString());
-                Syst syst = getSyst();
-                Invite inv = inviteRepository.findById(body.get("id1").getAsLong()).orElse(null);
+                Subscriber subscriber = authController.getSubscriber(body.get("uuid").getAsString());
+                User user = datas.userByLogin(subscriber.getLogin());
+                User user1 = datas.userByLogin(body.get("id").getAsString());
+                Syst syst = datas.getSyst();
+                Invite inv = datas.inviteById(body.get("id1").getAsLong());
                 if(user != null && user.getRoles().containsKey(4L) && (user1 != null || inv != null) && syst != null) {
-                    JsonObject ansToCl = new JsonObject();
                     if(user1 != null){
                         user1.getRoles().remove(4L);
-                        userRepository.saveAndFlush(user1);
+                        datas.getUserRepository().saveAndFlush(user1);
                         if(!ObjectUtils.isEmpty(syst.getAdmins())) syst.getAdmins().remove(user1.getId());
-                        systemRepository.saveAndFlush(syst);
+                        datas.getSystemRepository().saveAndFlush(syst);
 
-                        ansToCl.addProperty("id", user1.getId());
+                        ans.addProperty("id", user1.getId());
                     } else if(inv != null){
-                        inviteRepository.delete(inv);
+                        datas.getInviteRepository().delete(inv);
                         if(!ObjectUtils.isEmpty(syst.getAdminsInv())) syst.getAdminsInv().remove(inv.getId());
-                        systemRepository.saveAndFlush(syst);
+                        datas.getSystemRepository().saveAndFlush(syst);
 
-                        ansToCl.addProperty("id", inv.getId());
+                        ans.addProperty("id", inv.getId());
                     }
 
-                    authController.sendMessageForAll("remPepC", ansToCl, TypesConnect.ADMINS, "main");
+                    authController.sendMessageForAll("remPepC", ans, TypesConnect.ADMINS, "main", "main");
                 } else {
                     ans.addProperty("error", true);
                 }

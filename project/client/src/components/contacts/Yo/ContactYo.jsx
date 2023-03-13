@@ -3,8 +3,9 @@ import {Helmet} from "react-helmet-async";
 import contactCSS from '../contactMain.module.css';
 import {contacts, states} from "../../../store/selector";
 import {useDispatch, useSelector} from "react-redux";
-import {chStatB, errorLoad, getEdCon, setActNew} from "../ContactMain";
+import {chStatB, errorLoad, getEdCon, setActNew, setTyp} from "../ContactMain";
 import ErrFound from "../../other/error/ErrFound";
+import {CHANGE_EVENTS_CLEAR, changeEvents} from "../../../store/actions";
 
 let dispatch, contactsInfo, type, cState, inps, errText;
 type = "Yo";
@@ -15,23 +16,21 @@ let [_, forceUpdate] = [];
 export function ContactYo() {
     contactsInfo = useSelector(contacts);
     cState = useSelector(states);
-    if(!dispatch) setActNew(1);
+    if(!dispatch) {
+        setActNew(1);
+        setTyp(type);
+    }
     [_, forceUpdate] = useReducer((x) => x + 1, 0);
     dispatch = useDispatch();
     const isFirstUpdate = useRef(true);
     useEffect(() => {
         console.log("I was triggered during componentDidMount ContactYo.jsx");
-        // dispatch(changeContacts("Yo", "imageUrl", '/media/tuman.jpg'));
-        // dispatch(changeContacts("Yo", "imageUrl"));
-        // dispatch(changeContacts("Yo", "id_0", '8 (800) 555 35 37', '+78005553537'));
-        // dispatch(changeContacts("Yo", "id_0"));
-        // setInterval(function() {
-        //     dispatch(changeContacts("Yo", "id_" + Object.getOwnPropertyNames(contactsInfo.contactsYo.numbers).length, '8 (800) 555 35 37', '+78005553537'));
-        // }, 5000);
+        setTyp(type);
         for(let el of document.querySelectorAll("." + contactCSS.ed + " > *[id^='inpn']")){
             chStatB({target: el}, inps);
         }
         return function() {
+            dispatch(changeEvents(CHANGE_EVENTS_CLEAR));
             dispatch = undefined;
             console.log("I was triggered during componentWillUnmount ContactYo.jsx");
         }
@@ -48,12 +47,12 @@ export function ContactYo() {
             <Helmet>
                 <title>Контакты учебного центра</title>
             </Helmet>
-            {(!contactsInfo[type].contact && !contactsInfo[type].mapPr.imgUrl && !(cState.auth && cState.role == 3)) ?
+            {(!contactsInfo[type].contact && !contactsInfo[type].mapPr && !(cState.auth && cState.role == 3)) ?
                     <ErrFound text={errText}/>
                 :
                     <div className={contactCSS.block}>
                         {(cState.auth && cState.role == 3) ?
-                                getEdCon(type, contactsInfo, inps, forceUpdate)
+                                getEdCon(contactsInfo, inps, forceUpdate)
                             :
                                 <section className={contactCSS.center_colum}>
                                     <div className={contactCSS.blockTel}>

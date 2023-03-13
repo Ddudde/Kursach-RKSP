@@ -122,7 +122,7 @@ function rego(e, props, code){
     }
 }
 
-export function vxo(log, par, dis){
+export function vxo(log, par, dis, fun){
     send({
         login: log ? log : elem.logv.value,
         password: par ? par : elem.pasv.value
@@ -134,6 +134,7 @@ export function vxo(log, par, dis){
             } else {
                 addEvent("Неверный логин или пароль", 10);
             }
+            if(fun) fun();
         });
 }
 
