@@ -1,34 +1,31 @@
-package ru.mirea.controllers;
+package ru.mirea.controllers.people;
 
 import com.google.gson.JsonObject;
-import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 import ru.mirea.Main;
+import ru.mirea.controllers.AuthController;
+import ru.mirea.data.SSE.Subscriber;
 import ru.mirea.data.ServerService;
 import ru.mirea.data.models.auth.Invite;
 import ru.mirea.data.SSE.TypesConnect;
 import ru.mirea.data.models.School;
 import ru.mirea.data.models.auth.User;
 import ru.mirea.data.json.Role;
-import ru.mirea.data.reps.auth.InviteRepository;
-import ru.mirea.data.reps.SchoolRepository;
-import ru.mirea.data.reps.auth.UserRepository;
 
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 
 @RestController
-@RequestMapping("/schools")
+@RequestMapping("/hteachers")
 @NoArgsConstructor
 @CrossOrigin(origins = {"http://localhost:3000", "http://192.168.1.66:3000"})
-public class SchoolController {
+public class HTeachersController {
 
     @Autowired
     private ServerService datas;
@@ -44,40 +41,70 @@ public class SchoolController {
         if(data.has("body") && data.get("body").isJsonObject()) body = data.get("body").getAsJsonObject();
         if(!data.has("type")) data.addProperty("type", "default");
         switch (data.get("type").getAsString()){
-            case "getSchools" -> {
+            case "getInfo" -> {
+                Subscriber subscriber = authController.getSubscriber(body.get("uuid").getAsString());
                 bodyAns = new JsonObject();
                 ans.add("body", bodyAns);
-                User user = datas.userByLogin(body.get("login").getAsString());
-                if(user != null && user.getRoles().containsKey(4L)) {
-                    for(School el : datas.getSchools()){
-                        JsonObject schools = new JsonObject();
-                        schools.addProperty("name", el.getName());
-                        JsonObject pep = new JsonObject();
-                        schools.add("pep", pep);
-                        if(!ObjectUtils.isEmpty(el.getHteachers())){
-                            for(Long i1 : el.getHteachers()){
-                                JsonObject htO = new JsonObject();
+                User user = datas.userByLogin(subscriber.getLogin());
+                JsonObject htO = null;
+                if(user != null) {
+                    if(data.get("role").getAsLong() == 4L && user.getRoles().containsKey(4L)) {
+                        for(School el : datas.getSchools()){
+                            JsonObject schools = new JsonObject();
+                            schools.addProperty("name", el.getName());
+                            JsonObject pep = new JsonObject();
+                            schools.add("pep", pep);
+                            if(!ObjectUtils.isEmpty(el.getHteachers())){
+                                for(Long i1 : el.getHteachers()){
+                                    htO = new JsonObject();
+                                    User htU = datas.userById(i1);
+                                    htO.addProperty("name", htU.getFio());
+                                    htO.addProperty("login", htU.getLogin());
+                                    System.out.println(htU.getCode());
+                                    if(!ObjectUtils.isEmpty(htU.getCode())) htO.addProperty("link", htU.getCode());
+                                    pep.add(i1+"", htO);
+                                }
+                            }
+                            if(!ObjectUtils.isEmpty(el.getHteachersInv())){
+                                for(Long i1 : el.getHteachersInv()){
+                                    htO = new JsonObject();
+                                    Invite htI = datas.inviteById(i1);
+                                    htO.addProperty("name", htI.getFio());
+                                    System.out.println(htI.getCode());
+                                    if(!ObjectUtils.isEmpty(htI.getCode())) htO.addProperty("link", htI.getCode());
+                                    pep.add(i1+"", htO);
+                                }
+                            }
+                            bodyAns.add(el.getId()+"", schools);
+                        }
+                    }
+                    if(data.get("role").getAsLong() == 3L && user.getRoles().containsKey(3L)) {
+                        Long schId = user.getRoles().get(body.get("role").getAsLong()).getYO();
+                        School school = datas.schoolById(schId);
+                        if(!ObjectUtils.isEmpty(school.getHteachers())){
+                            for(Long i1 : school.getHteachers()){
+                                htO = new JsonObject();
                                 User htU = datas.userById(i1);
                                 htO.addProperty("name", htU.getFio());
                                 htO.addProperty("login", htU.getLogin());
                                 System.out.println(htU.getCode());
                                 if(!ObjectUtils.isEmpty(htU.getCode())) htO.addProperty("link", htU.getCode());
-                                pep.add(i1+"", htO);
+                                bodyAns.add(i1+"", htO);
                             }
                         }
-                        if(!ObjectUtils.isEmpty(el.getHteachersInv())){
-                            for(Long i1 : el.getHteachersInv()){
-                                JsonObject htO = new JsonObject();
+                        if(!ObjectUtils.isEmpty(school.getHteachersInv())){
+                            for(Long i1 : school.getHteachersInv()){
+                                htO = new JsonObject();
                                 Invite htI = datas.inviteById(i1);
                                 htO.addProperty("name", htI.getFio());
                                 System.out.println(htI.getCode());
                                 if(!ObjectUtils.isEmpty(htI.getCode())) htO.addProperty("link", htI.getCode());
-                                pep.add(i1+"", htO);
+                                bodyAns.add(i1+"", htO);
                             }
                         }
-                        bodyAns.add(el.getId()+"", schools);
                     }
-                } else {
+                }
+                if(htO == null){
                     ans.addProperty("error", true);
                 }
                 return ans;

@@ -1,4 +1,4 @@
-package ru.mirea.controllers;
+package ru.mirea.controllers.people;
 
 import com.google.gson.JsonObject;
 import lombok.AllArgsConstructor;
@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 import ru.mirea.Main;
+import ru.mirea.controllers.AuthController;
 import ru.mirea.data.SSE.Subscriber;
 import ru.mirea.data.ServerService;
 import ru.mirea.data.models.auth.Invite;

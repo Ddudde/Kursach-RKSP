@@ -226,7 +226,7 @@ function addSch (type, inp) {
     send({
         login: cState.login,
         name: inp
-    }, 'POST', "schools", "addSch")
+    }, 'POST', "hteachers", "addSch")
         .then(data => {
             console.log(data);
             if(data.error == false){
@@ -240,7 +240,7 @@ function remSch (type, id) {
     send({
         login: cState.login,
         id: id
-    }, 'POST', "schools", "remSch")
+    }, 'POST', "hteachers", "remSch")
         .then(data => {
             console.log(data);
             if(data.error == false){
@@ -255,7 +255,7 @@ function chSch (type, id, inp) {
         login: cState.login,
         id: id,
         name: inp
-    }, 'POST', "schools", "chSch")
+    }, 'POST', "hteachers", "chSch")
         .then(data => {
             console.log(data);
             if(data.error == false){
@@ -277,7 +277,7 @@ function remPep (type, id, id1, id2) {
         id: id,
         id1: id1,
         id2: id2
-    }, 'POST', "schools", "remPep")
+    }, 'POST', "hteachers", "remPep")
         .then(data => {
             console.log(data);
             if(data.error == false){
@@ -294,7 +294,7 @@ function chPep (type, id, id1, id2, inp) {
         id1: id1,
         id2: id2,
         name: inp
-    }, 'POST', "schools", "chPep")
+    }, 'POST', "hteachers", "chPep")
         .then(data => {
             console.log(data);
             if(data.error == false){
@@ -310,7 +310,7 @@ function addPep (type, id, inp) {
         yo: id,
         name: inp,
         role: 3
-    }, 'POST', "schools", "addPep")
+    }, 'POST', "hteachers", "addPep")
         .then(data => {
             console.log(data);
             if(data.error == false){
@@ -321,13 +321,9 @@ function addPep (type, id, inp) {
 
 function setInfo() {
     send({
-        type: "HTEACHERS",
-        uuid: cState.uuid,
-        podType: cState.role == 4 ? "adm" : undefined
-    }, 'POST', "auth", "infCon");
-    send({
-        login: cState.login
-    }, 'POST', "schools", "getSchools")
+        role: cState.role,
+        uuid: cState.uuid
+    }, 'POST', "hteachers", "getInfo")
         .then(data => {
             console.log(data);
             if(data.error == false){
@@ -391,13 +387,9 @@ export function HTeachers() {
     themeState = useSelector(themes);
     navigate = useNavigate();
     cState = useSelector(states);
-    if(!dispatch) setActNew(1);
-    [_, forceUpdate] = useReducer((x) => x + 1, 0);
-    dispatch = useDispatch();
-    const isFirstUpdate = useRef(true);
-    useEffect(() => {
-        console.log("I was triggered during componentDidMount HTeachers.jsx");
-        setInfo();
+    if(!dispatch) {
+        setActNew(1);
+        if(eventSource.readyState == EventSource.OPEN) setInfo();
         eventSource.addEventListener('connect', onCon, false);
         eventSource.addEventListener('addSchC', addSchC, false);
         eventSource.addEventListener('chSchC', chSchC, false);
@@ -406,6 +398,12 @@ export function HTeachers() {
         eventSource.addEventListener('remPepC', remPepC, false);
         eventSource.addEventListener('chPepC', chPepC, false);
         eventSource.addEventListener('codPepC', codPepC, false);
+    }
+    [_, forceUpdate] = useReducer((x) => x + 1, 0);
+    dispatch = useDispatch();
+    const isFirstUpdate = useRef(true);
+    useEffect(() => {
+        console.log("I was triggered during componentDidMount HTeachers.jsx");
         return function() {
             dispatch(changeEvents(CHANGE_EVENTS_CLEAR));
             dispatch = undefined;

@@ -221,7 +221,6 @@ function onCon(e) {
 
 function setInfo() {
     send({
-        role: cState.role,
         uuid: cState.uuid
     }, 'POST', "admins", "getAdmins")
         .then(data => {
