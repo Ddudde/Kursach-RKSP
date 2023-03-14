@@ -68,7 +68,7 @@ function refreshLink(e, type) {
     if (inp.hasAttribute("data-id")) {
         id = inp.getAttribute("data-id").split("_");
         send({
-            login: cState.login,
+            uuid: cState.uuid,
             id: id[0],
             id1: id[2],
             id2: id[1]
@@ -76,7 +76,6 @@ function refreshLink(e, type) {
             .then(data => {
                 console.log(data);
                 if(data.error == false){
-                    dispatch(changePeople(type, 0, id[1], id[2], data.body.code, "link"));
                     dispatch(changeEvents(CHANGE_EVENT, undefined, undefined, title, text, 10));
                 }
             });
@@ -125,14 +124,14 @@ function onFin(e, type) {
             par = par.parentElement;
             if(e.target.hasAttribute("data-id1")){
                 let id = e.target.getAttribute("data-id1");
-                addPep(type, id, inps.inpnpt);
+                addPep(par, id, inps.inpnpt);
                 // dispatch(changePeople(type, 2, id, "id8", inps.inpnpt));
             }
         } else {
             par = par.parentElement;
-            addSch(type, inps.inpnpt);
+            addSch(par, inps.inpnpt);
         }
-        par.setAttribute('data-st', '0');
+        // par.setAttribute('data-st', '0');
         return;
     }
     inp = par.querySelector("input");
@@ -143,18 +142,19 @@ function onFin(e, type) {
             if(type){
                 if(inp.hasAttribute("data-id")){
                     let id = inp.getAttribute("data-id").split("_");
-                    chPep(type, id[0], id[1], id[2], inp.value);
+                    chPep(par, id[0], id[1], id[2], inp.value);
                     // dispatch(changePeople(type, 0, id[0], id[1], inp.value));
                 } else if(inp.hasAttribute("data-id1")){
                     let id = inp.getAttribute("data-id1");
-                    chSch(type, id, inp.value);
+                    chSch(par, id, inp.value);
                 }
             } else {
                 inps.inpnpt = inp.value;
                 forceUpdate();
+                par.setAttribute('data-st', '0');
             }
         }
-        par.setAttribute('data-st', '0');
+        // par.setAttribute('data-st', '0');
     } else {
         inp.setAttribute("data-mod", '1');
     }
@@ -191,6 +191,12 @@ function onCon(e) {
     setInfo();
 }
 
+function codPepC(e) {
+    console.log(e.data)
+    const msg = JSON.parse(e.data);
+    dispatch(changePeople(tps.ht4L2.ch, 0, msg.id1, msg.id, msg.code, "link"));
+}
+
 function remSchC(e) {
     const msg = JSON.parse(e.data);
     dispatch(changePeople(tps.ht4.del, 0, msg.id));
@@ -221,7 +227,7 @@ function addPepC(e) {
     dispatch(changePeople(tps.ht4L2.el_gl, 0, msg.id, msg.id1, msg.body));
 }
 
-function addSch (type, inp) {
+function addSch (par, inp) {
     console.log("addSch");
     send({
         login: cState.login,
@@ -230,7 +236,7 @@ function addSch (type, inp) {
         .then(data => {
             console.log(data);
             if(data.error == false){
-                dispatch(changePeople(type, undefined, data.body.id, undefined, inp));
+                par.setAttribute('data-st', '0');
             }
         });
 }
@@ -241,15 +247,9 @@ function remSch (type, id) {
         login: cState.login,
         id: id
     }, 'POST', "hteachers", "remSch")
-        .then(data => {
-            console.log(data);
-            if(data.error == false){
-                dispatch(changePeople(type, 2, id));
-            }
-        });
 }
 
-function chSch (type, id, inp) {
+function chSch (par, id, inp) {
     console.log("chSch");
     send({
         login: cState.login,
@@ -259,15 +259,9 @@ function chSch (type, id, inp) {
         .then(data => {
             console.log(data);
             if(data.error == false){
-                dispatch(changePeople(type, 2, id, undefined, inp));
+                par.setAttribute('data-st', '0');
             }
         });
-}
-
-function codPepC(e) {
-    console.log(e.data)
-    const msg = JSON.parse(e.data);
-    dispatch(changePeople(tps.ht4L2.ch, 0, msg.id1, msg.id, msg.code, "link"));
 }
 
 function remPep (type, id, id1, id2) {
@@ -278,15 +272,9 @@ function remPep (type, id, id1, id2) {
         id1: id1,
         id2: id2
     }, 'POST', "hteachers", "remPep")
-        .then(data => {
-            console.log(data);
-            if(data.error == false){
-                dispatch(changePeople(type, 0, id1, id2));
-            }
-        });
 }
 
-function chPep (type, id, id1, id2, inp) {
+function chPep (par, id, id1, id2, inp) {
     console.log("changeInv");
     send({
         login: cState.login,
@@ -298,12 +286,12 @@ function chPep (type, id, id1, id2, inp) {
         .then(data => {
             console.log(data);
             if(data.error == false){
-                dispatch(changePeople(type, 0, id1, id2, inp));
+                par.setAttribute('data-st', '0');
             }
         });
 }
 
-function addPep (type, id, inp) {
+function addPep (par, id, inp) {
     console.log("addInv");
     send({
         login: cState.login,
@@ -314,7 +302,7 @@ function addPep (type, id, inp) {
         .then(data => {
             console.log(data);
             if(data.error == false){
-                dispatch(changePeople(type, 2, id, data.body.id, inp));
+                par.setAttribute('data-st', '0');
             }
         });
 }

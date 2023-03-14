@@ -48,7 +48,7 @@ public class HTeachersController {
                 User user = datas.userByLogin(subscriber.getLogin());
                 JsonObject htO = null;
                 if(user != null) {
-                    if(data.get("role").getAsLong() == 4L && user.getRoles().containsKey(4L)) {
+                    if(body.get("role").getAsLong() == 4L && user.getRoles().containsKey(4L)) {
                         for(School el : datas.getSchools()){
                             JsonObject schools = new JsonObject();
                             schools.addProperty("name", el.getName());
@@ -78,7 +78,7 @@ public class HTeachersController {
                             bodyAns.add(el.getId()+"", schools);
                         }
                     }
-                    if(data.get("role").getAsLong() == 3L && user.getRoles().containsKey(3L)) {
+                    if(body.get("role").getAsLong() == 3L && user.getRoles().containsKey(3L)) {
                         Long schId = user.getRoles().get(body.get("role").getAsLong()).getYO();
                         School school = datas.schoolById(schId);
                         if(!ObjectUtils.isEmpty(school.getHteachers())){
@@ -106,6 +106,8 @@ public class HTeachersController {
                 }
                 if(htO == null){
                     ans.addProperty("error", true);
+                } else {
+                    authController.infCon(body.get("uuid").getAsString(), subscriber.getLogin(), TypesConnect.HTEACHERS, user.getRoles().containsKey(4L) ? "adm" : "main", "main");
                 }
                 return ans;
             }
