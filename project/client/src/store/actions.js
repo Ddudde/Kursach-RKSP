@@ -41,6 +41,7 @@ export const CHANGE_GROUPS = "CHANGE_GROUPS";
 export const CHANGE_GROUPS_GRS = "CHANGE_GROUPS_GRS";
 export const CHANGE_GROUPS_DEL_GRS = "CHANGE_GROUPS_DEL_GRS";
 export const CHANGE_GROUPS_GR = "CHANGE_GROUPS_GR";
+export const CHANGE_GROUPS_GL = "CHANGE_GROUPS_GL";
 
 export const CHANGE_PJOURNAL_MARKS = "CHANGE_PJOURNAL_MARKS";
 export const CHANGE_PJOURNAL_DEL_MARKS = "CHANGE_PJOURNAL_DEL_MARKS";
@@ -67,6 +68,7 @@ export const CHANGE_HTEACHERS_DEL = "CHANGE_HTEACHERS_DEL";
 
 export const CHANGE_CLASSMATES = "CHANGE_CLASSMATES";
 export const CHANGE_CLASSMATES_GL = "CHANGE_CLASSMATES_GL";
+export const CHANGE_CLASSMATES_EL_GL = "CHANGE_CLASSMATES_EL_GL";
 export const CHANGE_CLASSMATES_DEL = "CHANGE_CLASSMATES_DEL";
 
 export const CHANGE_PARENTS_L1_PARAM = "CHANGE_PARENTS_L1_PARAM";
@@ -250,9 +252,9 @@ export function changeGroups(type, id, state, gid, block) {
     return {
         type: type,
         payload: {
-            Id: id,
+            id: id,
             gId: gid,
-            State: state
+            state: state
         }
     };
 }

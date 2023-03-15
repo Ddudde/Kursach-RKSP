@@ -58,7 +58,8 @@ function refreshLink(e) {
         send({
             uuid: cState.uuid,
             id: id[0],
-            id1: id[1]
+            id1: id[1],
+            role: cState.role
         }, 'POST', "auth", "setCodePep")
             .then(data => {
                 console.log(data);
@@ -156,8 +157,6 @@ function goToProf(log) {
 
 function codPepC(e) {
     const msg = JSON.parse(e.data);
-    console.log("codC");
-    console.log(msg);
     dispatch(changePeople(tps.ch, 0, msg.id, undefined, msg.code, "link"));
 }
 
@@ -246,7 +245,7 @@ function getBlock(x, b) {
                 {info.login && <img className={peopleCSS.profIm} src={themeState.theme_ch ? profd : profl} onClick={e=>goToProf(info.login)} title="Перейти в профиль" alt=""/>}
                 <img className={peopleCSS.imgfield} src={ed} onClick={onEdit} title="Редактировать" alt=""/>
                 <img className={peopleCSS.imginp} style={{marginRight: "1vw"}} src={no} onClick={e=>onDel(e, tps.del)} title="Удалить" alt=""/>
-                <input className={peopleCSS.inp+" "+peopleCSS.copyInp} data-id={x ? info.login+"_"+x : undefined} id={"inpcpt_" + x} placeholder="Ссылка не создана" value={info.link ? sit + (info.login ? "/reauth/" : "/invite/") + info.link : undefined} type="text" readOnly/>
+                <input className={peopleCSS.inp+" "+peopleCSS.copyInp} data-id={x ? info.login+"_"+x : undefined} id={"inpcpt_" + x} placeholder="Ссылка не создана" defaultValue={info.link ? sit + (info.login ? "/reauth/" : "/invite/") + info.link : undefined} type="text" readOnly/>
                 <img className={peopleCSS.imginp+" "+peopleCSS.refrC} src={themeState.theme_ch ? refreshCd : refreshCl} onClick={refreshLink} title="Создать ссылку-приглашение" alt=""/>
                 <img className={peopleCSS.imginp} src={themeState.theme_ch ? copyd : copyl} title="Копировать" data-enable={info.link ? "1" : "0"} onClick={(e)=>copyLink(e, info.link ? sit + (info.login ? "/reauth/" : "/invite/") + info.link : undefined, info.name)} alt=""/>
             </div>
@@ -292,7 +291,7 @@ export function Admins() {
         eventSource.addEventListener('addPepC', addPepC, false);
         eventSource.addEventListener('chPepC', chPepC, false);
         eventSource.addEventListener('remPepC', remPepC, false);
-        eventSource.addEventListener('codPepC', codPepC, false);
+        eventSource.addEventListener('codPepL2C', codPepC, false);
     }
     [_, forceUpdate] = useReducer((x) => x + 1, 0);
     dispatch = useDispatch();
@@ -306,7 +305,7 @@ export function Admins() {
             eventSource.removeEventListener('addPepC', addPepC);
             eventSource.removeEventListener('chPepC', chPepC);
             eventSource.removeEventListener('remPepC', remPepC);
-            eventSource.removeEventListener('codPepC', codPepC);
+            eventSource.removeEventListener('codPepL2C', codPepC);
             console.log("I was triggered during componentWillUnmount Admins.jsx");
         }
     }, []);
@@ -315,6 +314,7 @@ export function Admins() {
             isFirstUpdate.current = false;
             return;
         }
+        console.log(adminsInfo);
         console.log('componentDidUpdate Admins.jsx');
     });
     return (

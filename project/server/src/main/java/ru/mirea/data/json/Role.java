@@ -13,12 +13,12 @@ import java.util.List;
 public class Role implements Serializable {
     private String email;
     private Long YO;
-    private String group;
+    private Long group;
     private List<Long> kids;
     private List<Long> parents;
     private List<String> lessons;
 
-    public Role(String email, Long YO, String group, List<Long> parents) { // kid
+    public Role(String email, Long YO, Long group, List<Long> parents) { // kid
         this.email = email;
         this.YO = YO;
         this.group = group;

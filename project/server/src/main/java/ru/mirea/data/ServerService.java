@@ -37,7 +37,9 @@ import static java.util.Arrays.asList;
 
     private final ContactsRepository contactsRepository;
 
-    public ServerService(UserRepository userRepository, InviteRepository inviteRepository, SchoolRepository schoolRepository, RequestRepository requestRepository, SystemRepository systemRepository, NewsRepository newsRepository, ContactsRepository contactsRepository) {
+    private final GroupRepository groupRepository;
+
+    public ServerService(UserRepository userRepository, InviteRepository inviteRepository, SchoolRepository schoolRepository, RequestRepository requestRepository, SystemRepository systemRepository, NewsRepository newsRepository, ContactsRepository contactsRepository, GroupRepository groupRepository) {
         this.userRepository = userRepository;
         this.inviteRepository = inviteRepository;
         this.schoolRepository = schoolRepository;
@@ -45,16 +47,17 @@ import static java.util.Arrays.asList;
         this.systemRepository = systemRepository;
         this.newsRepository = newsRepository;
         this.contactsRepository = contactsRepository;
+        this.groupRepository = groupRepository;
 
         createUser(new User("nm1", "1111", "Петров В.В.", 2, new HashMap<Long,Role>() {{
-            put(0L, new Role("ex@ya.ru", 5L, "11A", new ArrayList<>(asList(1L, 2L))));
+            put(0L, new Role("ex@ya.ru", 5L, 17L, new ArrayList<>(asList(1L, 2L))));
             put(1L, new Role("ex@ya.ru", 5L, new ArrayList<>(asList(1L, 2L))));
             put(2L, new Role("ex@ya.ru", new ArrayList<>(asList("Англ. Яз.", "Математика")), 5L));
             put(3L, new Role("ex@ya.ru", 5L));
             put(4L, new Role("ex@ya.ru"));
         }}));
         createUser(new User("nm12", "1111", "Петров В.В.", 1, new HashMap<Long,Role>() {{
-            put(0L, new Role("ex@ya.ru", 6L, "11A", new ArrayList<>(asList(1L, 2L))));
+            put(0L, new Role("ex@ya.ru", 6L, 17L, new ArrayList<>(asList(1L, 2L))));
             put(1L, new Role("ex@ya.ru", 6L, new ArrayList<>(asList(1L, 2L))));
             put(2L, new Role("ex@ya.ru", new ArrayList<>(asList("Англ. Яз.", "Математика")), 6L));
             put(3L, new Role("ex@ya.ru", 6L));
@@ -65,9 +68,9 @@ import static java.util.Arrays.asList;
         createReq(new Request("ex@ya.ru","11.11.2022", "Всем своим дружным коллективом мы остановились на данном варианте."));
         System.out.println(getRequests());
 
-        createSchool(new School("Школа", new ArrayList<>(asList(7L, 8L)), new ArrayList<>(asList(14L)), 15L));
-        createSchool(new School("Гимназия", new ArrayList<>(asList(1L)), new ArrayList<>(asList(9L)), new ArrayList<>(asList(14L)), 15L));
-        createSchool(new School("Лицей", new ArrayList<>(asList(2L)), new ArrayList<>(asList(14L)), 15L));
+        createSchool(new School("Школа", new ArrayList<>(asList(7L, 8L)), new ArrayList<>(asList(14L)), 15L, new ArrayList<>(asList(17L, 18L, 19L, 20L))));
+        createSchool(new School("Гимназия", new ArrayList<>(asList(1L)), new ArrayList<>(asList(9L)), new ArrayList<>(asList(14L)), 15L, new ArrayList<>(asList(17L, 18L, 19L, 20L))));
+        createSchool(new School("Лицей", new ArrayList<>(asList(2L)), new ArrayList<>(asList(14L)), 15L, new ArrayList<>(asList(17L, 18L, 19L, 20L))));
         System.out.println(getSchools());
 
         createUser(new User("nm13", "1111", "Петров В.В.", 2, new HashMap<Long,Role>() {{
@@ -105,6 +108,17 @@ import static java.util.Arrays.asList;
                 "8 (800) 555 35 36\n5 (353) 555 00 88",
                 "Ближайшие станции метро:\nАлександровский сад, 610 м (Филёвская линия, выход 5)\nБиблиотека им. Ленина, 680 м (Сокольническая линия, выход 3)\nАрбатская, 750 м (Арбатско-Покровская линия, выход 8)",
                 "/media/map.jpg"));
+
+        createUser(new User("nm15", "1111", "Петров В.В.", 2, new HashMap<Long,Role>() {{
+            put(0L, new Role("ex@ya.ru", 4L, 17L, new ArrayList<>(asList(1L, 2L))));
+        }}));//16L
+
+        createGroups();//60L
+        System.out.println(getGroups());
+
+        createUser(new User("nm16", "1111", "Петров В.В.", 2, new HashMap<Long,Role>() {{
+            put(0L, new Role("ex@ya.ru", 4L, 18L, new ArrayList<>(asList(1L, 2L))));
+        }}));//61L
     }
 
     private void checkDates(){
@@ -254,5 +268,65 @@ import static java.util.Arrays.asList;
 
     public Contacts contactsById(Long id){
         return id == null ? null : contactsRepository.findById(id).orElse(null);
+    }
+
+    public void createGroup(Group group) {
+        Group savedGroup = groupRepository.saveAndFlush(group);
+        System.out.println(savedGroup);
+    }
+
+    public List<Group> getGroups() {
+        return groupRepository.findAll();
+    }
+
+    public Group groupById(Long id){
+        return id == null ? null : groupRepository.findById(id).orElse(null);
+    }
+
+    public void createGroups(){
+        createGroup(new Group("11A", new ArrayList<>(asList(1L, 2L, 16L))));//17L
+        createGroup(new Group("11Б", new ArrayList<>(asList(61L))));
+        createGroup(new Group("11В"));
+        createGroup(new Group("11Г"));
+        createGroup(new Group("10А"));
+        createGroup(new Group("10Б"));
+        createGroup(new Group("10В"));
+        createGroup(new Group("10Г"));
+        createGroup(new Group("9А"));
+        createGroup(new Group("9Б"));
+        createGroup(new Group("9В"));
+        createGroup(new Group("9Г"));
+        createGroup(new Group("8А"));
+        createGroup(new Group("8Б"));
+        createGroup(new Group("8В"));
+        createGroup(new Group("8Г"));
+        createGroup(new Group("7А"));
+        createGroup(new Group("7Б"));
+        createGroup(new Group("7В"));
+        createGroup(new Group("7Г"));
+        createGroup(new Group("6А"));
+        createGroup(new Group("6Б"));
+        createGroup(new Group("6В"));
+        createGroup(new Group("6Г"));
+        createGroup(new Group("5А"));
+        createGroup(new Group("5Б"));
+        createGroup(new Group("5В"));
+        createGroup(new Group("5Г"));
+        createGroup(new Group("4А"));
+        createGroup(new Group("4Б"));
+        createGroup(new Group("4В"));
+        createGroup(new Group("4Г"));
+        createGroup(new Group("3А"));
+        createGroup(new Group("3Б"));
+        createGroup(new Group("3В"));
+        createGroup(new Group("3Г"));
+        createGroup(new Group("2А"));
+        createGroup(new Group("2Б"));
+        createGroup(new Group("2В"));
+        createGroup(new Group("2Г"));
+        createGroup(new Group("1А"));
+        createGroup(new Group("1Б"));
+        createGroup(new Group("1В"));
+        createGroup(new Group("1Г"));//60L
     }
 }

@@ -1,7 +1,6 @@
 package ru.mirea.controllers.people;
 
 import com.google.gson.JsonObject;
-import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ObjectUtils;
@@ -9,28 +8,26 @@ import org.springframework.web.bind.annotation.*;
 import ru.mirea.Main;
 import ru.mirea.controllers.AuthController;
 import ru.mirea.data.SSE.Subscriber;
-import ru.mirea.data.ServerService;
-import ru.mirea.data.models.auth.Invite;
 import ru.mirea.data.SSE.TypesConnect;
-import ru.mirea.data.models.Syst;
-import ru.mirea.data.models.auth.User;
+import ru.mirea.data.ServerService;
 import ru.mirea.data.json.Role;
-import ru.mirea.data.reps.auth.InviteRepository;
-import ru.mirea.data.reps.SystemRepository;
-import ru.mirea.data.reps.auth.UserRepository;
+import ru.mirea.data.models.Group;
+import ru.mirea.data.models.School;
+import ru.mirea.data.models.Syst;
+import ru.mirea.data.models.auth.Invite;
+import ru.mirea.data.models.auth.User;
 
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 
 @RestController
-@RequestMapping("/admins")
+@RequestMapping("/students")
 @NoArgsConstructor
 @CrossOrigin(origins = {"http://localhost:3000", "http://192.168.1.66:3000"})
-public class AdminsController {
+public class StudentsController {
 
     @Autowired
     private ServerService datas;
@@ -46,35 +43,43 @@ public class AdminsController {
         if(data.has("body") && data.get("body").isJsonObject()) body = data.get("body").getAsJsonObject();
         if(!data.has("type")) data.addProperty("type", "default");
         switch (data.get("type").getAsString()){
-            case "getAdmins" -> {
+            case "getStud" -> {
                 Subscriber subscriber = authController.getSubscriber(body.get("uuid").getAsString());
                 bodyAns = new JsonObject();
                 ans.add("body", bodyAns);
                 User user = datas.userByLogin(subscriber.getLogin());
-                Syst syst = datas.getSyst();
-                if(user != null && syst != null) {
-                    if(!ObjectUtils.isEmpty(syst.getAdmins())){
-                        for(Long i1 : syst.getAdmins()){
-                            JsonObject admO = new JsonObject();
-                            User admU = datas.userById(i1);
-                            admO.addProperty("name", admU.getFio());
-                            admO.addProperty("login", admU.getLogin());
-                            if(!ObjectUtils.isEmpty(admU.getCode())) admO.addProperty("link", admU.getCode());
-                            bodyAns.add(i1+"", admO);
+                Group group = null;
+                Long schId = null;
+                if(user != null) {
+                    schId = datas.getFirstRole(user.getRoles()).getYO();
+                    School school = datas.schoolById(schId);
+                    group = datas.groupById(body.get("group").getAsLong());
+                    if(group != null && school != null && school.getGroups().contains(group.getId())) {
+                        if (!ObjectUtils.isEmpty(group.getKids())) {
+                            for (Long i1 : group.getKids()) {
+                                JsonObject studO = new JsonObject();
+                                User studU = datas.userById(i1);
+                                studO.addProperty("name", studU.getFio());
+                                studO.addProperty("login", studU.getLogin());
+                                if (!ObjectUtils.isEmpty(studU.getCode())) studO.addProperty("link", studU.getCode());
+                                bodyAns.add(i1 + "", studO);
+                            }
+                        }
+                        if (!ObjectUtils.isEmpty(group.getKidsInv())) {
+                            for (Long i1 : group.getKidsInv()) {
+                                JsonObject studO = new JsonObject();
+                                Invite studI = datas.inviteById(i1);
+                                studO.addProperty("name", studI.getFio());
+                                if (!ObjectUtils.isEmpty(studI.getCode())) studO.addProperty("link", studI.getCode());
+                                bodyAns.add(i1 + "", studO);
+                            }
                         }
                     }
-                    if(!ObjectUtils.isEmpty(syst.getAdminsInv())){
-                        for(Long i1 : syst.getAdminsInv()){
-                            JsonObject admO = new JsonObject();
-                            Invite admI = datas.inviteById(i1);
-                            admO.addProperty("name", admI.getFio());
-                            if(!ObjectUtils.isEmpty(admI.getCode())) admO.addProperty("link", admI.getCode());
-                            bodyAns.add(i1+"", admO);
-                        }
-                    }
-                    authController.infCon(body.get("uuid").getAsString(), subscriber.getLogin(), TypesConnect.ADMINS, "null", user.getRoles().containsKey(4L) ? "adm" : "main");
-                } else {
+                }
+                if(group == null){
                     ans.addProperty("error", true);
+                } else {
+                    authController.infCon(body.get("uuid").getAsString(), subscriber.getLogin(), TypesConnect.STUDENTS, schId+"_"+ group.getId(), user.getRoles().containsKey(3L) ? "ht" : "main");
                 }
                 return ans;
             }
@@ -98,7 +103,7 @@ public class AdminsController {
                     ans.addProperty("id", inv.getId());
                     bodyAns.addProperty("name", body.get("name").getAsString());
 
-                    authController.sendMessageForAll("addPepC", ans, TypesConnect.ADMINS, "main", "main");
+                    authController.sendMessageForAll("addPepC", ans, TypesConnect.STUDENTS, subscriber.getPodTypeL1(), "main");
                 } else {
                     ans.addProperty("error", true);
                 }
@@ -124,7 +129,7 @@ public class AdminsController {
 
                     ans.addProperty("name", body.get("name").getAsString());
 
-                    authController.sendMessageForAll("chPepC", ans, TypesConnect.ADMINS, "main", "main");
+                    authController.sendMessageForAll("chPepC", ans, TypesConnect.STUDENTS, subscriber.getPodTypeL1(), "main");
                 } else {
                     ans.addProperty("error", true);
                 }
@@ -152,7 +157,7 @@ public class AdminsController {
                         ans.addProperty("id", inv.getId());
                     }
 
-                    authController.sendMessageForAll("remPepC", ans, TypesConnect.ADMINS, "main", "main");
+                    authController.sendMessageForAll("remPepC", ans, TypesConnect.STUDENTS, subscriber.getPodTypeL1(), "main");
                 } else {
                     ans.addProperty("error", true);
                 }

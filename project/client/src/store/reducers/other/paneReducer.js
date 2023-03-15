@@ -8,17 +8,20 @@ export default function paneReducer(state = initialState, action) {
     let fd = {...state};
     switch(action.type) {
         case CHANGE_PANE:
-            fd.els[action.payload.Id] = action.payload.State;
+            fd.els[action.payload.id] = action.payload.state;
             return fd;
         case CHANGE_PANE_GR:
-            fd.els[action.payload.Id].group = action.payload.State;
+            console.log("test1");
+            console.log(action.payload.state);
+            console.log(action.payload.id);
+            fd.els[action.payload.id].group = action.payload.state;
             return fd;
         case CHANGE_PANE_GRS:
-            fd.els[action.payload.Id].groups[action.payload.gId] = action.payload.State;
-            fd.els[action.payload.Id].group = action.payload.gId;
+            fd.els[action.payload.id].groups[action.payload.gId] = action.payload.state;
+            fd.els[action.payload.id].group = action.payload.gId;
             return fd;
         case CHANGE_PANE_DEL_GRS:
-            delete fd.els[action.payload.Id].groups[action.payload.gId];
+            delete fd.els[action.payload.id].groups[action.payload.gId];
             return fd;
         default:
             return state;

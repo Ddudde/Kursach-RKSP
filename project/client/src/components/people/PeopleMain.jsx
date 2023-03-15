@@ -2,22 +2,25 @@ import React, {useEffect, useRef} from "react";
 import peopleCSS from './peopleMain.module.css';
 import {Outlet} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
-import {states, themes} from "../../store/selector";
+import {groups, states} from "../../store/selector";
 import Pane from "../other/pane/Pane";
-import {setActived} from "../main/Main";
+import {eventSource, send, setActived} from "../main/Main";
 import {
     CHANGE_EVENT,
+    CHANGE_GROUPS_GL,
+    CHANGE_GROUPS_GR,
     CHANGE_PARENTS,
     CHANGE_PARENTS_DEL,
     CHANGE_PARENTS_DEL_L0,
     CHANGE_PARENTS_DEL_L1,
     CHANGE_PARENTS_L1,
     changeEvents,
+    changeGroups,
     changePeople
 } from "../../store/actions";
 import parentsCSS from "./parents/parents.module.css";
 
-let gr, cState, dispatch, themeState;
+let gr, cState, dispatch, groupsInfo;
 gr = {
     group: 0
 };
@@ -96,8 +99,7 @@ export function onDel(e, type, info) {
 }
 
 export function onEdit(e) {
-    let par;
-    par = e.target.parentElement;
+    let par = e.target.parentElement;
     if(par.classList.contains(peopleCSS.add)){
         par.setAttribute('data-st', '1');
     }
@@ -204,13 +206,37 @@ export function ele (x, par, inps) {
     if(!inps[par]) inps[par] = x;
 }
 
+function onCon(e) {
+    setGroups();
+}
+
+function setGroups() {
+    send({
+        uuid: cState.uuid
+    }, 'POST', "hteachers", "getGroups")
+        .then(data => {
+            console.log(data);
+            if(data.error == false){
+                dispatch(changeGroups(CHANGE_GROUPS_GL, undefined, data.body));
+                if(!data.body[groupsInfo.group]){
+                    let grs = Object.getOwnPropertyNames(data.body);
+                    dispatch(changeGroups(CHANGE_GROUPS_GR, undefined, parseInt(grs[0])));
+                }
+            }
+        });
+}
+
 export function setActNew(name) {
     gr.group = name;
 }
 
 export function PeopleMain() {
     cState = useSelector(states);
-    themeState = useSelector(themes);
+    groupsInfo = useSelector(groups);
+    if(!dispatch){
+        if(eventSource.readyState == EventSource.OPEN) setGroups();
+        eventSource.addEventListener('connect', onCon, false);
+    }
     dispatch = useDispatch();
     gr.groups = {
         0: cState.auth && (cState.role < 2 || cState.role == 3) ? {
@@ -239,6 +265,8 @@ export function PeopleMain() {
         console.log("I was triggered during componentDidMount PeopleMain.jsx");
         setActived(3);
         return function() {
+            dispatch = undefined;
+            eventSource.removeEventListener('connect', onCon);
             console.log("I was triggered during componentWillUnmount PeopleMain.jsx");
         }
     }, []);

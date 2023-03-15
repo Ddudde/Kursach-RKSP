@@ -122,19 +122,18 @@ function rego(e, props, code){
     }
 }
 
-export function vxo(log, par, dis, fun){
+function vxo(){
     send({
-        login: log ? log : elem.logv.value,
-        password: par ? par : elem.pasv.value
+        uuid: cState.uuid,
+        login: elem.logv.value,
+        password: elem.pasv.value
     }, 'POST', "auth", "auth")
         .then(data => {
             if(data.error == false && data.body.auth){
-                if(dis && !dispatch) dispatch = dis;
                 dispatch(changeState(CHANGE_STATE_GL, undefined, data.body));
             } else {
                 addEvent("Неверный логин или пароль", 10);
             }
-            if(fun) fun();
         });
 }
 

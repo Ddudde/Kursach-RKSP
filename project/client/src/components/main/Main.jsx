@@ -133,7 +133,7 @@ export function setActived(name) {
             document.querySelector(name).setAttribute('data-act', '1');
         }
     }
-    if(ke != undefined) {
+    if(ke != undefined && paneInfo.els[ke]) {
         dispatch(changeGroups(CHANGE_PANE_GR, ke, name, undefined, false));
     } else {
         gr.group = name;
@@ -191,7 +191,7 @@ function iniNet() {
             console.log('try to reconnect...');
         }
     };
-    eventSource.addEventListener('connect', e => {
+    eventSource.addEventListener('chck', e => {
         const msg = JSON.parse(e.data);
         console.log(msg);
         dispatch(changeState(CHANGE_STATE, "uuid", msg));

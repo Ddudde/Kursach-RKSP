@@ -99,19 +99,19 @@ export function Pane(props) {
         setGr();
     };
     const setGr = (bol) => {
-        let nam = ".pan" + info.group;
+        let nam = ".pan" + panJs.info.group;
         if(panJs.blockCl == "DEL"){
             panJs.blockCl = false;
             return;
         }
-        if(info.groups[info.group]){
+        if(panJs.info.groups[panJs.info.group]){
             if (panJs.act != nam || !bol) setActivedMy(nam);
         } else {
             if(props.main) {
                 setActivedMy(undefined);
                 return;
             }
-            let grps = Object.getOwnPropertyNames(info.groups);
+            let grps = Object.getOwnPropertyNames(panJs.info.groups);
             if(grps.length == 0){
                 if(panJs.refes.lin) panJs.refes.lin.style.width = "0";
                 return;
@@ -198,7 +198,7 @@ export function Pane(props) {
                 panJs.edGr = undefined;
                 panJs.blockCl = false;
             } else {
-                let grop = Object.getOwnPropertyNames(info.groups);
+                let grop = Object.getOwnPropertyNames(panJs.info.groups);
                 dispatch(changeGroups(gType[props.cla ? true : false][CHANGE_PANE_GRS], panJs.ke, inp.value, grop.length == 0 ? 0 : parseInt(grop[grop.length-1]) + 1));
             }
             par.setAttribute('data-st', '0');
@@ -216,7 +216,7 @@ export function Pane(props) {
         panJs.blockCl = "ED";
         panJs.panAdd.setAttribute('data-st', 1);
         inp = panJs.panAdd.querySelector("input");
-        inp.value = info.groups[par.getAttribute('data-id')];
+        inp.value = panJs.info.groups[par.getAttribute('data-id')];
         chStatB({target: inp});
         panJs.edGr = par.getAttribute('data-id');
     };
@@ -229,13 +229,9 @@ export function Pane(props) {
         let el = e.target;
         panJs.inps[el.id] = !el.validity.patternMismatch && el.value.length != 0;
         if (panJs.inps[el.id]) {
-            el.style.outline = "none black";
+            el.setAttribute("data-mod", '0');
         } else {
-            el.style.animation = "but 1s ease infinite";
-            setTimeout(function () {
-                el.style.animation = "none"
-            }, 1000);
-            el.style.outline = "solid red";
+            el.setAttribute("data-mod", '1');
         }
         el.parentElement.querySelector(".yes").setAttribute("data-enable", +panJs.inps[el.id]);
     };
@@ -266,10 +262,11 @@ export function Pane(props) {
     const groupsInfo = useSelector(groups);
     const panJs = useRef(new PanJs()).current;
     const dispatch = useDispatch();
-    let bol, info;
     if(panJs.ke == undefined) {
         panJs.ke = kel++;
-        bol = true;
+        if(!props.cla) {
+            dispatch(changeGroups(CHANGE_PANE, panJs.ke, props.gro));
+        }
     }
     const isFirstUpdate = useRef(true);
     const [_, forceUpdate] = useReducer((x) => x + 1, 0);
@@ -280,9 +277,6 @@ export function Pane(props) {
         if((props.cla && cState.role == 3)) {
             panJs.nav.style.gridTemplate = "7vh/ 15% repeat(5,1fr)";
             chStatB({target: panJs.nav.querySelector("." + paneCSS.nav_iZag + " input")});
-        }
-        if(bol && !props.cla) {
-            dispatch(changeGroups(CHANGE_PANE, panJs.ke, props.gro));
         }
         console.log("I was triggered during componentDidMount Pane.jsx");
         window.addEventListener('resize', preTim);
@@ -299,6 +293,7 @@ export function Pane(props) {
             console.log("I was triggered during componentWillUnmount Pane.jsx");
         }
     }, []);
+    panJs.info = props.cla ? groupsInfo : paneInfo.els[panJs.ke];
     useEffect(() => {
         if (isFirstUpdate.current) {
             isFirstUpdate.current = false;
@@ -319,21 +314,18 @@ export function Pane(props) {
             forceUpdate();
         }
         panJs.pari.paels = el.length;
-        if(info) {
+        if(panJs.info) {
             setGr(true);
         }
         console.log('componentDidUpdate Pane.jsx');
     });
-    if(!info){
-        info = props.cla ? groupsInfo : paneInfo.els[panJs.ke];
-    }
     return (
         <nav className={paneCSS.panel} id="her" data-mod={props.main ? "1" : "0"} data-ke={panJs.ke} ref={(el)=>(panJs.nav = el)}>
             {ele(0, "elems")}
             {getAdd("Добавить группу", "Add")}
-            {info && Object.getOwnPropertyNames(info.groups).map(param =>
-                info.groups[param] && <>{
-                panJs.gr[param] = getPan(info.groups[param], param, info.groups[param].linke, undefined, () => setGroup(param))
+            {panJs.info && Object.getOwnPropertyNames(panJs.info.groups).map(param =>
+                panJs.info.groups[param] && <>{
+                panJs.gr[param] = getPan(panJs.info.groups[param], param, panJs.info.groups[param].linke, undefined, () => setGroup(param))
             }</>)}
             {panJs.mor}
             {!props.main && <div className={paneCSS.lin} data-id={"1"} style={{width: (100 / panJs.pari.elems) + "%"}} id="lin" ref={(ele)=>(panJs.refes.lin = ele)}/>}

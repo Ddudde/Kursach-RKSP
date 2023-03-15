@@ -7,8 +7,9 @@ public enum TypesConnect {
     PROFILES,
     SETTINGS,
     TUTOR,
+    NEWS,
+    CONTACTS,
     HTEACHERS,
     ADMINS,
-    NEWS,
-    CONTACTS
+    STUDENTS
 }

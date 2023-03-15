@@ -38,7 +38,15 @@ public class AuthController {
     public Flux<ServerSentEvent> openSseStream() {
         Flux<ServerSentEvent> stream = Flux.create(fluxSink -> {
             UUID uuid = UUID.randomUUID();
+            Subscriber subscriber = new Subscriber(fluxSink);
+            subscriptions.put(uuid, subscriber);
             System.out.println("create subscription for " + uuid);
+            ServerSentEvent<Object> event = ServerSentEvent
+                    .builder()
+                    .event("chck")
+                    .data(uuid)
+                    .build();
+            fluxSink.next(event);
             fluxSink.onCancel(
                 () -> {
                     subscriptions.remove(uuid);
@@ -52,14 +60,12 @@ public class AuthController {
                 }
             );
 //            fluxSink.error(new Exception("test"));
-            Subscriber subscriber = new Subscriber(fluxSink);
-            subscriptions.put(uuid, subscriber);
-            ServerSentEvent<Object> event = ServerSentEvent
+            ServerSentEvent<Object> event1 = ServerSentEvent
                     .builder()
                     .event("connect")
-                    .data(uuid)
+                    .data("")
                     .build();
-            fluxSink.next(event);
+            fluxSink.next(event1);
         });
         return stream;
     }
@@ -164,10 +170,11 @@ public class AuthController {
                         bodyAns.addProperty("auth", true);
                         bodyAns.addProperty("login", user.getLogin());
 //                        bodyAns.addProperty("role", ObjectUtils.isEmpty(user.getRoles()) ? 0 : ((Long) user.getRoles().keySet().toArray()[4]));
-                        bodyAns.addProperty("role", ObjectUtils.isEmpty(user.getRoles()) ? 0 : ((Long) user.getRoles().keySet().toArray()[0]));
+                        bodyAns.addProperty("role", ObjectUtils.isEmpty(user.getRoles()) ? 0 : datas.getFirstRoleId(user.getRoles()));
                         bodyAns.addProperty("ico", user.getIco());
                         bodyAns.addProperty("roles", !ObjectUtils.isEmpty(user.getRoles()) && user.getRoles().size() > 1);
                         bodyAns.addProperty("secFr", !ObjectUtils.isEmpty(user.getSecFr()));
+                        infCon(body.get("uuid").getAsString(), body.get("login").getAsString(), null, null, null);
                     }
                 }
                 return ans;
@@ -194,7 +201,7 @@ public class AuthController {
                         user.setRoles(inv.getRole());
                         user.setFio(inv.getFio());
                         datas.getUserRepository().saveAndFlush(user);
-                        School school = datas.schoolById(((Role) inv.getRole().values().toArray()[0]).getYO());
+                        School school = datas.schoolById(datas.getFirstRole(inv.getRole()).getYO());
                         if(ObjectUtils.isEmpty(school.getHteachersInv())) school.setHteachersInv(new ArrayList<>());
                         if(ObjectUtils.isEmpty(school.getHteachers())) school.setHteachers(new ArrayList<>());
                         school.getHteachersInv().remove(inv.getId());
@@ -287,7 +294,10 @@ public class AuthController {
                 User user = datas.userByLogin(subscriber.getLogin());
                 User user1 = datas.userByLogin(body.get("id").getAsString());
                 Invite inv = datas.inviteById(body.get("id1").getAsLong());
-                if(user != null && user.getRoles().containsKey(4L) && (user1 != null || inv != null)) {
+                Long schId = null;
+                if(user != null && (user1 != null || inv != null)
+                        && (body.get("role").getAsLong() == 3L && user.getRoles().containsKey(3L)
+                        || body.get("role").getAsLong() == 4L && user.getRoles().containsKey(4L))) {
                     UUID uuid = UUID.randomUUID();
                     Instant after = Instant.now().plus(Duration.ofDays(30));
                     Date dateAfter = Date.from(after);
@@ -295,20 +305,23 @@ public class AuthController {
                         user1.setCode(uuid.toString());
                         user1.setExpDate(Main.df.format(dateAfter));
                         datas.getUserRepository().saveAndFlush(user1);
+                        schId = datas.getFirstRole(user1.getRoles()).getYO();
 
                         ans.addProperty("id", user1.getId());
                     } else if(inv != null){
                         inv.setCode(uuid.toString());
                         inv.setExpDate(Main.df.format(dateAfter));
                         datas.getInviteRepository().saveAndFlush(inv);
+                        schId = datas.getFirstRole(inv.getRole()).getYO();
 
                         ans.addProperty("id", inv.getId());
                     }
                     System.out.println("setCode " + uuid);
 
                     ans.addProperty("code", uuid.toString());
-                    if(body.has("id2")) ans.addProperty("id1", body.get("id2").getAsLong());
-                    sendMessageForAll("codPepC", ans, TypesConnect.MAIN, "adm", "main");
+                    ans.addProperty("id1", schId);
+                    sendMessageForAll("codPepL2C", ans, subscriber.getType(), "null", "adm");
+                    sendMessageForAll("codPepL1C", ans, subscriber.getType(), schId+"", "ht");
                 } else {
                     ans.addProperty("error", true);
                 }

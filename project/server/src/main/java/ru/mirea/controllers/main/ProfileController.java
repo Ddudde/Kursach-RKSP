@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.mirea.controllers.AuthController;
 import ru.mirea.data.SSE.TypesConnect;
 import ru.mirea.data.ServerService;
+import ru.mirea.data.models.Group;
 import ru.mirea.data.models.School;
 import ru.mirea.data.models.auth.User;
 import ru.mirea.data.reps.SchoolRepository;
@@ -56,10 +57,13 @@ public class ProfileController {
                         Role role = user.getRoles().get(i);
                         if(!ObjectUtils.isEmpty(role.getEmail())) roleO.addProperty("email", role.getEmail());
                         if(!ObjectUtils.isEmpty(role.getYO())) {
-                            School school = datas.getSchoolRepository().findById(role.getYO()).orElseThrow(RuntimeException::new);
+                            School school = datas.schoolById(role.getYO());
                             if(school != null) roleO.addProperty("yo", school.getName());
                         }
-                        if(!ObjectUtils.isEmpty(role.getGroup())) roleO.addProperty("group", role.getGroup());
+                        if(!ObjectUtils.isEmpty(role.getGroup())) {
+                            Group group = datas.groupById(role.getGroup());
+                            if(group != null) roleO.addProperty("group", role.getGroup());
+                        }
                         if(!ObjectUtils.isEmpty(role.getLessons())) roleO.add("lessons", gson.toJsonTree(role.getLessons()));
                         if(!ObjectUtils.isEmpty(role.getKids())){
                             JsonObject kids = new JsonObject();
