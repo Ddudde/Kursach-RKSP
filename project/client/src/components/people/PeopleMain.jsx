@@ -7,8 +7,10 @@ import Pane from "../other/pane/Pane";
 import {eventSource, send, setActived} from "../main/Main";
 import {
     CHANGE_EVENT,
+    CHANGE_GROUPS_DEL_GRS,
     CHANGE_GROUPS_GL,
     CHANGE_GROUPS_GR,
+    CHANGE_GROUPS_GRS,
     CHANGE_PARENTS,
     CHANGE_PARENTS_DEL,
     CHANGE_PARENTS_DEL_L0,
@@ -149,7 +151,7 @@ export function onFin(e, inps, forceUpdate, type, info, net) {
     }
     inp = par.querySelector("input");
     if (inps[inp.id]) {
-        inp.setAttribute("data-mod", '1');
+        inp.setAttribute("data-mod", '0');
         if(par.parentElement.classList.contains(peopleCSS.pepl)) {
             par = par.parentElement;
             if(type){
@@ -175,7 +177,7 @@ export function onFin(e, inps, forceUpdate, type, info, net) {
         }
         par.setAttribute('data-st', '0');
     } else {
-        inp.setAttribute("data-mod", '0');
+        inp.setAttribute("data-mod", '1');
     }
 }
 
@@ -206,6 +208,58 @@ export function ele (x, par, inps) {
     if(!inps[par]) inps[par] = x;
 }
 
+function remGroupC(e) {
+    const msg = JSON.parse(e.data);
+    dispatch(changeGroups(CHANGE_GROUPS_DEL_GRS, undefined, undefined, msg.id));
+}
+
+function chGroupC(e) {
+    const msg = JSON.parse(e.data);
+    dispatch(changeGroups(CHANGE_GROUPS_GRS, undefined, msg.name, msg.id));
+}
+
+function addGroupC(e) {
+    const msg = JSON.parse(e.data);
+    dispatch(changeGroups(CHANGE_GROUPS_GRS, undefined, msg.name, msg.id));
+}
+
+export function remGroup (id) {
+    console.log("remGroup");
+    send({
+        uuid: cState.uuid,
+        id: id
+    }, 'POST', "hteachers", "remGroup")
+}
+
+export function chGroup (id, inp, par) {
+    console.log("chGroup");
+    send({
+        uuid: cState.uuid,
+        id: id,
+        name: inp
+    }, 'POST', "hteachers", "chGroup")
+        .then(data => {
+            console.log(data);
+            if(data.error == false){
+                par.setAttribute('data-st', '0');
+            }
+        });
+}
+
+export function addGroup (inp, par) {
+    console.log("addGroup");
+    send({
+        uuid: cState.uuid,
+        name: inp
+    }, 'POST', "hteachers", "addGroup")
+        .then(data => {
+            console.log(data);
+            if(data.error == false){
+                par.setAttribute('data-st', '0');
+            }
+        });
+}
+
 function onCon(e) {
     setGroups();
 }
@@ -233,9 +287,12 @@ export function setActNew(name) {
 export function PeopleMain() {
     cState = useSelector(states);
     groupsInfo = useSelector(groups);
-    if(!dispatch){
+    if(!dispatch && cState.role > 1){
         if(eventSource.readyState == EventSource.OPEN) setGroups();
         eventSource.addEventListener('connect', onCon, false);
+        eventSource.addEventListener('addGroupC', addGroupC, false);
+        eventSource.addEventListener('chGroupC', chGroupC, false);
+        eventSource.addEventListener('remGroupC', remGroupC, false);
     }
     dispatch = useDispatch();
     gr.groups = {
@@ -267,6 +324,9 @@ export function PeopleMain() {
         return function() {
             dispatch = undefined;
             eventSource.removeEventListener('connect', onCon);
+            eventSource.removeEventListener('addGroupC', addGroupC);
+            eventSource.removeEventListener('chGroupC', chGroupC);
+            eventSource.removeEventListener('remGroupC', remGroupC);
             console.log("I was triggered during componentWillUnmount PeopleMain.jsx");
         }
     }, []);

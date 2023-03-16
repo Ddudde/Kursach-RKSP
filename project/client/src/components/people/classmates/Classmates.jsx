@@ -31,6 +31,7 @@ import {eventSource, send} from "../../main/Main";
 let dispatch, classmatesInfo, groupsInfo, selGr, errText, navigate, inps, themeState, cState, tps;
 errText = "К сожалению, информация не найдена... Можете попробовать попросить завуча заполнить информацию.";
 inps = {inpnpt : "Фамилия И.О."};
+selGr = 0;
 tps = {
     del : CHANGE_CLASSMATES_DEL,
     ch: CHANGE_CLASSMATES,
@@ -158,8 +159,6 @@ function goToProf(log) {
 
 function codPepC(e) {
     const msg = JSON.parse(e.data);
-    console.log("test ");
-    console.log(msg);
     dispatch(changePeople(tps.ch, 0, msg.id, undefined, msg.code, "link"));
 }
 
@@ -184,7 +183,7 @@ function remInv (type, id, id1) {
         uuid: cState.uuid,
         id: id,
         id1: id1
-    }, 'POST', "admins", "remPep")
+    }, 'POST', "students", "remPep")
 }
 
 function changeInv (type, id, id1, inp, par) {
@@ -194,7 +193,7 @@ function changeInv (type, id, id1, inp, par) {
         id: id,
         id1: id1,
         name: inp
-    }, 'POST', "admins", "chPep")
+    }, 'POST', "students", "chPep")
         .then(data => {
             console.log(data);
             if(data.error == false){
@@ -208,7 +207,7 @@ function addInv (type, inp, par) {
     send({
         uuid: cState.uuid,
         name: inp
-    }, 'POST', "admins", "addPep")
+    }, 'POST', "students", "addPep")
         .then(data => {
             console.log(data);
             if(data.error == false){
@@ -297,7 +296,7 @@ export function Classmates() {
         eventSource.addEventListener('addPepC', addPepC, false);
         eventSource.addEventListener('chPepC', chPepC, false);
         eventSource.addEventListener('remPepC', remPepC, false);
-        eventSource.addEventListener('codPepL2C', codPepC, false);
+        eventSource.addEventListener('codPepL1C', codPepC, false);
     }
     [_, forceUpdate] = useReducer((x) => x + 1, 0);
     dispatch = useDispatch();
@@ -314,7 +313,7 @@ export function Classmates() {
             eventSource.removeEventListener('addPepC', addPepC);
             eventSource.removeEventListener('chPepC', chPepC);
             eventSource.removeEventListener('remPepC', remPepC);
-            eventSource.removeEventListener('codPepL2C', codPepC);
+            eventSource.removeEventListener('codPepL1C', codPepC);
             console.log("I was triggered during componentWillUnmount Classmates.jsx");
         }
     }, []);
@@ -324,7 +323,7 @@ export function Classmates() {
             return;
         }
         if(selGr != groupsInfo.group){
-            setInfo();
+            if(eventSource.readyState == EventSource.OPEN) setInfo();
         }
         console.log('componentDidUpdate Classmates.jsx');
     });
@@ -359,7 +358,7 @@ export function Classmates() {
                                                 <div className={peopleCSS.nav_i+" "+peopleCSS.nav_iZag2} id={peopleCSS.nav_i}>
                                                     {classmatesInfo[param].name}
                                                 </div>
-                                                <img className={peopleCSS.profIm} src={themeState.theme_ch ? profd : profl} title="Перейти в профиль" alt=""/>
+                                                {classmatesInfo[param].login && <img className={peopleCSS.profIm} src={themeState.theme_ch ? profd : profl} onClick={e=>goToProf(classmatesInfo[param].login)} title="Перейти в профиль" alt=""/>}
                                             </div>
                                         )
                                     }

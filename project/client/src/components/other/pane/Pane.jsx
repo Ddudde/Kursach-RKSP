@@ -16,6 +16,7 @@ import PanJs from "./PanJs";
 import yes from "../../../media/yes.png";
 import no from "../../../media/no.png";
 import ed from "../../../media/edit.png";
+import {addGroup, chGroup, remGroup} from "../../people/PeopleMain";
 
 let kel, gType;
 kel = 0;
@@ -194,14 +195,23 @@ export function Pane(props) {
         par = par.parentElement;
         if (panJs.inps[inp.id]) {
             if(panJs.edGr){
-                dispatch(changeGroups(gType[props.cla ? true : false][CHANGE_PANE_GRS], panJs.ke, inp.value, panJs.edGr));
+                if(props.cla) {
+                    chGroup(panJs.edGr, inp.value, par);
+                } else {
+                    dispatch(changeGroups(CHANGE_PANE_GRS, panJs.ke, inp.value, panJs.edGr));
+                    par.setAttribute('data-st', '0');
+                }
                 panJs.edGr = undefined;
                 panJs.blockCl = false;
             } else {
                 let grop = Object.getOwnPropertyNames(panJs.info.groups);
-                dispatch(changeGroups(gType[props.cla ? true : false][CHANGE_PANE_GRS], panJs.ke, inp.value, grop.length == 0 ? 0 : parseInt(grop[grop.length-1]) + 1));
+                if(props.cla) {
+                    addGroup(inp.value, par);
+                } else {
+                    dispatch(changeGroups(CHANGE_PANE_GRS, panJs.ke, inp.value, grop.length == 0 ? 0 : parseInt(grop[grop.length - 1]) + 1));
+                    par.setAttribute('data-st', '0');
+                }
             }
-            par.setAttribute('data-st', '0');
         }
     };
     const onClose = (e) => {
@@ -223,7 +233,11 @@ export function Pane(props) {
     const onDel = (e) => {
         let par = e.target.parentElement;
         panJs.blockCl = "DEL";
-        dispatch(changeGroups(gType[props.cla ? true : false][CHANGE_PANE_DEL_GRS], panJs.ke, undefined, par.getAttribute('data-id')));
+        if(props.cla) {
+            remGroup(par.getAttribute('data-id'));
+        } else {
+            dispatch(changeGroups(CHANGE_PANE_DEL_GRS, panJs.ke, undefined, par.getAttribute('data-id')));
+        }
     };
     const chStatB = (e) => {
         let el = e.target;

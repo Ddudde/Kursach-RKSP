@@ -13,7 +13,6 @@ import ru.mirea.data.ServerService;
 import ru.mirea.data.json.Role;
 import ru.mirea.data.models.Group;
 import ru.mirea.data.models.School;
-import ru.mirea.data.models.Syst;
 import ru.mirea.data.models.auth.Invite;
 import ru.mirea.data.models.auth.User;
 
@@ -25,10 +24,10 @@ import java.util.HashMap;
 import java.util.Objects;
 
 @RestController
-@RequestMapping("/students")
+@RequestMapping("/parents")
 @NoArgsConstructor
 @CrossOrigin(origins = {"http://localhost:3000", "http://192.168.1.66:3000"})
-public class StudentsController {
+public class ParentsController {
 
     @Autowired
     private ServerService datas;
@@ -44,10 +43,10 @@ public class StudentsController {
         if(data.has("body") && data.get("body").isJsonObject()) body = data.get("body").getAsJsonObject();
         if(!data.has("type")) data.addProperty("type", "default");
         switch (data.get("type").getAsString()){
-            case "getStud" -> {
+            case "getInfo" -> {
                 Subscriber subscriber = authController.getSubscriber(body.get("uuid").getAsString());
                 bodyAns = new JsonObject();
-                ans.add("body", bodyAns);
+                ans.add("bodyC", bodyAns);
                 User user = datas.userByLogin(subscriber.getLogin());
                 Group group = null;
                 Long schId = null;
@@ -62,7 +61,6 @@ public class StudentsController {
                     if(group != null && school != null && school.getGroups().contains(group.getId())) {
                         if (!ObjectUtils.isEmpty(group.getKids())) {
                             for (Long i1 : group.getKids()) {
-                                if(Objects.equals(user.getId(), i1)) continue;
                                 JsonObject studO = new JsonObject();
                                 User studU = datas.userById(i1);
                                 studO.addProperty("name", studU.getFio());
@@ -85,8 +83,7 @@ public class StudentsController {
                 if(group == null){
                     ans.addProperty("error", true);
                 } else {
-
-                    authController.infCon(body.get("uuid").getAsString(), subscriber.getLogin(), TypesConnect.STUDENTS, schId+"", group.getId()+"", user.getRoles().containsKey(3L) ? "ht" : "main", "main");
+                    authController.infCon(body.get("uuid").getAsString(), subscriber.getLogin(), TypesConnect.PARENTS, schId+"", group.getId()+"", user.getRoles().containsKey(3L) ? "ht" : "main", "main");
                 }
                 return ans;
             }

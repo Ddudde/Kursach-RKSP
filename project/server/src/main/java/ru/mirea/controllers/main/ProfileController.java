@@ -104,7 +104,7 @@ public class ProfileController {
 
                     JsonObject ansToCl = new JsonObject();
                     ansToCl.addProperty("login", user.getLogin());
-                    authController.sendMessageForAll("chLogin", ansToCl, TypesConnect.PROFILES, user.getLogin(), "main");
+                    authController.sendMessageForAll("chLogin", ansToCl, TypesConnect.PROFILES, user.getLogin(), "main", "main", "main");
                 } else {
                     ans.addProperty("error", true);
                 }
@@ -120,7 +120,7 @@ public class ProfileController {
 
                     JsonObject ansToCl = new JsonObject();
                     ansToCl.addProperty("more", user.getInfo());
-                    authController.sendMessageForAll("chInfo", ansToCl, TypesConnect.PROFILES, user.getLogin(), "main");
+                    authController.sendMessageForAll("chInfo", ansToCl, TypesConnect.PROFILES, user.getLogin(), "main", "main", "main");
                 } else {
                     ans.addProperty("error", true);
                 }
@@ -137,7 +137,7 @@ public class ProfileController {
                     JsonObject ansToCl = new JsonObject();
                     ansToCl.addProperty("email", body.get("email").getAsString());
                     ansToCl.addProperty("role", body.get("role").getAsLong());
-                    authController.sendMessageForAll("chEmail", ansToCl, TypesConnect.PROFILES, user.getLogin(), "main");
+                    authController.sendMessageForAll("chEmail", ansToCl, TypesConnect.PROFILES, user.getLogin(), "main", "main", "main");
                 } else {
                     ans.addProperty("error", true);
                 }

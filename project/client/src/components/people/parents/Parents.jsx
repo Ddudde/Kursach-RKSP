@@ -2,7 +2,8 @@ import React, {useEffect, useReducer, useRef} from "react";
 import {Helmet} from "react-helmet-async";
 import peopleCSS from '../peopleMain.module.css';
 import parentsCSS from './parents.module.css';
-import {classmates, parents, states, themes} from "../../../store/selector";
+import {useNavigate} from "react-router-dom";
+import {classmates, groups, parents, states, themes} from "../../../store/selector";
 import {useDispatch, useSelector} from "react-redux";
 import {chStatB, copyLink, ele, onClose, onDel, onEdit, onFin, refreshLink, setActNew, sit} from "../PeopleMain";
 import profl from "../../../media/profl.png";
@@ -12,10 +13,13 @@ import ErrFound from "../../other/error/ErrFound";
 import mapd from "../../../media/Map_symbolD.png";
 import mapl from "../../../media/Map_symbolL.png";
 import {
+    CHANGE_CLASSMATES_GL,
+    CHANGE_EVENTS_CLEAR,
     CHANGE_PARENTS,
     CHANGE_PARENTS_DEL,
     CHANGE_PARENTS_DEL_L0,
     CHANGE_PARENTS_L1_PARAM,
+    changeEvents,
     changePeople
 } from "../../../store/actions";
 import ed from "../../../media/edit.png";
@@ -25,10 +29,12 @@ import refreshCd from "../../../media/refreshCd.png";
 import refreshCl from "../../../media/refreshCl.png";
 import copyd from "../../../media/copyd.png";
 import copyl from "../../../media/copyl.png";
+import {eventSource, send} from "../../main/Main";
 
-let dispatch, parentsInfo, classmatesInfo, errText, inps, themeState, cState;
+let dispatch, parentsInfo, navigate, groupsInfo, selGr, classmatesInfo, errText, inps, themeState, cState;
 errText = "К сожалению, информация не найдена... Можете попробовать попросить завуча заполнить информацию.";
 inps = {nyid : undefined, inpnpt : "Фамилия И.О."};
+selGr = 0;
 let [_, forceUpdate] = [];
 
 function selecKid(e, id) {
@@ -111,7 +117,6 @@ function getAdd() {
                         Обучающийся:
                     </div>
                     {getKids()}
-                    <img className={peopleCSS.profIm} data-enable={inps.nyid ? "1" : "0"} src={themeState.theme_ch ? profd : profl} title="Перейти в профиль" alt=""/>
                     <div className={peopleCSS.nav_i} id={peopleCSS.nav_i}>
                         {inps.ppI.length > 1 ? "Представители:" : "Представитель:"}
                     </div>
@@ -219,19 +224,48 @@ function getParents (pI, b) {
             )
 }
 
+function onCon(e) {
+    setInfo();
+}
+
+function setInfo() {
+    send({
+        uuid: cState.uuid,
+        group: groupsInfo.group
+    }, 'POST', "parents", "getInfo")
+        .then(data => {
+            console.log(data);
+            if(data.error == false){
+                selGr = groupsInfo.group;
+                dispatch(changePeople(CHANGE_CLASSMATES_GL, undefined, undefined, undefined, data.bodyC));
+            }
+            for(let el of document.querySelectorAll("." + peopleCSS.ed + " > *[id^='inpn']")){
+                chStatB({target: el});
+            }
+        });
+}
+
 export function Parents() {
     parentsInfo = useSelector(parents);
     classmatesInfo = useSelector(classmates);
     themeState = useSelector(themes);
     cState = useSelector(states);
-    if(!dispatch) setActNew(3);
+    groupsInfo = useSelector(groups);
+    navigate = useNavigate();
+    if(!dispatch) {
+        setActNew(3);
+        if(eventSource.readyState == EventSource.OPEN) setInfo();
+        eventSource.addEventListener('connect', onCon, false);
+    }
     [_, forceUpdate] = useReducer((x) => x + 1, 0);
     dispatch = useDispatch();
     const isFirstUpdate = useRef(true);
     useEffect(() => {
         console.log("I was triggered during componentDidMount Parents.jsx");
         return function() {
+            dispatch(changeEvents(CHANGE_EVENTS_CLEAR));
             dispatch = undefined;
+            eventSource.removeEventListener('connect', onCon);
             console.log("I was triggered during componentWillUnmount Parents.jsx");
         }
     }, []);
@@ -240,6 +274,9 @@ export function Parents() {
         if (isFirstUpdate.current) {
             isFirstUpdate.current = false;
             return;
+        }
+        if(selGr != groupsInfo.group){
+            if(eventSource.readyState == EventSource.OPEN) setInfo();
         }
         console.log('componentDidUpdate Parents.jsx');
     });

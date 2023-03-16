@@ -11,9 +11,6 @@ export default function paneReducer(state = initialState, action) {
             fd.els[action.payload.id] = action.payload.state;
             return fd;
         case CHANGE_PANE_GR:
-            console.log("test1");
-            console.log(action.payload.state);
-            console.log(action.payload.id);
             fd.els[action.payload.id].group = action.payload.state;
             return fd;
         case CHANGE_PANE_GRS:

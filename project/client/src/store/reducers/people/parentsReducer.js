@@ -20,40 +20,43 @@ const initialState = {
         //     }
         // }
     },
-    "id1" : {
-        name : "Петров А.А.",
-        par : {
-            "id1": {
-                name : "Петров А.А."
-            },
-            "id2": {
-                name : "Петрова А.Б."
-            }
-        }
-    },
-    "id2": {
-        name : "Васечкин А.С.",
-        par : {
-            "id1": {
-                name : "Петров А.А."
-            }
-        }
-    },
-    "id3": {
-        name : "Петров А.Г.",
-        par : {
-            "id1": {
-                name : "Петров А.А."
-            }
-        }
-    }
+    // "id1" : {
+    //     name : "Петров А.А.",
+    //     par : {
+    //         "id1": {
+    //             name : "Петров А.А."
+    //         },
+    //         "id2": {
+    //             name : "Петрова А.Б."
+    //         }
+    //     }
+    // },
+    // "id2": {
+    //     name : "Васечкин А.С.",
+    //     par : {
+    //         "id1": {
+    //             name : "Петров А.А."
+    //         }
+    //     }
+    // },
+    // "id3": {
+    //     name : "Петров А.Г.",
+    //     par : {
+    //         "id1": {
+    //             name : "Петров А.А."
+    //         }
+    //     }
+    // }
 };
 
 export default function parentsReducer(state = initialState, action) {
     let fd = {...state};
     switch(action.type) {
         case CHANGE_PARENTS_GL:
-            return action.payload.state;
+            let nw = {...fd.nw};
+            fd = action.payload.state;
+            fd.nw = nw;
+            return fd;
         case CHANGE_PARENTS_L1_PARAM:
             if(!fd[action.payload.l1]){
                 fd[action.payload.l1] = {};

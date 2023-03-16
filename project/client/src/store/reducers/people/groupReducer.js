@@ -69,7 +69,7 @@ export default function groupReducer(state = initialState, action) {
             return fd;
         case CHANGE_GROUPS_GRS:
             fd.groups[action.payload.gId] = action.payload.state;
-            fd.group = action.payload.gId;
+            // fd.group = action.payload.gId;
             return fd;
         case CHANGE_GROUPS_DEL_GRS:
             delete fd.groups[action.payload.gId];

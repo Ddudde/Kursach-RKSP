@@ -342,7 +342,7 @@ export function Admins() {
                                             <div className={peopleCSS.nav_i+" "+peopleCSS.nav_iZag2} id={peopleCSS.nav_i}>
                                                 {adminsInfo[param].name}
                                             </div>
-                                            <img className={peopleCSS.profIm} src={themeState.theme_ch ? profd : profl} title="Перейти в профиль" alt=""/>
+                                            {adminsInfo[param].login && <img className={peopleCSS.profIm} src={themeState.theme_ch ? profd : profl} onClick={e=>goToProf(adminsInfo[param].login)} title="Перейти в профиль" alt=""/>}
                                         </div>
                                     )
                                 }
