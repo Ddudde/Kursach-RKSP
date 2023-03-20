@@ -10,14 +10,15 @@ import ru.mirea.controllers.AuthController;
 import ru.mirea.data.SSE.Subscriber;
 import ru.mirea.data.SSE.TypesConnect;
 import ru.mirea.data.ServerService;
-import ru.mirea.data.json.Role;
 import ru.mirea.data.models.*;
 import ru.mirea.data.models.auth.Invite;
 import ru.mirea.data.models.auth.User;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.UUID;
 
 import static java.util.Arrays.asList;
 
@@ -232,7 +233,7 @@ public class ScheduleController {
                 }
                 return ans;
             }
-            case "chPep" -> {
+            case "chPep1" -> {
                 Subscriber subscriber = authController.getSubscriber(body.get("uuid").getAsString());
                 User user = datas.userByLogin(subscriber.getLogin());
                 User user1 = datas.userByLogin(body.get("id").getAsString());
