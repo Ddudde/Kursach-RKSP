@@ -363,7 +363,7 @@ export function Main() {
                 </div>
             </div>
             <div className={mainCSS.d}>
-                © 2020 ООО "Рога и Копыта" Все права защищены. Project on <a href="https://github.com/Ddudde/Kursach-HTML" style={{color: "var(--cV2)"}}>github</a>.
+                © 2020 ООО "Рога и Копыта" Все права защищены. Project on <a href="https://github.com/Ddudde/Kursach-RKSP" style={{color: "var(--cV2)"}}>github</a>.
             </div>
             <img className={mainCSS.d1} src={up} title="Вверх" alt="" onClick={onTop} ref={(el)=>d1 = el}/>
         </>

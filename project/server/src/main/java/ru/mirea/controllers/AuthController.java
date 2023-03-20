@@ -277,7 +277,10 @@ public class AuthController {
                 return ans;
             }
             case "checkInvCode" -> {
-                User user = datas.userByLogin(body.get("login").getAsString());
+                User user = null;
+                if(body.has("login")) {
+                    user = datas.userByLogin(body.get("login").getAsString());
+                }
                 Invite inv = datas.inviteByCode(body.get("code").getAsString());
                 if(inv == null) {
                     ans.addProperty("error", true);
