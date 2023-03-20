@@ -19,7 +19,7 @@ const initialState = {
         //         name : "Петрова А.Б."
         //     }
         // }
-    },
+    }
     // "id1" : {
     //     name : "Петров А.А.",
     //     par : {
@@ -54,9 +54,8 @@ export default function parentsReducer(state = initialState, action) {
     switch(action.type) {
         case CHANGE_PARENTS_GL:
             let nw = {...fd.nw};
-            fd = action.payload.state;
-            fd.nw = nw;
-            return fd;
+            action.payload.state.nw = nw;
+            return action.payload.state;
         case CHANGE_PARENTS_L1_PARAM:
             if(!fd[action.payload.l1]){
                 fd[action.payload.l1] = {};

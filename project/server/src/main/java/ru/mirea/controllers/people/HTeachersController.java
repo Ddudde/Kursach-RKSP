@@ -317,21 +317,12 @@ public class HTeachersController {
             case "getGroups" -> {
                 Subscriber subscriber = authController.getSubscriber(body.get("uuid").getAsString());
                 User user = datas.userByLogin(subscriber.getLogin());
-                bodyAns = new JsonObject();
-                ans.add("body", bodyAns);
-                Group gr = null;
-                Long schId = null;
                 if(user != null && (user.getRoles().containsKey(2L) || user.getRoles().containsKey(3L))) {
-                    schId = datas.getFirstRole(user.getRoles()).getYO();
-                    School school = datas.schoolById(schId);
-                    if (!ObjectUtils.isEmpty(school.getGroups())) {
-                        for (Long i1 : school.getGroups()) {
-                            gr = datas.groupById(i1);
-                            bodyAns.addProperty(i1 + "", gr.getName());
-                        }
-                    }
+                    JsonObject grps = new JsonObject();
+                    datas.groupsByUser(user, grps);
+                    ans.add("body", grps);
                 }
-                if(gr == null){
+                if(!ans.has("body")){
                     ans.addProperty("error", true);
                 }
                 return ans;

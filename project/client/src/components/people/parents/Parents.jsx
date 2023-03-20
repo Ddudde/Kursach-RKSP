@@ -14,10 +14,14 @@ import mapd from "../../../media/Map_symbolD.png";
 import mapl from "../../../media/Map_symbolL.png";
 import {
     CHANGE_CLASSMATES_GL,
+    CHANGE_EVENT,
     CHANGE_EVENTS_CLEAR,
     CHANGE_PARENTS,
     CHANGE_PARENTS_DEL,
     CHANGE_PARENTS_DEL_L0,
+    CHANGE_PARENTS_DEL_L1,
+    CHANGE_PARENTS_GL,
+    CHANGE_PARENTS_L1,
     CHANGE_PARENTS_L1_PARAM,
     changeEvents,
     changePeople
@@ -86,7 +90,6 @@ function getAddPred(param) {
                     <div className={peopleCSS.nav_i + " " + peopleCSS.nav_iZag2} id={peopleCSS.nav_i}>
                         {inps.inpnpt}
                     </div>
-                    <img className={peopleCSS.profIm} src={themeState.theme_ch ? profd : profl} title="Так будет выглядеть иконка перехода в профиль" alt=""/>
                     <img className={peopleCSS.imgfield} src={ed} onClick={onEdit} title="Редактировать" alt=""/>
                     <img className={peopleCSS.imginp+" yes "} src={yes} onClick={(e)=>onFin(e, inps, forceUpdate, CHANGE_PARENTS, parentsInfo)} title="Подтвердить" alt=""/>
                     <img className={peopleCSS.imginp} style={{marginRight: "1vw"}} src={no} onClick={onClose} title="Выйти из режима создания" alt=""/>
@@ -122,13 +125,12 @@ function getAdd() {
                     </div>
                 </div>
                 {getAddPred()}
-                {inps.ppI.map(param1 =>
+                {inps.ppI.map((param1, i, xs, info = parentsInfo.nw.par[param1]) =>
                     <div className={peopleCSS.pepl} data-st="0" key={param1}>
                         <div className={peopleCSS.fi}>
                             <div className={peopleCSS.nav_i+" "+peopleCSS.nav_iZag2} id={peopleCSS.nav_i}>
-                                {parentsInfo.nw.par[param1].name}
+                                {info.name}
                             </div>
-                            <img className={peopleCSS.profIm} src={themeState.theme_ch ? profd : profl} title="Так будет выглядеть иконка перехода в профиль" alt=""/>
                             <img className={peopleCSS.imgfield} src={ed} onClick={onEdit} title="Редактировать" alt=""/>
                             <img className={peopleCSS.imginp} data-id={param1} style={{marginRight: "1vw"}} src={no} onClick={(e)=>onDel(e, CHANGE_PARENTS_DEL)} title="Удалить" alt=""/>
                         </div>
@@ -136,7 +138,7 @@ function getAdd() {
                             <div className={peopleCSS.preinf}>
                                 ФИО:
                             </div>
-                            <input className={peopleCSS.inp} data-id1={param1} id={"inpnpt_" + param1} placeholder={"Фамилия И.О."} defaultValue={parentsInfo.nw.par[param1].name} onChange={(e)=>chStatB(e, inps)} type="text"/>
+                            <input className={peopleCSS.inp} data-id1={param1} id={"inpnpt_" + param1} placeholder={"Фамилия И.О."} defaultValue={info.name} onChange={(e)=>chStatB(e, inps)} type="text"/>
                             {ele(false, "inpnpt_" + param1, inps)}
                             <img className={peopleCSS.imginp+" yes "} src={yes} onClick={(e)=>onFin(e, inps, forceUpdate, CHANGE_PARENTS, parentsInfo)} title="Подтвердить" alt=""/>
                             <img className={peopleCSS.imginp} style={{marginRight: "1vw"}} src={no} onClick={onClose} title="Отменить изменения и выйти из режима редактирования" alt=""/>
@@ -156,37 +158,37 @@ function getParents (pI, b) {
     return b ?
             <>
                 {getAdd()}
-                {pI.map((param, i, x, ppI = parentsInfo[param].par ? Object.getOwnPropertyNames(parentsInfo[param].par) : [])=>
-                    (param != "nw" && parentsInfo[param].par) &&
+                {pI.map((param, i, xs, info = parentsInfo[param], ppI = info.par ? Object.getOwnPropertyNames(info.par) : [])=>
+                    (param != "nw" && info.par) &&
                     <div className={peopleCSS.nav_iZag+" "+peopleCSS.nav_iZag1} key={param}>
                         <div className={parentsCSS.uch}>
                             <div className={peopleCSS.nav_i+" "+parentsCSS.nam} id={peopleCSS.nav_i}>
-                                Обучающийся: {parentsInfo[param].name}
+                                Обучающийся: {info.name}
                             </div>
-                            <img className={peopleCSS.profIm} src={themeState.theme_ch ? profd : profl} title="Перейти в профиль" alt=""/>
+                            {info.login && <img className={peopleCSS.profIm} src={themeState.theme_ch ? profd : profl} onClick={e=>goToProf(info.login)} title="Перейти в профиль" alt=""/>}
                             <div className={peopleCSS.nav_i} id={peopleCSS.nav_i}>
                                 {ppI.length > 1 ? "Представители:" : "Представитель:"}
                             </div>
                         </div>
                         {getAddPred(param)}
-                        {ppI.map(param1 =>
+                        {ppI.map((param1, i1, xs1, info1 = info.par[param1]) =>
                             <div className={peopleCSS.pepl} data-st="0" key={param1}>
                                 <div className={peopleCSS.fi}>
                                     <div className={peopleCSS.nav_i+" "+peopleCSS.nav_iZag2} id={peopleCSS.nav_i}>
-                                        {parentsInfo[param].par[param1].name}
+                                        {info1.name}
                                     </div>
-                                    <img className={peopleCSS.profIm} src={themeState.theme_ch ? profd : profl} title="Перейти в профиль" alt=""/>
+                                    {info1.login && <img className={peopleCSS.profIm} src={themeState.theme_ch ? profd : profl} onClick={e=>goToProf(info1.login)} title="Перейти в профиль" alt=""/>}
                                     <img className={peopleCSS.imgfield} src={ed} onClick={onEdit} title="Редактировать" alt=""/>
                                     <img className={peopleCSS.imginp} data-id={param + "_" + param1} style={{marginRight: "1vw"}} src={no} onClick={(e)=>onDel(e, CHANGE_PARENTS_DEL, parentsInfo)} title="Удалить" alt=""/>
-                                    <input className={peopleCSS.inp+" "+peopleCSS.copyInp} data-id={param + "_" + param1} id={"inpcpt_" + param + "_" + param1} placeholder="Ссылка не создана" value={parentsInfo[param].par[param1].link} type="text" readOnly/>
+                                    <input className={peopleCSS.inp+" "+peopleCSS.copyInp} data-id={param + "_" + param1} id={"inpcpt_" + param + "_" + param1} placeholder="Ссылка не создана" defaultValue={info1.link ? sit + (info1.login ? "/reauth/" : "/invite/") + info1.link : undefined} type="text" readOnly/>
                                     <img className={peopleCSS.imginp+" "+peopleCSS.refrC} src={themeState.theme_ch ? refreshCd : refreshCl} onClick={(e)=>refreshLink(e, sit, CHANGE_PARENTS)} title="Создать ссылку-приглашение" alt=""/>
-                                    <img className={peopleCSS.imginp} src={themeState.theme_ch ? copyd : copyl} title="Копировать" data-enable={parentsInfo[param].par[param1].link ? "1" : "0"} onClick={(e)=>copyLink(e, parentsInfo[param].par[param1].link, parentsInfo[param].par[param1].name)} alt=""/>
+                                    <img className={peopleCSS.imginp} src={themeState.theme_ch ? copyd : copyl} title="Копировать" data-enable={info1.link ? "1" : "0"} onClick={(e)=>copyLink(e, info1.link, info1.name)} alt=""/>
                                 </div>
                                 <div className={peopleCSS.ed}>
                                     <div className={peopleCSS.preinf}>
                                         ФИО:
                                     </div>
-                                    <input className={peopleCSS.inp} data-id={param + "_" + param1} id={"inpnpt_" + param1} placeholder={"Фамилия И.О."} defaultValue={parentsInfo[param].par[param1].name} onChange={(e)=>chStatB(e, inps)} type="text"/>
+                                    <input className={peopleCSS.inp} data-id={param + "_" + param1} id={"inpnpt_" + param1} placeholder={"Фамилия И.О."} defaultValue={info1.name} onChange={(e)=>chStatB(e, inps)} type="text"/>
                                     {ele(false, "inpnpt_" + param + "_" + param1, inps)}
                                     <img className={peopleCSS.imginp+" yes "} src={yes} onClick={(e)=>onFin(e, inps, forceUpdate, CHANGE_PARENTS, parentsInfo)} title="Подтвердить" alt=""/>
                                     <img className={peopleCSS.imginp} style={{marginRight: "1vw"}} src={no} onClick={onClose} title="Отменить изменения и выйти из режима редактирования" alt=""/>
@@ -200,32 +202,81 @@ function getParents (pI, b) {
                 )}
             </>
         :
-            pI.map((param, i, x, ppI = parentsInfo[param].par ? Object.getOwnPropertyNames(parentsInfo[param].par) : []) =>
-                parentsInfo[param].par &&
+            pI.map((param, i, xs, info = parentsInfo[param], ppI = info.par ? Object.getOwnPropertyNames(info.par) : []) =>
+                info.par &&
                 <div className={peopleCSS.nav_iZag+" "+peopleCSS.nav_iZag1} key={param}>
                     <div className={parentsCSS.uch}>
                         <div className={peopleCSS.nav_i+" "+parentsCSS.nam} id={peopleCSS.nav_i}>
-                            Обучающийся: {parentsInfo[param].name}
+                            Обучающийся: {info.name}
                         </div>
-                        <img className={peopleCSS.profIm} src={themeState.theme_ch ? profd : profl} title="Перейти в профиль" alt=""/>
+                        {info.login && <img className={peopleCSS.profIm} src={themeState.theme_ch ? profd : profl} onClick={e=>goToProf(info.login)} title="Перейти в профиль" alt=""/>}
                         <div className={peopleCSS.nav_i} id={peopleCSS.nav_i}>
                             {ppI.length > 1 ? "Представители:" : "Представитель:"}
                         </div>
                     </div>
-                    {ppI.map(param1 =>
+                    {ppI.map((param1, i1, xs1, info1 = info.par[param1]) =>
                         <div key={param1}>
                             <div className={peopleCSS.nav_i+" "+peopleCSS.nav_iZag2} id={peopleCSS.nav_i}>
-                                {parentsInfo[param].par[param1].name}
+                                {info1.name}
                             </div>
-                            <img className={peopleCSS.profIm} src={themeState.theme_ch ? profd : profl} title="Перейти в профиль" alt=""/>
+                            {info1.login && <img className={peopleCSS.profIm} src={themeState.theme_ch ? profd : profl} onClick={e=>goToProf(info1.login)} title="Перейти в профиль" alt=""/>}
                         </div>
                     )}
                 </div>
             )
 }
 
+function goToProf(log) {
+    if(log) navigate("/profiles/" + log);
+}
+
+function codPepL1C(e) {
+    const msg = JSON.parse(e.data);
+    dispatch(changePeople(CHANGE_PARENTS, msg.id, "par", msg.id1, msg.code, "link"));
+}
+
+export function codPar (id, id1, title, text) {
+    console.log("codPar");
+    send({
+        uuid: cState.uuid,
+        id: id,
+        id1: id1,
+        role: cState.role
+    }, 'POST', "parents", "setCodePep")
+        .then(data => {
+            console.log(data);
+            if(data.error == false){
+                dispatch(changeEvents(CHANGE_EVENT, undefined, undefined, title, text, 10));
+                // dispatch(changePeople(CHANGE_PARENTS_L1, undefined, data.id, undefined, data.body));
+            }
+        });
+}
+
+function addKidC(e) {
+    const msg = JSON.parse(e.data);
+    dispatch(changePeople(CHANGE_PARENTS_L1, undefined, msg.id, undefined, msg.body));
+}
+
+export function addKid (bod, id, par) {
+    console.log("addKid");
+    send({
+        uuid: cState.uuid,
+        bod: bod,
+        id: id
+    }, 'POST', "parents", "addKid")
+        .then(data => {
+            console.log(data);
+            if(data.error == false){
+                // dispatch(changePeople(CHANGE_PARENTS_L1, undefined, data.id, undefined, data.body));
+                id = undefined;
+                dispatch(changePeople(CHANGE_PARENTS_DEL_L1, "nw", "par"));
+                par.setAttribute('data-st', '0');
+            }
+        });
+}
+
 function onCon(e) {
-    setInfo();
+    if(groupsInfo.group) setInfo();
 }
 
 function setInfo() {
@@ -238,9 +289,7 @@ function setInfo() {
             if(data.error == false){
                 selGr = groupsInfo.group;
                 dispatch(changePeople(CHANGE_CLASSMATES_GL, undefined, undefined, undefined, data.bodyC));
-            }
-            for(let el of document.querySelectorAll("." + peopleCSS.ed + " > *[id^='inpn']")){
-                chStatB({target: el});
+                dispatch(changePeople(CHANGE_PARENTS_GL, undefined, undefined, undefined, data.bodyP));
             }
         });
 }
@@ -256,6 +305,8 @@ export function Parents() {
         setActNew(3);
         if(eventSource.readyState == EventSource.OPEN) setInfo();
         eventSource.addEventListener('connect', onCon, false);
+        eventSource.addEventListener('addKidC', addKidC, false);
+        eventSource.addEventListener('codPepL1C', codPepL1C, false);
     }
     [_, forceUpdate] = useReducer((x) => x + 1, 0);
     dispatch = useDispatch();
@@ -266,6 +317,8 @@ export function Parents() {
             dispatch(changeEvents(CHANGE_EVENTS_CLEAR));
             dispatch = undefined;
             eventSource.removeEventListener('connect', onCon);
+            eventSource.removeEventListener('addKidC', addKidC);
+            eventSource.removeEventListener('codPepL1C', codPepL1C);
             console.log("I was triggered during componentWillUnmount Parents.jsx");
         }
     }, []);

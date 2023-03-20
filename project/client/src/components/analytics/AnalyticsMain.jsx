@@ -9,9 +9,6 @@ import {
     CHANGE_PERIODS,
     CHANGE_PERIODS_DEL,
     CHANGE_PERIODS_L1,
-    CHANGE_SCHEDULE,
-    CHANGE_SCHEDULE_DEL,
-    CHANGE_SCHEDULE_PARAM,
     CHANGE_ZVONKI,
     CHANGE_ZVONKI_DEL,
     CHANGE_ZVONKI_DEL_L0,
@@ -26,16 +23,12 @@ gr = {
     group: 0
 }
 
-export function onDel(e, type, info) {
+export function onDel(e, type) {
     let par, inp, id;
     par = e.target.parentElement.parentElement;
     if(par.classList.contains(analyticsCSS.edbl)){
         inp = par.querySelector("input");
-        if(!inp){
-            if(type == CHANGE_SCHEDULE_DEL) {
-                dispatch(changeAnalytics(type, info.id, info.id1));
-            }
-        }else if (inp.hasAttribute("data-id")) {
+        if (inp.hasAttribute("data-id")) {
             id = inp.getAttribute("data-id").split("_");
             if(type == CHANGE_ZVONKI_DEL) {
                 dispatch(changeAnalytics(type, id[0], "lessons", id[1]));
@@ -82,58 +75,14 @@ export function onFin(e, inps, forceUpdate, type, info) {
             } else {
                 for(let i = 0, inpf; i < inpm.length; i++) {
                     inpf = document.querySelector("." + analyticsCSS.edbl + " *[id='" + inpm[i] + "']")
-                    inpf.style.animation = "but 1s ease infinite";
-                    setTimeout(function () {
-                        inpf.style.animation = "none"
-                    }, 1000);
-                    inpf.style.outline = "solid red";
-                }
-            }
-            return;
-        } else if(type == CHANGE_SCHEDULE){
-            let inpm = ["sinpnpt_", "sinpnkt_"];
-            if(inps.sinpnpt_ && inps.sinpnkt_ && inps.nyid)
-            {
-                let grop, id, obj, param;
-                param = inp.getAttribute("data-id1");
-                grop = Object.getOwnPropertyNames(info[param].lessons);
-                id = grop.length == 0 ? 0 : (parseInt(grop[grop.length-1]) + 1);
-                obj = {
-                    name: inps.sinpnpt_,
-                    cabinet: inps.sinpnkt_,
-                    prepod: {
-                        name: info[param].nw.prepod,
-                        id: inps.nyid
-                    }
-                }
-                dispatch(changeAnalytics(type, param, id, undefined, obj));
-            } else {
-                for(let i = 0, inpf; i < inpm.length; i++) {
-                    inpf = document.querySelector("." + analyticsCSS.edbl + " *[id='" + inpm[i] + "']")
-                    inpf.style.animation = "but 1s ease infinite";
-                    setTimeout(function () {
-                        inpf.style.animation = "none"
-                    }, 1000);
-                    inpf.style.outline = "solid red";
+                    inpf.setAttribute("data-mod", '1');
                 }
             }
             return;
         }
-    }
-    if(!inp){
-        if(type == CHANGE_SCHEDULE_PARAM) {
-            let obj = {
-                name: info.st[info.id].nw.prepod,
-                id: inps.nyid
-            }
-            dispatch(changeAnalytics(type, info.id, info.id1, info.par, obj));
-        }
-        par = par.parentElement;
-        par.setAttribute('data-st', '0');
-        return;
     }
     if (inps[inp.id]) {
-        inp.style.outline = "none black";
+        inp.setAttribute("data-mod", '0');
         if(par.parentElement.classList.contains(analyticsCSS.edbl)) {
             par = par.parentElement;
             if(type){
@@ -143,8 +92,6 @@ export function onFin(e, inps, forceUpdate, type, info) {
                         dispatch(changeAnalytics(type, id[0], "lessons", id[1], inp.value));
                     } else if(type == CHANGE_PERIODS) {
                         dispatch(changeAnalytics(type, "prs", id[0], id[1], inp.value));
-                    } else if(type == CHANGE_SCHEDULE_PARAM) {
-                        dispatch(changeAnalytics(type, id[0], id[1], info, inp.value));
                     }
                 } else if(inp.hasAttribute("data-id1")){
                     let id = inp.getAttribute("data-id1");
@@ -177,11 +124,7 @@ export function onFin(e, inps, forceUpdate, type, info) {
         }
         par.setAttribute('data-st', '0');
     } else {
-        inp.style.animation = "but 1s ease infinite";
-        setTimeout(function () {
-            inp.style.animation = "none"
-        }, 1000);
-        inp.style.outline = "solid red";
+        inp.setAttribute("data-mod", '1');
     }
 }
 
@@ -202,19 +145,11 @@ export function onClose(e, type) {
 
 export function chStatB(e, inps, upd) {
     let el = e.target;
-    if(el.pattern) {
-        inps[el.id] = !el.validity.patternMismatch ? el.value : false;
-    } else {
-        inps[el.id] = el.value;
-    }
+    inps[el.id] = !el.validity.patternMismatch ? el.value : false;
     if (inps[el.id]) {
-        el.style.outline = "none black";
+        el.setAttribute("data-mod", '0');
     } else {
-        el.style.animation = "but 1s ease infinite";
-        setTimeout(function () {
-            el.style.animation = "none"
-        }, 1000);
-        el.style.outline = "solid red";
+        el.setAttribute("data-mod", '1');
     }
     if(upd) upd();
     let ye = el.parentElement.querySelector(".yes");
@@ -223,12 +158,8 @@ export function chStatB(e, inps, upd) {
     }
 }
 
-export function ele (x, par, b, inps, pari) {
-    if(b){
-        if(!inps[par]) inps[par] = x;
-    } else {
-        pari[par] = x;
-    }
+export function ele (x, par, inps) {
+    if(!inps[par]) inps[par] = x;
 }
 
 export function setActNew(name) {

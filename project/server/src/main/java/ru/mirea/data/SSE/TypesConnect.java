@@ -12,5 +12,7 @@ public enum TypesConnect {
     HTEACHERS,
     ADMINS,
     STUDENTS,
-    PARENTS
+    PARENTS,
+    TEACHERS,
+    SCHEDULE
 }

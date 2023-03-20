@@ -17,10 +17,9 @@ import {
 import no from "../../../media/no.png";
 import ed from "../../../media/edit.png";
 
-let dispatch, zvonkiInfo, errText, inps, pari, cState;
+let dispatch, zvonkiInfo, errText, inps, cState;
 errText = "К сожалению, информация не найдена... Можете попробовать попросить завуча заполнить информацию.";
 inps = {inpnpt : "8.00-8.45", inpnst: "1 смена"};
-pari = {elems: 0, paels: 0};
 let [_, forceUpdate] = [];
 
 function getZvonki(b) {
@@ -44,7 +43,7 @@ function getZvonki(b) {
                                     Смена:
                                 </div>
                                 <input className={analyticsCSS.inp} data-id1={param} id={"inpnst_" + param} placeholder={"1 смена"} defaultValue={zvonkiInfo[param].name} onChange={(e)=>chStatB(e, inps)} type="text"/>
-                                {ele(false, "inpnst_" + param, true, inps, pari)}
+                                {ele(false, "inpnst_" + param, inps)}
                                 <img className={analyticsCSS.imginp+" yes "} src={yes} onClick={(e)=>onFin(e, inps, forceUpdate, CHANGE_ZVONKI_L1)} title="Подтвердить" alt=""/>
                                 <img className={analyticsCSS.imginp} style={{marginRight: "1vw"}} src={no} onClick={onClose} title="Отменить изменения и выйти из режима редактирования" alt=""/>
                             </div>
@@ -67,7 +66,7 @@ function getZvonki(b) {
                                             Интервал:
                                         </div>
                                         <input className={analyticsCSS.inp} data-id={param + "_" + param1} id={"inpnpt_" + param + "_" + param1} placeholder={"8.00-8.45"} defaultValue={zvonkiInfo[param].lessons[param1]} onChange={(e)=>chStatB(e, inps)} type="text"/>
-                                        {ele(false, "inpnpt_" + param + "_" + param1, true, inps, pari)}
+                                        {ele(false, "inpnpt_" + param + "_" + param1, inps)}
                                         <img className={analyticsCSS.imginp+" yes "} src={yes} onClick={(e)=>onFin(e, inps, forceUpdate, CHANGE_ZVONKI)} title="Подтвердить" alt=""/>
                                         <img className={analyticsCSS.imginp} style={{marginRight: "1vw"}} src={no} onClick={onClose} title="Отменить изменения и выйти из режима редактирования" alt=""/>
                                     </div>
@@ -86,7 +85,7 @@ function getZvonki(b) {
                                     Интервал:
                                 </div>
                                 <input className={analyticsCSS.inp} data-id1={param} id={"inpnpt_"} placeholder={"8.00-8.45"} defaultValue={inps.inpnpt} onChange={(e)=>chStatB(e, inps)} type="text"/>
-                                {ele(false, "inpnpt_", true, inps, pari)}
+                                {ele(false, "inpnpt_", inps)}
                                 <img className={analyticsCSS.imginp+" yes "} src={yes} onClick={(e)=>onFin(e, inps, forceUpdate, CHANGE_ZVONKI, zvonkiInfo)} title="Подтвердить" alt=""/>
                                 <img className={analyticsCSS.imginp} style={{marginRight: "1vw"}} src={no} onClick={onClose} title="Отменить изменения и выйти из режима редактирования" alt=""/>
                             </div>
@@ -106,7 +105,7 @@ function getZvonki(b) {
                                 Смена:
                             </div>
                             <input className={analyticsCSS.inp} id={"inpnst_"} placeholder={"X Смена"} defaultValue={inps.inpnst} onChange={(e)=>chStatB(e, inps)} type="text"/>
-                            {ele(false, "inpnst_", true, inps, pari)}
+                            {ele(false, "inpnst_", inps)}
                             <img className={analyticsCSS.imginp+" yes "} src={yes} onClick={(e)=>onFin(e, inps, forceUpdate, CHANGE_ZVONKI_SMENA, zvonkiInfo)} title="Подтвердить" alt=""/>
                             <img className={analyticsCSS.imginp} style={{marginRight: "1vw"}} src={no} onClick={onClose} title="Отменить изменения и выйти из режима редактирования" alt=""/>
                         </div>

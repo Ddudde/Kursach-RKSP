@@ -2,7 +2,6 @@ package ru.mirea.controllers.main;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ObjectUtils;
@@ -13,9 +12,10 @@ import ru.mirea.data.ServerService;
 import ru.mirea.data.models.Group;
 import ru.mirea.data.models.School;
 import ru.mirea.data.models.auth.User;
-import ru.mirea.data.reps.SchoolRepository;
-import ru.mirea.data.reps.auth.UserRepository;
 import ru.mirea.data.json.Role;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @RequestMapping("/profiles")
@@ -64,7 +64,13 @@ public class ProfileController {
                             Group group = datas.groupById(role.getGroup());
                             if(group != null) roleO.addProperty("group", role.getGroup());
                         }
-                        if(!ObjectUtils.isEmpty(role.getLessons())) roleO.add("lessons", gson.toJsonTree(role.getLessons()));
+                        if(!ObjectUtils.isEmpty(role.getSubjects())) {
+                            List<String> subjects = new ArrayList<>();
+                            for(Long i1 : role.getSubjects()) {
+                                subjects.add(datas.subjectById(i1).getName());
+                            }
+                            roleO.add("lessons", gson.toJsonTree(subjects));
+                        }
                         if(!ObjectUtils.isEmpty(role.getKids())){
                             JsonObject kids = new JsonObject();
                             for(Long i1 : role.getKids()){

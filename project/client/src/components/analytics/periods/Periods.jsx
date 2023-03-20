@@ -11,10 +11,9 @@ import {CHANGE_PERIODS, CHANGE_PERIODS_DEL, CHANGE_PERIODS_L1} from "../../../st
 import no from "../../../media/no.png";
 import ed from "../../../media/edit.png";
 
-let dispatch, periodsInfo, errText, cState, inps, pari;
+let dispatch, periodsInfo, errText, cState, inps;
 errText = "К сожалению, информация не найдена... Можете попробовать попросить завуча заполнить информацию.";
 inps = {inpnnt : "V четверть", inpnit: "01.09.22-03.11.22"};
-pari = {elems: 0, paels: 0};
 let [_, forceUpdate] = [];
 
 export function Periods() {
@@ -77,7 +76,7 @@ export function Periods() {
                                                 Название:
                                             </div>
                                             <input className={analyticsCSS.inp} data-id={param + "_name"} id={"inpnnt_" + param + "_name"} placeholder={"X Смена"} defaultValue={periodsInfo.prs[param].name} onChange={(e)=>chStatB(e, inps)} type="text"/>
-                                            {ele(false, "inpnnt_" + param + "_name", true, inps, pari)}
+                                            {ele(false, "inpnnt_" + param + "_name", inps)}
                                             <img className={analyticsCSS.imginp+" yes "} src={yes} onClick={(e)=>onFin(e, inps, forceUpdate, CHANGE_PERIODS)} title="Подтвердить" alt=""/>
                                             <img className={analyticsCSS.imginp} style={{marginRight: "1vw"}} src={no} onClick={onClose} title="Отменить изменения и выйти из режима редактирования" alt=""/>
                                         </div>
@@ -95,7 +94,7 @@ export function Periods() {
                                                 Интервал:
                                             </div>
                                             <input className={analyticsCSS.inp} data-id={param + "_per"} id={"inpnit_" + param + "_per"} placeholder={"01.09.22-03.11.22"} defaultValue={periodsInfo.prs[param].per} onChange={(e)=>chStatB(e, inps)} type="text"/>
-                                            {ele(false, "inpnit_" + param + "_per", true, inps, pari)}
+                                            {ele(false, "inpnit_" + param + "_per", inps)}
                                             <img className={analyticsCSS.imginp+" yes "} src={yes} onClick={(e)=>onFin(e, inps, forceUpdate, CHANGE_PERIODS)} title="Подтвердить" alt=""/>
                                             <img className={analyticsCSS.imginp} style={{marginRight: "1vw"}} src={no} onClick={onClose} title="Отменить изменения и выйти из режима редактирования" alt=""/>
                                         </div>
@@ -114,12 +113,12 @@ export function Periods() {
                                         Название:
                                     </div>
                                     <input className={analyticsCSS.inp} id={"inpnnt_"} placeholder={"X Смена"} defaultValue={inps.inpnnt} onChange={(e)=>chStatB(e, inps, forceUpdate)} type="text"/>
-                                    {ele(false, "inpnnt_", true, inps, pari)}
+                                    {ele(false, "inpnnt_", inps)}
                                     <div className={analyticsCSS.preinf}>
                                         , Интервал:
                                     </div>
                                     <input className={analyticsCSS.inp} id={"inpnit_"} placeholder={"01.09.22-03.11.22"} defaultValue={inps.inpnit} onChange={(e)=>chStatB(e, inps, forceUpdate)} type="text"/>
-                                    {ele(false, "inpnit_", true, inps, pari)}
+                                    {ele(false, "inpnit_", inps)}
                                     <img className={analyticsCSS.imginp} data-enable={inps.inpnnt_ && inps.inpnit_ ? "1" : "0"} src={yes} onClick={(e)=>onFin(e, inps, forceUpdate, CHANGE_PERIODS_L1, periodsInfo)} title="Подтвердить" alt=""/>
                                     <img className={analyticsCSS.imginp} style={{marginRight: "1vw"}} src={no} onClick={onClose} title="Отменить изменения и выйти из режима редактирования" alt=""/>
                                 </div>

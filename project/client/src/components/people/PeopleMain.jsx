@@ -14,13 +14,14 @@ import {
     CHANGE_PARENTS,
     CHANGE_PARENTS_DEL,
     CHANGE_PARENTS_DEL_L0,
-    CHANGE_PARENTS_DEL_L1,
-    CHANGE_PARENTS_L1,
+    CHANGE_TEACHERS,
     changeEvents,
     changeGroups,
     changePeople
 } from "../../store/actions";
 import parentsCSS from "./parents/parents.module.css";
+import {addKid, codPar} from "./parents/Parents";
+import {addTea, codTea} from "./teachers/Teachers";
 
 let gr, cState, dispatch, groupsInfo;
 gr = {
@@ -54,11 +55,13 @@ export function refreshLink(e, sit, type) {
     if (inp.hasAttribute("data-id")) {
         id = inp.getAttribute("data-id").split("_");
         if(type == CHANGE_PARENTS){
-            dispatch(changePeople(type, id[0], "par", id[1], sit + "/invite/" + gen_cod(), "link"));
+            codPar(id[0], id[1], title, text);
+            // dispatch(changePeople(type, id[0], "par", id[1], sit + "/invite/" + gen_cod(), "link"));
         } else {
-            dispatch(changePeople(type, 0, id[0], id[1], sit + "/invite/" + gen_cod(), "link"));
+            codTea(id[0], id[1], title, text);
+            // dispatch(changePeople(type, id[0], id[1], undefined, sit + "/invite/" + gen_cod(), "link"));
         }
-        dispatch(changeEvents(CHANGE_EVENT, undefined, undefined, title, text, 10));
+        // dispatch(changeEvents(CHANGE_EVENT, undefined, undefined, title, text, 10));
     } else if (inp.hasAttribute("data-id1")) {
         id = inp.getAttribute("data-id1");
         dispatch(changePeople(type, 2, id, undefined, sit + "/invite/" + gen_cod(), "link"));
@@ -80,7 +83,7 @@ export function onDel(e, type, info) {
                     dispatch(changePeople(type, id[0], "par", id[1]));
                 }
             } else {
-                dispatch(changePeople(type, 0, id[0], id[1]));
+                dispatch(changePeople(type, id[0], id[1]));
             }
         } else if(inp.hasAttribute("data-id1")){
             let id = inp.getAttribute("data-id1");
@@ -111,14 +114,15 @@ export function onEdit(e) {
     }
 }
 
-export function onFin(e, inps, forceUpdate, type, info, net) {
+export function onFin(e, inps, forceUpdate, type, info) {
     let par, inp;
     par = e.target.parentElement;
     if (par.classList.contains(parentsCSS.upr)) {
         par = par.parentElement;
-        dispatch(changePeople(CHANGE_PARENTS_L1, undefined, inps.nyid, undefined, {...info.nw}));
-        inps.nyid = undefined;
-        dispatch(changePeople(CHANGE_PARENTS_DEL_L1, "nw", "par"));
+        addKid({...info.nw}, inps.nyid, par);
+        // dispatch(changePeople(CHANGE_PARENTS_L1, undefined, inps.nyid, undefined, {...info.nw}));
+        // inps.nyid = undefined;
+        // dispatch(changePeople(CHANGE_PARENTS_DEL_L1, "nw", "par"));
         par.setAttribute('data-st', '0');
         return;
     }
@@ -138,15 +142,16 @@ export function onFin(e, inps, forceUpdate, type, info, net) {
                 id = grop.length == 0 ? "id0" : "id" + (parseInt(grop[grop.length-1].replace("id", "")) + 1);
                 dispatch(changePeople(type, "nw", "par", id, inps.inpnpt));
             }
+            par.setAttribute('data-st', '0');
+        } else if(type == CHANGE_TEACHERS) {
+            par = par.parentElement;
+            addTea(inps.inpnpt, par);
+            // dispatch(changePeople(type, "nt", "id8", undefined, inps.inpnpt));
         } else {
             par = par.parentElement;
-            if(net) {
-                net(type, inps.inpnpt);
-            } else {
-                dispatch(changePeople(type, 2, "id8", undefined, inps.inpnpt));
-            }
+            dispatch(changePeople(type, 2, "id8", undefined, inps.inpnpt));
+            par.setAttribute('data-st', '0');
         }
-        par.setAttribute('data-st', '0');
         return;
     }
     inp = par.querySelector("input");
@@ -160,7 +165,7 @@ export function onFin(e, inps, forceUpdate, type, info, net) {
                     if(type == CHANGE_PARENTS) {
                         dispatch(changePeople(type, id[0], "par", id[1], inp.value));
                     } else {
-                        dispatch(changePeople(type, 0, id[0], id[1], inp.value));
+                        dispatch(changePeople(type, id[0], id[1], undefined, inp.value));
                     }
                 } else if(inp.hasAttribute("data-id1")){
                     let id = inp.getAttribute("data-id1");
